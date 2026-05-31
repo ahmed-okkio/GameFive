@@ -1,6 +1,7 @@
 "use client";
 
 import { RefreshCw } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { ProgressScreen } from "@/components/ProgressScreen";
 
@@ -102,10 +103,17 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
     message: null,
     error: null
   });
+
   const endpoint = useMemo(
     () => `/api/players/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}/status`,
     [gameName, tagLine]
   );
+
+  const winRate = useMemo(() => {
+    if (!status || status.state !== "ready" || status.matches.length === 0) return 0;
+    const wins = status.matches.filter((m) => m.win).length;
+    return Math.round((wins / status.matches.length) * 100);
+  }, [status]);
 
   useEffect(() => {
     let cancelled = false;
@@ -193,12 +201,6 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
     
   const placementProgress = Math.min(100, Math.round((status.mmr.mayhemGames / 10) * 100));
 
-  const winRate = useMemo(() => {
-    if (status.matches.length === 0) return 0;
-    const wins = status.matches.filter((m) => m.win).length;
-    return Math.round((wins / status.matches.length) * 100);
-  }, [status.matches]);
-
   const activeProgress = status.activeJob
     ? Math.min(100, Math.round((status.activeJob.completedSteps / Math.max(status.activeJob.totalSteps, 1)) * 100))
     : 0;
@@ -227,18 +229,6 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
     : latestProfileJob?.completedAt
       ? `Finished ${formatDateTime(latestProfileJob.completedAt)}`
       : (latestProfileJob?.message ?? "No calculation history yet");
-  const refinementStatusLabel = status.enrichment
-    ? enrichmentLabel
-    : latestEnrichment?.status === "complete"
-      ? "Rank refinement complete"
-      : "Rank refinement not running";
-  const refinementStatusDetail = status.enrichment
-    ? status.enrichment.status === "processing"
-      ? `${enrichmentProgress}% complete`
-      : "Waiting for worker"
-    : latestEnrichment?.completedAt
-      ? `Finished ${formatDateTime(latestEnrichment.completedAt)}`
-      : "V1 uses Riot ranked plus uploaded Mayhem games";
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-8">
@@ -252,9 +242,11 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
           {status.player.isPlaced ? (
             <div className="mt-4 flex items-center gap-4">
                 <div className="h-20 w-20 flex-shrink-0">
-                  <img
+                  <Image
                       src={getTierIcon(status.tier.tier)}
                       alt={status.tier.tier}
+                      width={80}
+                      height={80}
                       className="h-full w-full object-contain"
                   />
                 </div>
@@ -403,16 +395,6 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
         </div>
       </div>
     </section>
-  );
-}
-
-function StatusTile({ label, value, detail }: { label: string; value: string; detail: string }) {
-  return (
-    <div className="rounded border border-line bg-black/20 p-3">
-      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-stone-500">{label}</p>
-      <p className="mt-2 text-sm font-bold text-stone-100">{value}</p>
-      <p className="mt-1 text-xs text-stone-400">{detail}</p>
-    </div>
   );
 }
 
