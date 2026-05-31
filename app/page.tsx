@@ -1,4 +1,5 @@
 import { SearchForm } from "@/components/SearchForm";
+import { appConfig } from "@/lib/config";
 
 export default function HomePage() {
   return (
@@ -11,6 +12,15 @@ export default function HomePage() {
         </p>
         <div className="mt-8">
           <SearchForm />
+          {appConfig.companionDownloadUrl && (
+            <p className="mt-4 text-sm text-stone-400">
+              Mayhem games are only recorded if you run the{" "}
+              <a href={appConfig.companionDownloadUrl} className="font-semibold text-gold hover:underline">
+                GameFive Companion app
+              </a>{" "}
+              while you play.
+            </p>
+          )}
         </div>
       </div>
     </section>
