@@ -2,8 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { DEFAULT_MEDIAN_MMR } from "@/lib/mmr/ranked";
 import { getTierLabel } from "@/lib/mmr/tier";
 import { CHAMPION_MAP } from "@/lib/riot/champions";
-
-const CACHE_MS = 60 * 60 * 1000;
+import { riotClient } from "@/lib/riot/client";
 
 export async function getGlobalMedianMmr() {
   const players = await prisma.player.findMany({
@@ -100,7 +99,24 @@ export type PlayerProfile =
     };
 
 export async function getPlayerProfile(gameName: string, tagLine: string): Promise<PlayerProfile> {
-  const player = await getPlayerByRiotId(gameName, tagLine);
+  let player = await getPlayerByRiotId(gameName, tagLine);
+
+  if (!player) {
+      try {
+        const account = await riotClient.getAccountByRiotId(gameName, tagLine);
+        if (account) {
+            player = await prisma.player.create({
+                data: {
+                    puuid: account.puuid,
+                    riotIdName: account.gameName,
+                    riotIdTag: account.tagLine
+                }
+            });
+        }
+      } catch (e) {
+          // Player not found on Riot either
+      }
+  }
 
   if (!player) {
     return {
