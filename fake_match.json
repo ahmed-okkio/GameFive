@@ -1,0 +1,24 @@
+{
+  "source": "lcu",
+  "uploaderPuuid": "Okkio-PUUID-12345",
+  "gameId": 99999999,
+  "queueId": 2400,
+  "gameCreation": 1717171717000,
+  "gameDuration": 1200,
+  "participants": [
+    {
+      "puuid": "Okkio-PUUID-12345",
+      "gameName": "Okkio",
+      "tagLine": "EUW",
+      "participantId": 1,
+      "teamId": 100,
+      "championId": 1,
+      "win": true,
+      "kills": 10,
+      "deaths": 2,
+      "assists": 5,
+      "totalDamageDealtToChampions": 10000,
+      "totalHeal": 5000
+    }
+  ]
+}

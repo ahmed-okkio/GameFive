@@ -45,10 +45,6 @@ internal sealed class ConfigStore
 
     public void CreateTemplate()
     {
-        Save(new CompanionConfig
-        {
-            AuthToken = "dev-local-token",
-            ServerBaseUrl = "http://localhost:3000"
-        });
+        Save(new CompanionConfig());
     }
 }
