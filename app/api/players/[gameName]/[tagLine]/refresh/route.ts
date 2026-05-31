@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getPlayerByRiotId } from "@/lib/players";
 import { calculateAndStoreProfile } from "@/lib/mmr/calculate-profile";
 import { prisma } from "@/lib/prisma";
+import { riotClient } from "@/lib/riot/client";
 
 type Context = {
   params: Promise<{
@@ -14,7 +15,29 @@ export async function POST(_request: Request, context: Context) {
   const params = await context.params;
   const gameName = decodeURIComponent(params.gameName);
   const tagLine = decodeURIComponent(params.tagLine);
-  const player = await getPlayerByRiotId(gameName, tagLine);
+  let player = await getPlayerByRiotId(gameName, tagLine);
+
+  if (!player) {
+      try {
+        const account = await riotClient.getAccountByRiotId(gameName, tagLine);
+        if (account) {
+            player = await prisma.player.upsert({
+                where: { puuid: account.puuid },
+                update: {
+                    riotIdName: account.gameName,
+                    riotIdTag: account.tagLine
+                },
+                create: {
+                    puuid: account.puuid,
+                    riotIdName: account.gameName,
+                    riotIdTag: account.tagLine
+                }
+            });
+        }
+      } catch (e) {
+          return NextResponse.json({ error: "Player not found." }, { status: 404 });
+      }
+  }
 
   if (player?.manualRefreshAt && Date.now() - player.manualRefreshAt.getTime() < 30 * 60 * 1000) {
     return NextResponse.json(
