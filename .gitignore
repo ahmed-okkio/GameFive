@@ -1,0 +1,16 @@
+node_modules
+.next
+dist
+coverage
+.env
+.env.*
+!.env.example
+*.tsbuildinfo
+prisma/dev.db
+
+# Logs and build artifacts
+*.log
+companion/bin/
+companion/obj/
+.DS_Store
+Thumbs.db

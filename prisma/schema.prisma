@@ -1,0 +1,190 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Player {
+  id                    String             @id @default(uuid())
+  puuid                 String             @unique
+  riotIdName            String             @map("riot_id_name")
+  riotIdTag             String             @map("riot_id_tag")
+  summonerId            String?            @map("summoner_id")
+  profileIconId         Int?               @map("profile_icon_id")
+  summonerLevel         Int?               @map("summoner_level")
+  region                String             @default("EUW")
+  soloDuoTier           String?            @map("solo_duo_tier")
+  soloDuoDivision       String?            @map("solo_duo_division")
+  flexTier              String?            @map("flex_tier")
+  flexDivision          String?            @map("flex_division")
+  rawMmr                Float              @default(0) @map("raw_mmr")
+  currentLp             Int                @default(0) @map("current_lp")
+  isPlaced              Boolean            @default(false) @map("is_placed")
+  historicalTier        String?            @map("historical_tier")
+  historicalDivision    String?            @map("historical_division")
+  enrichmentDepth       Int                @default(0) @map("enrichment_depth")
+  mayhemGames           Int                @default(0) @map("mayhem_games")
+  aramGames             Int                @default(0) @map("aram_games")
+  lastGameDate          DateTime?          @map("last_game_date")
+  lastGameTier          String?            @map("last_game_tier")
+  cacheUpdatedAt        DateTime?          @map("cache_updated_at")
+  manualRefreshAt       DateTime?          @map("manual_refresh_at")
+  enrichmentCompletedAt DateTime?          @map("enrichment_completed_at")
+  createdAt             DateTime           @default(now()) @map("created_at")
+  updatedAt             DateTime           @updatedAt @map("updated_at")
+  participants          MatchParticipant[]
+  profileJobs           ProfileJob[]
+  enrichmentJobs        EnrichmentQueue[]
+  leaderboardEntries    FriendsLeaderboard[]
+
+  @@map("players")
+}
+
+model Match {
+  id               String             @id @default(uuid())
+  matchId          String             @unique @map("match_id")
+  gameMode         String             @map("game_mode")
+  gameDate         DateTime           @map("game_date")
+  durationSeconds  Int                @map("duration_seconds")
+  queueId          Int                @map("queue_id")
+  lobbyAvgMmr      Float?             @map("lobby_avg_mmr")
+  createdAt        DateTime           @default(now()) @map("created_at")
+  participants     MatchParticipant[]
+
+  @@map("matches")
+}
+
+model MatchParticipant {
+  id                 String   @id @default(uuid())
+  matchId            String   @map("match_id")
+  playerId           String   @map("player_id")
+  team               Int
+  win                Boolean
+  championId         Int      @map("champion_id")
+  championName       String?  @map("champion_name")
+  kills              Int
+  deaths             Int
+  assists            Int
+  damageToChampions  Int      @map("damage_to_champions")
+  healingDone        Int      @map("healing_done")
+  killParticipation  Float    @map("kill_participation")
+  damageShare        Float    @map("damage_share")
+  healingShare       Float    @map("healing_share")
+  performanceScore   Float    @default(0) @map("performance_score")
+  lpDelta            Int      @default(0) @map("lp_delta")
+  createdAt          DateTime @default(now()) @map("created_at")
+  match              Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  player             Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([matchId, playerId])
+  @@map("match_participants")
+  }
+
+model ProfileJob {
+  id                String    @id @default(uuid())
+  playerId          String?   @map("player_id")
+  riotIdName        String    @map("riot_id_name")
+  riotIdTag         String    @map("riot_id_tag")
+  status            String
+  totalSteps        Int       @default(1001) @map("total_steps")
+  completedSteps    Int       @default(0) @map("completed_steps")
+  message           String    @default("Queued")
+  error             String?
+  bullJobId         String?   @unique @map("bull_job_id")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  startedAt         DateTime? @map("started_at")
+  completedAt       DateTime? @map("completed_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  player            Player?   @relation(fields: [playerId], references: [id], onDelete: SetNull)
+
+  @@index([riotIdName, riotIdTag, status])
+  @@map("profile_jobs")
+}
+
+model EnrichmentQueue {
+  id                 String    @id @default(uuid())
+  playerId           String    @map("player_id")
+  status             String
+  depthReached       Int       @default(0) @map("depth_reached")
+  totalCallsEstimate Int       @map("total_calls_estimate")
+  callsMade          Int       @default(0) @map("calls_made")
+  bullJobId          String?   @unique @map("bull_job_id")
+  queuedAt           DateTime  @default(now()) @map("queued_at")
+  startedAt          DateTime? @map("started_at")
+  completedAt        DateTime? @map("completed_at")
+  player             Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@map("enrichment_queue")
+}
+
+model FriendsLeaderboard {
+  id           String   @id @default(uuid())
+  playerId     String   @map("player_id")
+  addedBy      String   @map("added_by")
+  addedAt      DateTime @default(now()) @map("added_at")
+  displayOrder Int?     @map("display_order")
+  player       Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([playerId])
+  @@map("friends_leaderboard")
+}
+
+model TierBoundary {
+  id        String   @id @default(uuid())
+  tier      String
+  division  String?
+  minMmr    Float    @map("min_mmr")
+  maxMmr    Float?   @map("max_mmr")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([tier, division])
+  @@map("tier_boundaries")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
