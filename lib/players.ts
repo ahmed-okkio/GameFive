@@ -103,18 +103,25 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
 
   if (!player) {
       try {
+        console.log(`Player ${gameName}#${tagLine} not in DB, fetching from Riot...`);
         const account = await riotClient.getAccountByRiotId(gameName, tagLine);
         if (account) {
-            player = await prisma.player.create({
-                data: {
+            player = await prisma.player.upsert({
+                where: { puuid: account.puuid },
+                update: {
+                    riotIdName: account.gameName,
+                    riotIdTag: account.tagLine
+                },
+                create: {
                     puuid: account.puuid,
                     riotIdName: account.gameName,
                     riotIdTag: account.tagLine
                 }
             });
+            console.log(`Upserted player in DB: ${player.id}`);
         }
       } catch (e) {
-          // Player not found on Riot either
+          console.error(`Failed to fetch/upsert player from Riot API: ${gameName}#${tagLine}`, e);
       }
   }
 
