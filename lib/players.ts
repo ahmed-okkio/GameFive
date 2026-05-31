@@ -4,6 +4,8 @@ import { getTierLabel } from "@/lib/mmr/tier";
 import { CHAMPION_MAP } from "@/lib/riot/champions";
 import { riotClient } from "@/lib/riot/client";
 
+const CACHE_MS = 60 * 60 * 1000;
+
 export async function getGlobalMedianMmr() {
   const players = await prisma.player.findMany({
     where: {
@@ -27,15 +29,18 @@ export async function getGlobalMedianMmr() {
 }
 
 export async function getPlayerByRiotId(gameName: string, tagLine: string) {
-  const candidates = await prisma.player.findMany({
+  return await prisma.player.findFirst({
     where: {
+      riotIdName: {
+        equals: gameName,
+        mode: 'insensitive',
+      },
       riotIdTag: {
-        equals: tagLine
-      }
-    }
+        equals: tagLine,
+        mode: 'insensitive',
+      },
+    },
   });
-
-  return candidates.find((player) => player.riotIdName.toLowerCase() === gameName.toLowerCase()) ?? null;
 }
 
 export type PlayerProfile = 

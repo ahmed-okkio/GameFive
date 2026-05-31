@@ -154,7 +154,7 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
         team: participant.teamId,
         win: participant.win,
         championId: participant.championId,
-        championName: CHAMPION_MAP[participant.championId] ?? (console.warn(`Unknown champion ID: ${participant.championId}`) || `Champion ${participant.championId}`),
+        championName: CHAMPION_MAP[participant.championId] ?? `Champion ${participant.championId}`,
         kills: participant.kills,
         deaths: participant.deaths,
         assists: participant.assists,

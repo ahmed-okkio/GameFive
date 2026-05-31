@@ -93,19 +93,6 @@ model FriendsLeaderboard {
 }
 
 
-model TierBoundary {
-  id        String   @id @default(uuid())
-  tier      String
-  division  String?
-  minMmr    Float    @map("min_mmr")
-  maxMmr    Float?   @map("max_mmr")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@unique([tier, division])
-  @@map("tier_boundaries")
-}
-
 model Account {
   id                String  @id @default(cuid())
   userId            String
