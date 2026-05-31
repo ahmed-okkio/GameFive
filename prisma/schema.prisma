@@ -32,12 +32,9 @@ model Player {
   lastGameTier          String?            @map("last_game_tier")
   cacheUpdatedAt        DateTime?          @map("cache_updated_at")
   manualRefreshAt       DateTime?          @map("manual_refresh_at")
-  enrichmentCompletedAt DateTime?          @map("enrichment_completed_at")
   createdAt             DateTime           @default(now()) @map("created_at")
   updatedAt             DateTime           @updatedAt @map("updated_at")
   participants          MatchParticipant[]
-  profileJobs           ProfileJob[]
-  enrichmentJobs        EnrichmentQueue[]
   leaderboardEntries    FriendsLeaderboard[]
 
   @@map("players")
@@ -83,43 +80,6 @@ model MatchParticipant {
   @@map("match_participants")
   }
 
-model ProfileJob {
-  id                String    @id @default(uuid())
-  playerId          String?   @map("player_id")
-  riotIdName        String    @map("riot_id_name")
-  riotIdTag         String    @map("riot_id_tag")
-  status            String
-  totalSteps        Int       @default(1001) @map("total_steps")
-  completedSteps    Int       @default(0) @map("completed_steps")
-  message           String    @default("Queued")
-  error             String?
-  bullJobId         String?   @unique @map("bull_job_id")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  startedAt         DateTime? @map("started_at")
-  completedAt       DateTime? @map("completed_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
-  player            Player?   @relation(fields: [playerId], references: [id], onDelete: SetNull)
-
-  @@index([riotIdName, riotIdTag, status])
-  @@map("profile_jobs")
-}
-
-model EnrichmentQueue {
-  id                 String    @id @default(uuid())
-  playerId           String    @map("player_id")
-  status             String
-  depthReached       Int       @default(0) @map("depth_reached")
-  totalCallsEstimate Int       @map("total_calls_estimate")
-  callsMade          Int       @default(0) @map("calls_made")
-  bullJobId          String?   @unique @map("bull_job_id")
-  queuedAt           DateTime  @default(now()) @map("queued_at")
-  startedAt          DateTime? @map("started_at")
-  completedAt        DateTime? @map("completed_at")
-  player             Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
-
-  @@map("enrichment_queue")
-}
-
 model FriendsLeaderboard {
   id           String   @id @default(uuid())
   playerId     String   @map("player_id")
@@ -131,6 +91,7 @@ model FriendsLeaderboard {
   @@unique([playerId])
   @@map("friends_leaderboard")
 }
+
 
 model TierBoundary {
   id        String   @id @default(uuid())

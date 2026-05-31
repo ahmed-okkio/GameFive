@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { DEFAULT_MEDIAN_MMR } from "@/lib/mmr/ranked";
 import { getTierLabel } from "@/lib/mmr/tier";
-import { enqueueProfileCalculation } from "@/lib/jobs/enqueue";
 import { CHAMPION_MAP } from "@/lib/riot/champions";
 
 const CACHE_MS = 60 * 60 * 1000;
@@ -40,57 +39,75 @@ export async function getPlayerByRiotId(gameName: string, tagLine: string) {
   return candidates.find((player) => player.riotIdName.toLowerCase() === gameName.toLowerCase()) ?? null;
 }
 
-export async function getPlayerProfile(gameName: string, tagLine: string) {
+export type PlayerProfile = 
+  | {
+      state: "awaiting";
+      player: null;
+      job: null;
+    }
+  | {
+      state: "ready";
+      player: {
+        id: string;
+        puuid: string;
+        riotIdName: string;
+        riotIdTag: string;
+        rawMmr: number;
+        currentLp: number;
+        isPlaced: boolean;
+        mayhemGames: number;
+        aramGames: number;
+        cacheUpdatedAt: Date | null;
+      };
+      mmr: {
+        rawMmr: number;
+        displayedMmr: number;
+        currentLp: number;
+        decayAmount: number;
+        mayhemGames: number;
+        aramGames: number;
+      };
+      tier: {
+        label: string;
+        tier: string;
+      };
+      matches: Array<{
+        id: string;
+        win: boolean;
+        kills: number;
+        deaths: number;
+        assists: number;
+        lpDelta: number;
+        championId: number;
+        championName: string;
+        damageToChampions: number;
+        healingDone: number;
+        match: {
+          gameDate: Date;
+        };
+      }>;
+      champions: Array<{
+        championId: number;
+        championName: string;
+        games: number;
+        wins: number;
+        kills: number;
+        deaths: number;
+        assists: number;
+        damage: number;
+        healing: number;
+      }>;
+    };
+
+export async function getPlayerProfile(gameName: string, tagLine: string): Promise<PlayerProfile> {
   const player = await getPlayerByRiotId(gameName, tagLine);
 
   if (!player) {
-    const job = await enqueueProfileCalculation(gameName, tagLine);
     return {
-      state: "awaiting" as const,
+      state: "awaiting",
       player: null,
-      job: await withProfileQueuePosition(job)
+      job: null
     };
-  }
-
-  const cacheAge = player.cacheUpdatedAt ? Date.now() - player.cacheUpdatedAt.getTime() : Number.POSITIVE_INFINITY;
-  const activeJob = await prisma.profileJob.findFirst({
-    where: {
-      OR: [
-        {
-          playerId: player.id
-        },
-        {
-          riotIdName: player.riotIdName,
-          riotIdTag: player.riotIdTag
-        }
-      ],
-      status: {
-        in: ["queued", "processing"]
-      }
-    },
-    orderBy: {
-      createdAt: "desc"
-    }
-  });
-  const latestProfileJob = await prisma.profileJob.findFirst({
-    where: {
-      OR: [
-        {
-          playerId: player.id
-        },
-        {
-          riotIdName: player.riotIdName,
-          riotIdTag: player.riotIdTag
-        }
-      ]
-    },
-    orderBy: {
-      createdAt: "desc"
-    }
-  });
-
-  if (cacheAge > CACHE_MS && !activeJob) {
-    await enqueueProfileCalculation(player.riotIdName, player.riotIdTag);
   }
 
   const participants = await prisma.matchParticipant.findMany({
@@ -111,7 +128,6 @@ export async function getPlayerProfile(gameName: string, tagLine: string) {
     take: 100
   });
 
-  // Calculate Inactivity Decay on demand
   const lastMayhemGame = participants
     .filter((p) => p.match.gameMode === "MAYHEM")
     .sort((a, b) => b.match.gameDate.getTime() - a.match.gameDate.getTime())[0];
@@ -120,12 +136,11 @@ export async function getPlayerProfile(gameName: string, tagLine: string) {
   const daysInactive = lastMayhemGame ? Math.max(0, (now.getTime() - lastMayhemGame.match.gameDate.getTime()) / 86_400_000) : 0;
   const decayAmount = player.isPlaced ? player.rawMmr * (0.005 * daysInactive) : 0;
   
-  // Note: Decay is purely for display as per spec 3.10
   const displayedMmr = Math.round(Math.max(0, player.rawMmr - decayAmount));
   const tier = getTierLabel(displayedMmr);
 
   return {
-    state: "ready" as const,
+    state: "ready",
     player: {
         ...player,
         isPlaced: player.isPlaced
@@ -139,72 +154,27 @@ export async function getPlayerProfile(gameName: string, tagLine: string) {
         aramGames: player.aramGames
     },
     tier,
-    activeJob: activeJob ? await withProfileQueuePosition(activeJob) : null,
-    latestProfileJob,
-    recentGames: participants.slice(0, 5),
-    matches: participants,
+    matches: participants.map(p => ({
+        id: p.id,
+        win: p.win,
+        kills: p.kills,
+        deaths: p.deaths,
+        assists: p.assists,
+        lpDelta: p.lpDelta,
+        championId: p.championId,
+        championName: p.championName ?? "Unknown",
+        damageToChampions: p.damageToChampions,
+        healingDone: p.healingDone,
+        match: {
+            gameDate: p.match.gameDate
+        }
+    })),
     champions: buildChampionStats(participants)
   };
 }
 
 export async function readPlayerProfileStatus(gameName: string, tagLine: string) {
-  const player = await getPlayerByRiotId(gameName, tagLine);
-
-  if (!player) {
-    const job = await prisma.profileJob.findFirst({
-      where: {
-        riotIdName: gameName,
-        riotIdTag: tagLine,
-        status: {
-          in: ["queued", "processing", "failed"]
-        }
-      },
-      orderBy: {
-        createdAt: "desc"
-      }
-    });
-
-    if (job) {
-      return {
-        state: "awaiting" as const,
-        player: null,
-        job: await withProfileQueuePosition(job)
-      };
-    }
-
-    return getPlayerProfile(gameName, tagLine);
-  }
-
   return getPlayerProfile(gameName, tagLine);
-}
-
-async function withProfileQueuePosition<T extends { id: string; status: string }>(job: T) {
-  if (job.status !== "queued") {
-    return {
-      ...job,
-      queuePosition: null,
-      queueLength: null
-    };
-  }
-
-  const queuedJobs = await prisma.profileJob.findMany({
-    where: {
-      status: "queued"
-    },
-    select: {
-      id: true
-    },
-    orderBy: {
-      createdAt: "asc"
-    }
-  });
-  const index = queuedJobs.findIndex((queuedJob) => queuedJob.id === job.id);
-
-  return {
-    ...job,
-    queuePosition: index >= 0 ? index + 1 : null,
-    queueLength: queuedJobs.length
-  };
 }
 
 function buildChampionStats(

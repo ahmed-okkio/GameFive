@@ -12,12 +12,8 @@ function bearerToken(request: Request) {
 export async function POST(request: Request) {
   if (bearerToken(request) !== appConfig.companionIngestToken) {
     return NextResponse.json(
-      {
-        error: "Unauthorized"
-      },
-      {
-        status: 401
-      }
+      { error: "Unauthorized" },
+      { status: 401 }
     );
   }
 
@@ -26,13 +22,8 @@ export async function POST(request: Request) {
 
   if (!payload.success) {
     return NextResponse.json(
-      {
-        error: "Invalid match payload",
-        issues: payload.error.issues
-      },
-      {
-        status: 400
-      }
+      { error: "Invalid match payload", issues: payload.error.issues },
+      { status: 400 }
     );
   }
 

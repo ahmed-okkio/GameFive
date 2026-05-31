@@ -25,13 +25,12 @@ export default async function PlayerPage({ params }: PageProps) {
   const decodedGameName = decodeURIComponent(gameName);
   const decodedTagLine = decodeURIComponent(tagLine);
   const profile = await getPlayerProfile(decodedGameName, decodedTagLine);
-  const initialStatus =
-    profile.state === "awaiting"
-      ? {
-          state: profile.state,
-          job: serializeProfileJob(profile.job)
-        }
-      : {
+
+  if (profile.state === "awaiting") {
+      return <div>Player not found or awaiting calculation...</div>;
+  }
+
+  const initialStatus = {
           state: profile.state,
           player: {
             riotIdName: profile.player.riotIdName,
@@ -65,17 +64,8 @@ export default async function PlayerPage({ params }: PageProps) {
                   gameDate: m.match.gameDate.toISOString()
               }
           })),
-          activeJob: profile.activeJob
-            ? {
-                status: profile.activeJob.status,
-                completedSteps: profile.activeJob.completedSteps,
-                totalSteps: profile.activeJob.totalSteps,
-                message: profile.activeJob.message,
-                queuePosition: profile.activeJob.queuePosition,
-                queueLength: profile.activeJob.queueLength
-              }
-            : null,
-          latestProfileJob: profile.latestProfileJob ? serializeProfileJob(profile.latestProfileJob) : null,
+          activeJob: null,
+          latestProfileJob: null,
           latestEnrichment: null,
           champions: profile.champions.map(c => ({
               championId: c.championId,
@@ -91,28 +81,4 @@ export default async function PlayerPage({ params }: PageProps) {
         };
 
   return <ProfileClient gameName={decodedGameName} tagLine={decodedTagLine} initialStatus={initialStatus} />;
-}
-
-function serializeProfileJob(job: {
-  status: string;
-  completedSteps: number;
-  totalSteps: number;
-  message: string;
-  queuePosition?: number | null;
-  queueLength?: number | null;
-  error?: string | null;
-  completedAt?: Date | null;
-  updatedAt: Date;
-}) {
-  return {
-    status: job.status,
-    completedSteps: job.completedSteps,
-    totalSteps: job.totalSteps,
-    message: job.message,
-    queuePosition: job.queuePosition ?? null,
-    queueLength: job.queueLength ?? null,
-    error: job.error ?? null,
-    completedAt: job.completedAt?.toISOString() ?? null,
-    updatedAt: job.updatedAt.toISOString()
-  };
 }

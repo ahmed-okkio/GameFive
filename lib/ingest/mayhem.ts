@@ -4,7 +4,8 @@ import type { Player } from "@prisma/client";
 import { bestRankedMmr, DEFAULT_MEDIAN_MMR } from "@/lib/mmr/ranked";
 import { calculateLpDelta, calculatePlacementMmr } from "@/lib/mmr/calculate";
 import { getTierLabel } from "@/lib/mmr/tier";
-import { enqueueProfileCalculation } from "@/lib/jobs/enqueue";
+import { CHAMPION_MAP } from "@/lib/riot/champions";
+import { calculateAndStoreProfile } from "@/lib/mmr/calculate-profile";
 
 export const companionMatchPayloadSchema = z.object({
   source: z.literal("lcu"),
@@ -43,28 +44,6 @@ function isMayhemPayload(payload: CompanionMatchPayload) {
   return payload.queueId === 2400 || payload.gameMode?.toUpperCase() === "KIWI";
 }
 
-async function getGlobalMedianMmr() {
-  const players = await prisma.player.findMany({
-    where: {
-      rawMmr: {
-        gt: 0
-      }
-    },
-    select: {
-      rawMmr: true
-    },
-    orderBy: {
-      rawMmr: "asc"
-    }
-  });
-
-  if (players.length < 10) {
-    return DEFAULT_MEDIAN_MMR;
-  }
-
-  return players[Math.floor(players.length / 2)].rawMmr;
-}
-
 export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload) {
   if (!isMayhemPayload(payload)) {
     return {
@@ -76,9 +55,7 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
 
   const matchId = `LCU_${payload.gameId}`;
   const existingMatch = await prisma.match.findUnique({
-    where: {
-      matchId
-    }
+    where: { matchId }
   });
 
   if (existingMatch) {
@@ -97,52 +74,25 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
     const riotIdName = participant.gameName?.trim() || participant.summonerName?.trim() || "Unknown";
     const riotIdTag = participant.tagLine?.trim() || "EUW";
 
-    let player = await prisma.player.findUnique({
-      where: {
-        puuid: participant.puuid
-      }
-    });
+    let player = await prisma.player.findUnique({ where: { puuid: participant.puuid } });
 
     if (!player && riotIdName !== "Unknown") {
-      player = await prisma.player.findFirst({
-        where: {
-          riotIdName,
-          riotIdTag
-        }
-      });
-
-      if (player) {
-        const isNewReal = participant.puuid.length > 50;
-        const isOldReal = player.puuid.length > 50;
-        if (isNewReal && !isOldReal) {
-          player = await prisma.player.update({
-            where: { id: player.id },
-            data: { puuid: participant.puuid }
-          });
-        }
+      player = await prisma.player.findFirst({ where: { riotIdName, riotIdTag } });
+      if (player && participant.puuid.length > 50 && player.puuid.length <= 50) {
+        player = await prisma.player.update({ where: { id: player.id }, data: { puuid: participant.puuid } });
       }
     }
 
     if (!player) {
-      player = await prisma.player.create({
-        data: {
-          puuid: participant.puuid,
-          riotIdName,
-          riotIdTag
-        }
-      });
+      player = await prisma.player.create({ data: { puuid: participant.puuid, riotIdName, riotIdTag } });
     } else if (participant.gameName && participant.tagLine) {
-      player = await prisma.player.update({
-        where: { id: player.id },
-        data: { riotIdName, riotIdTag }
-      });
+      player = await prisma.player.update({ where: { id: player.id }, data: { riotIdName, riotIdTag } });
     }
 
     playerRows.set(participant.puuid, player);
   }
 
   // 2. Calculate Lobby Average MMR
-  // Spec: "Calculate lobby_avg_mmr as the average of all 9 other players in the lobby (allies and enemies)."
   const uploader = playerRows.get(payload.uploaderPuuid);
   const opponents = [...playerRows.values()].filter(p => p.id !== uploader?.id);
   
@@ -166,13 +116,9 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
   // 4. Calculate LP delta
   let calculatedLpDelta = 0;
   if (uploader) {
-    const existingMayhemGamesCount = await prisma.matchParticipant.count({
-        where: { playerId: uploader.id, match: { gameMode: "MAYHEM" } }
-    });
-    const mayhemGamesCount = existingMayhemGamesCount + 1;
     const isWin = payload.participants.find(p => p.puuid === payload.uploaderPuuid)?.win ?? false;
     
-    if (mayhemGamesCount >= 10 && uploader.isPlaced) {
+    if (uploader.isPlaced) {
         const last5Games = await prisma.matchParticipant.findMany({
             where: { playerId: uploader.id, match: { gameMode: "MAYHEM" } },
             include: { match: true },
@@ -213,7 +159,6 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
         assists: participant.assists,
         damageToChampions: participant.totalDamageDealtToChampions,
         healingDone: participant.totalHeal,
-        // Performance stats stored but not used for MMR
         killParticipation: 0,
         damageShare: 0,
         healingShare: 0,
@@ -225,75 +170,24 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
 
   // 6. Update uploader MMR/LP
   if (uploader) {
-    const mayhemGamesCount = await prisma.matchParticipant.count({
-        where: { playerId: uploader.id, match: { gameMode: "MAYHEM" } }
-    });
+      if (uploader.isPlaced) {
+          const newMmr = uploader.rawMmr + calculatedLpDelta;
+          const tier = getTierLabel(newMmr);
 
-    if (mayhemGamesCount >= 10 && uploader.isPlaced) {
-        const newMmr = uploader.rawMmr + calculatedLpDelta;
-        const tier = getTierLabel(newMmr);
-
-        await prisma.player.update({
-            where: { id: uploader.id },
-            data: {
-                rawMmr: newMmr,
-                currentLp: Math.round(newMmr % 100),
-                mayhemGames: mayhemGamesCount,
-                lastGameDate: new Date(payload.gameCreation),
-                lastGameTier: tier.tier,
-                cacheUpdatedAt: new Date()
-            }
-        });
-    } else if (mayhemGamesCount >= 10 && !uploader.isPlaced) {
-        // Just finished or passed 10th game - Run Placement Formula
-        const first10Games = await prisma.matchParticipant.findMany({
-            where: { playerId: uploader.id, match: { gameMode: "MAYHEM" } },
-            include: { match: true },
-            orderBy: { match: { gameDate: "asc" } },
-            take: 10
-        });
-        const wins = first10Games.filter(g => g.win).length;
-
-        const startingMmr = calculatePlacementMmr({
-            soloDuoTier: uploader.soloDuoTier,
-            soloDuoDivision: uploader.soloDuoDivision,
-            flexTier: uploader.flexTier,
-            flexDivision: uploader.flexDivision,
-            historicalTier: uploader.historicalTier,
-            historicalDivision: uploader.historicalDivision,
-            mayhemWins: wins,
-            globalMedianMmr
-        });
-
-        const tier = getTierLabel(startingMmr);
-
-        await prisma.player.update({
-            where: { id: uploader.id },
-            data: {
-                isPlaced: true,
-                rawMmr: startingMmr,
-                currentLp: Math.round(startingMmr % 100),
-                mayhemGames: mayhemGamesCount,
-                lastGameDate: new Date(payload.gameCreation),
-                lastGameTier: tier.tier,
-                cacheUpdatedAt: new Date()
-            }
-        });
-    } else {
-        // Still in placements
-        await prisma.player.update({
-            where: { id: uploader.id },
-            data: {
-                mayhemGames: mayhemGamesCount,
-                lastGameDate: new Date(payload.gameCreation),
-                cacheUpdatedAt: new Date()
-            }
-        });
-    }
-
-    if (uploader.riotIdName !== "Unknown") {
-      await enqueueProfileCalculation(uploader.riotIdName, uploader.riotIdTag);
-    }
+          await prisma.player.update({
+              where: { id: uploader.id },
+              data: {
+                  rawMmr: newMmr,
+                  currentLp: Math.round(newMmr % 100),
+                  mayhemGames: { increment: 1 },
+                  lastGameDate: new Date(payload.gameCreation),
+                  lastGameTier: tier.tier,
+                  cacheUpdatedAt: new Date()
+              }
+          });
+      } else {
+        await calculateAndStoreProfile(uploader);
+      }
   }
 
   return {
@@ -302,4 +196,13 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
     matchId,
     participants: payload.participants.length
   };
+}
+
+async function getGlobalMedianMmr() {
+  const players = await prisma.player.findMany({
+    where: { rawMmr: { gt: 0 } },
+    select: { rawMmr: true },
+    orderBy: { rawMmr: "asc" }
+  });
+  return players.length < 10 ? DEFAULT_MEDIAN_MMR : players[Math.floor(players.length / 2)].rawMmr;
 }

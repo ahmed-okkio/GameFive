@@ -19,26 +19,12 @@ export async function GET() {
         player: {
           rawMmr: "desc"
         }
-      },
-      {
-        displayOrder: "asc"
       }
     ]
   });
 
-  const queue = await prisma.enrichmentQueue.findMany({
-    include: {
-      player: true
-    },
-    orderBy: {
-      queuedAt: "asc"
-    },
-    take: 20
-  });
-
   return NextResponse.json({
-    entries,
-    queue
+    entries
   });
 }
 
@@ -61,25 +47,15 @@ export async function POST(request: Request) {
 
     const player = await prisma.player.findFirst({
       where: {
-        riotIdName: {
-          equals: gameName.trim()
-        },
-        riotIdTag: {
-          equals: tagLine.trim()
-        }
+        riotIdName: { equals: gameName.trim() },
+        riotIdTag: { equals: tagLine.trim() }
       }
     });
 
     if (!player) {
-      const { enqueueProfileCalculation } = await import("@/lib/jobs/enqueue");
-      await enqueueProfileCalculation(gameName.trim(), tagLine.trim());
       return NextResponse.json(
-        {
-          error: "Player calculation queued. Add them after the provisional profile is ready."
-        },
-        {
-          status: 202
-        }
+        { error: "Player not found. They must have played a Mayhem match to be indexed." },
+        { status: 404 }
       );
     }
 
@@ -91,9 +67,7 @@ export async function POST(request: Request) {
   }
 
   const entry = await prisma.friendsLeaderboard.upsert({
-    where: {
-      playerId
-    },
+    where: { playerId },
     create: {
       playerId,
       addedBy: session.user?.name ?? "admin"
@@ -119,9 +93,7 @@ export async function DELETE(request: Request) {
   }
 
   await prisma.friendsLeaderboard.delete({
-    where: {
-      id
-    }
+    where: { id }
   });
 
   return NextResponse.json({ ok: true });

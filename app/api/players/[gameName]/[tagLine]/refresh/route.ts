@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { enqueueProfileCalculation } from "@/lib/jobs/enqueue";
 import { getPlayerByRiotId } from "@/lib/players";
+import { calculateAndStoreProfile } from "@/lib/mmr/calculate-profile";
+import { prisma } from "@/lib/prisma";
 
 type Context = {
   params: Promise<{
@@ -17,31 +18,20 @@ export async function POST(_request: Request, context: Context) {
 
   if (player?.manualRefreshAt && Date.now() - player.manualRefreshAt.getTime() < 30 * 60 * 1000) {
     return NextResponse.json(
-      {
-        error: "Manual refresh is available every 30 minutes."
-      },
-      {
-        status: 429
-      }
+      { error: "Manual refresh is available every 30 minutes." },
+      { status: 429 }
     );
   }
-
-  const job = await enqueueProfileCalculation(gameName, tagLine, true);
 
   if (player) {
-    await import("@/lib/prisma").then(({ prisma }) =>
-      prisma.player.update({
-        where: {
-          id: player.id
-        },
-        data: {
-          manualRefreshAt: new Date()
-        }
-      })
-    );
+    await calculateAndStoreProfile(player);
+    await prisma.player.update({
+        where: { id: player.id },
+        data: { manualRefreshAt: new Date() }
+    });
+  } else {
+    return NextResponse.json({ error: "Player not found." }, { status: 404 });
   }
 
-  return NextResponse.json({
-    job
-  });
+  return NextResponse.json({ ok: true });
 }

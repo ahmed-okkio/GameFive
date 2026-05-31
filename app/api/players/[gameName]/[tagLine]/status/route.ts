@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { readPlayerProfileStatus } from "@/lib/players";
-import { CHAMPION_MAP } from "@/lib/riot/champions";
+import { getPlayerProfile } from "@/lib/players";
+import { calculateAndStoreProfile } from "@/lib/mmr/calculate-profile";
+import { prisma } from "@/lib/prisma";
 
 type Context = {
   params: Promise<{
@@ -9,41 +10,23 @@ type Context = {
   }>;
 };
 
-export const dynamic = 'force-dynamic';
-
 export async function GET(_request: Request, context: Context) {
   const params = await context.params;
-  const profile = await readPlayerProfileStatus(decodeURIComponent(params.gameName), decodeURIComponent(params.tagLine));
-
-  if (profile.state === "awaiting") {
-    return NextResponse.json({
-      state: "awaiting",
-      job: profile.job
-    });
+  const gameName = decodeURIComponent(params.gameName);
+  const tagLine = decodeURIComponent(params.tagLine);
+  
+  // Directly calculate synchronously on request
+  const profile = await getPlayerProfile(gameName, tagLine);
+  
+  if (profile.state === "ready" && profile.player) {
+      const fullPlayer = await prisma.player.findUnique({ where: { id: profile.player.id } });
+      if (fullPlayer) {
+          await calculateAndStoreProfile(fullPlayer);
+      }
+      // Fetch fresh data after calculation
+      const freshProfile = await getPlayerProfile(gameName, tagLine);
+      return NextResponse.json(freshProfile);
   }
 
-  return NextResponse.json({
-    state: "ready",
-    player: profile.player,
-    mmr: profile.mmr,
-    tier: profile.tier,
-    matches: profile.matches.map(m => ({
-        id: m.id,
-        win: m.win,
-        kills: m.kills,
-        deaths: m.deaths,
-        assists: m.assists,
-        lpDelta: m.lpDelta,
-        championId: m.championId,
-        championName: CHAMPION_MAP[m.championId] ?? `Champion ${m.championId}`,
-        damageToChampions: m.damageToChampions,
-        healingDone: m.healingDone,
-        match: {
-            gameDate: m.match.gameDate.toISOString()
-        }
-    })),
-    champions: profile.champions,
-    activeJob: profile.activeJob,
-    latestProfileJob: profile.latestProfileJob
-  });
+  return NextResponse.json(profile);
 }
