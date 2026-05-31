@@ -41,6 +41,16 @@ export async function calculateAndStoreProfile(player: Player) {
                 cacheUpdatedAt: new Date()
             }
         });
+
+        // Automatically add to leaderboard if they just became placed
+        await prisma.friendsLeaderboard.upsert({
+          where: { playerId: player.id },
+          update: {},
+          create: {
+            playerId: player.id,
+            addedBy: "auto-placed"
+          }
+        });
     } else {
         await prisma.player.update({
             where: { id: player.id },
