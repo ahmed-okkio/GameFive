@@ -40,6 +40,10 @@ public class CompanionWorker : BackgroundService
 
         // Start WMI Monitor
         var uploader = new GameFiveUploader(config, new UploadQueue(_appPaths.FailedUploadsPath, _logger), _logger);
+        
+        // Flush queue on startup to handle failed uploads from previous sessions
+        await uploader.FlushAsync(stoppingToken);
+
         try
         {
             _logger.Info("Initializing LCU Monitor...");
@@ -54,9 +58,17 @@ public class CompanionWorker : BackgroundService
             monitor.Start();
             
             // Keep running until stopped
+            int counter = 0;
             while (!stoppingToken.IsCancellationRequested)
             {
                 await Task.Delay(1000, stoppingToken);
+                
+                // Flush every 5 minutes (300 seconds)
+                if (++counter >= 300)
+                {
+                    counter = 0;
+                    await uploader.FlushAsync(stoppingToken);
+                }
             }
             monitor.Stop();
         }

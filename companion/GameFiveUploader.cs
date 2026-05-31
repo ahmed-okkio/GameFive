@@ -70,34 +70,16 @@ internal sealed class GameFiveUploader : IDisposable
             return;
         }
 
-        if (_attemptedGameIds.Contains(upload.GameId))
+        // Try to upload the current match AND flush the queue
+        await FlushAsync(cancellationToken);
+        
+        if (await TryUploadAsync(upload, cancellationToken))
         {
-            _logger.Info($"Mayhem upload skipped; already attempted this session. gameId={upload.GameId}");
-            return;
-        }
-
-        // Retry logic with exponential backoff (starting at 2s, doubling up to 60s)
-        int maxRetries = 30;
-        int delayMs = 2000; 
-        int maxDelayMs = 60000;
-
-        for (int i = 0; i <= maxRetries; i++)
-        {
-            if (await TryUploadAsync(upload, cancellationToken))
-            {
-                return; // Success!
-            }
-
-            if (i < maxRetries)
-            {
-                _logger.Warn($"Retry {i + 1}/{maxRetries} for match {upload.GameId} in {delayMs}ms.");
-                await Task.Delay(delayMs, cancellationToken);
-                delayMs = Math.Min(delayMs * 2, maxDelayMs); // Exponential backoff capped at 60s
-            }
+            return; // Success!
         }
 
         _queue.Enqueue(upload);
-        _logger.Info($"All retry attempts failed. Queued Mayhem upload for retry. gameId={upload.GameId}");
+        _logger.Info($"Upload failed. Queued Mayhem upload for retry. gameId={upload.GameId}");
     }
 
     public void ClearUploadedGameIds()
