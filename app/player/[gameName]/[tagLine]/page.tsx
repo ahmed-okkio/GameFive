@@ -56,6 +56,7 @@ export default async function PlayerPage({ params }: PageProps) {
               deaths: m.deaths,
               assists: m.assists,
               lpDelta: m.lpDelta,
+              isPlacement: m.isPlacement,
               championId: m.championId,
               championName: m.championName ?? "Unknown",
               damageToChampions: m.damageToChampions,

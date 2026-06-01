@@ -60,6 +60,7 @@ type StatusResponse =
         deaths: number;
         assists: number;
         lpDelta: number;
+        isPlacement: boolean;
         championId: number;
         championName: string;
         damageToChampions: number;
@@ -314,7 +315,7 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
                             </span>
                         </div>
                         <span className="font-mono font-bold text-gold">
-                            {status.player.isPlaced ? (match.lpDelta >= 0 ? `+${match.lpDelta} LP` : `${match.lpDelta} LP`) : "Placement"}
+                            {match.isPlacement ? "Placement" : (match.lpDelta >= 0 ? `+${match.lpDelta} LP` : `${match.lpDelta} LP`)}
                         </span>
                     </div>
                 ))}

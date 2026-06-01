@@ -164,7 +164,8 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
         damageShare: 0,
         healingShare: 0,
         performanceScore: 0,
-        lpDelta: participant.puuid === payload.uploaderPuuid ? calculatedLpDelta : 0
+        lpDelta: participant.puuid === payload.uploaderPuuid ? calculatedLpDelta : 0,
+        isPlacement: !player.isPlaced
       }
     });
   }

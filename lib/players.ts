@@ -82,6 +82,7 @@ export type PlayerProfile =
         deaths: number;
         assists: number;
         lpDelta: number;
+        isPlacement: boolean;
         championId: number;
         championName: string;
         damageToChampions: number;
@@ -189,6 +190,7 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
         deaths: p.deaths,
         assists: p.assists,
         lpDelta: p.lpDelta,
+        isPlacement: p.isPlacement,
         championId: p.championId,
         championName: p.championName ?? "Unknown",
         damageToChampions: p.damageToChampions,
