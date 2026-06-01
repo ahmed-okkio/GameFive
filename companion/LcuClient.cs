@@ -31,11 +31,6 @@ internal sealed class LcuClient : IDisposable
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authBytes));
     }
 
-    public async Task<LcuSummoner?> GetCurrentSummonerAsync(CancellationToken cancellationToken)
-    {
-        return await GetJsonAsync<LcuSummoner>("/lol-summoner/v1/current-summoner", cancellationToken);
-    }
-
     public async Task<string?> GetCurrentPuuidAsync(CancellationToken cancellationToken)
     {
         var summoner = await GetJsonAsync<LcuSummoner>("/lol-summoner/v1/current-summoner", cancellationToken);
