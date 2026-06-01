@@ -56,6 +56,7 @@ export type PlayerProfile =
         puuid: string;
         riotIdName: string;
         riotIdTag: string;
+        profileIconId: number | null;
         rawMmr: number;
         currentLp: number;
         isPlaced: boolean;
@@ -112,16 +113,21 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
         console.log(`Player ${gameName}#${tagLine} not in DB, fetching from Riot...`);
         const account = await riotClient.getAccountByRiotId(gameName, tagLine);
         if (account) {
+            // Fetch summoner to get profileIconId
+            const summoner = await riotClient.getSummonerByPuuid(account.puuid);
+            
             player = await prisma.player.upsert({
                 where: { puuid: account.puuid },
                 update: {
                     riotIdName: account.gameName,
-                    riotIdTag: account.tagLine
+                    riotIdTag: account.tagLine,
+                    profileIconId: summoner.profileIconId
                 },
                 create: {
                     puuid: account.puuid,
                     riotIdName: account.gameName,
-                    riotIdTag: account.tagLine
+                    riotIdTag: account.tagLine,
+                    profileIconId: summoner.profileIconId
                 }
             });
             console.log(`Upserted player in DB: ${player.id}`);

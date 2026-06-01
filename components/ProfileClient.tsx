@@ -1,8 +1,9 @@
 "use client";
 
 import { RefreshCw } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { ProgressScreen } from "@/components/ProgressScreen";
+import { getLatestDDragonVersion, getProfileIconUrl } from "@/lib/riot/ddragon";
 
 type ProfileJobSnapshot = {
   status: string;
@@ -36,6 +37,7 @@ type StatusResponse =
         riotIdName: string;
         riotIdTag: string;
         isPlaced: boolean;
+        profileIconId: number | null;
       };
       mmr: {
         currentLp: number;
@@ -83,11 +85,16 @@ type ProfileClientProps = {
 export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClientProps) {
   const [status, setStatus] = useState<StatusResponse | null>(initialStatus ?? null);
   const [tab, setTab] = useState("matches");
+  const [ddragonVersion, setDdragonVersion] = useState<string | null>(null);
   const [refreshState, setRefreshState] = useState<{ loading: boolean; message: string | null; error: string | null }>({
     loading: false,
     message: null,
     error: null
   });
+
+  useEffect(() => {
+      getLatestDDragonVersion().then(setDdragonVersion);
+  }, []);
 
   async function refresh() {
     setRefreshState({ loading: true, message: null, error: null });
@@ -119,8 +126,16 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
       <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
         <aside className="rounded-lg border border-line bg-panel p-5">
             <div className="flex flex-col items-center text-center">
-                <div className="h-24 w-24 rounded-full bg-black/30 flex items-center justify-center mb-4">
-                     <span className="text-4xl font-black text-stone-500">?</span>
+                <div className="h-24 w-24 rounded-full bg-black/30 flex items-center justify-center mb-4 overflow-hidden">
+                     {ddragonVersion && status.player.profileIconId ? (
+                         <img 
+                            src={getProfileIconUrl(status.player.profileIconId, ddragonVersion)} 
+                            alt="Profile Icon" 
+                            className="h-full w-full object-cover"
+                         />
+                     ) : (
+                         <span className="text-4xl font-black text-stone-500">?</span>
+                     )}
                 </div>
                 <h1 className="text-2xl font-black text-white">{status.player.riotIdName}</h1>
                 <p className="text-sm text-stone-500">#{status.player.riotIdTag}</p>

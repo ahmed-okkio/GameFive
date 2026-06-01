@@ -35,11 +35,8 @@ export default async function PlayerPage({ params }: PageProps) {
           player: {
             riotIdName: profile.player.riotIdName,
             riotIdTag: profile.player.riotIdTag,
-            rawMmr: profile.player.rawMmr,
             isPlaced: profile.player.isPlaced,
-            mayhemGames: profile.player.mayhemGames,
-            aramGames: profile.player.aramGames,
-            cacheUpdatedAt: profile.player.cacheUpdatedAt?.toISOString() ?? null
+            profileIconId: profile.player.profileIconId
           },
           mmr: {
             rawMmr: Math.round(profile.mmr.rawMmr),
