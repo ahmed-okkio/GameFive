@@ -14,9 +14,7 @@ async function getLatestDDragon() {
 
 export async function getChampionMap(): Promise<Record<number, string>> {
    const champions = await getLatestDDragon();
-   const map: Record<number, string> = {
-      804: "Yunara" // Explicit fallback
-   };
+   const map: Record<number, string> = {};
 
    for (const championName in champions) {
       if (!champions.hasOwnProperty(championName)) { continue; }
@@ -29,7 +27,6 @@ export async function getChampionMap(): Promise<Record<number, string>> {
 
 export async function getChampionNameByKey(key: number | string): Promise<string> {
    const keyStr = key.toString();
-   if (keyStr === "804") return "Yunara";
 
    const champions = await getLatestDDragon();
    for (const championName in champions) {
