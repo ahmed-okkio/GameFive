@@ -67,6 +67,7 @@ export default async function PlayerPage({ params }: PageProps) {
                       deaths: part.deaths,
                       assists: part.assists,
                       win: part.win,
+                      team: part.team,
                       player: {
                           riotIdName: part.player.riotIdName,
                           riotIdTag: part.player.riotIdTag

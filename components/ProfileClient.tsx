@@ -60,6 +60,7 @@ type StatusResponse =
             deaths: number;
             assists: number;
             win: boolean;
+            team: number;
             player: { riotIdName: string; riotIdTag: string; };
           }>
         };
@@ -229,14 +230,26 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
                             </div>
                         </div>
                         {expandedMatchId === match.id && (
-                          <div className="bg-black/10 p-4 border-x border-b border-line rounded-b-lg">
-                              {match.match.participants.map(p => (
-                                  <div key={p.id} className="flex justify-between py-1 text-sm border-t border-line/50 first:border-0">
-                                      <Link href={`/player/${encodeURIComponent(p.player.riotIdName)}/${encodeURIComponent(p.player.riotIdTag)}`} className="text-white hover:text-gold">
-                                        {p.player.riotIdName}#{p.player.riotIdTag} - {p.championName}
-                                      </Link>
-                                      <span className="text-stone-300">{p.kills}/{p.deaths}/{p.assists}</span>
-                                  </div>
+                          <div className="border-x border-b border-line rounded-b-lg overflow-hidden">
+                              {[100, 200].map(teamId => (
+                                <div key={teamId} className={`${teamId === 100 ? 'bg-blue-900/10' : 'bg-red-900/10'} p-4`}>
+                                    <h4 className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-3 px-1">
+                                        {teamId === 100 ? "Blue Team" : "Red Team"}
+                                    </h4>
+                                    <div className="space-y-2">
+                                        {match.match.participants
+                                            .filter(p => p.team === teamId)
+                                            .map(p => (
+                                            <div key={p.id} className="flex items-center justify-between py-2 px-3 bg-black/20 rounded-md text-sm">
+                                                <Link href={`/player/${encodeURIComponent(p.player.riotIdName)}/${encodeURIComponent(p.player.riotIdTag)}`} className="font-semibold text-white hover:text-gold flex-1">
+                                                    {p.player.riotIdName}#{p.player.riotIdTag}
+                                                </Link>
+                                                <span className="text-stone-300 w-24 text-center">{p.championName}</span>
+                                                <span className="text-stone-300 w-20 text-right font-mono">{p.kills}/{p.deaths}/{p.assists}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
                               ))}
                           </div>
                         )}

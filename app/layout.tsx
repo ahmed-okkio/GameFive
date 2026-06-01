@@ -19,7 +19,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <Link href="/" className="text-xl font-black tracking-wide text-gold">
               GameFive
             </Link>
-            <div className="hidden sm:block w-72">
+            <div className="hidden sm:block w-96">
                 <SearchForm />
             </div>
             <nav className="flex items-center gap-3 text-sm">

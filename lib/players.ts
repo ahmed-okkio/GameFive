@@ -117,6 +117,7 @@ export type PlayerProfile =
             deaths: number;
             assists: number;
             win: boolean;
+            team: number;
             player: { riotIdName: string; riotIdTag: string; };
           }>
         };
@@ -192,6 +193,7 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
                 deaths: part.deaths,
                 assists: part.assists,
                 win: part.win,
+                team: part.team,
                 player: {
                     riotIdName: part.player.riotIdName,
                     riotIdTag: part.player.riotIdTag
