@@ -108,7 +108,18 @@ export type PlayerProfile =
         championName: string;
         damageToChampions: number;
         healingDone: number;
-        match: { gameDate: Date; };
+        match: {
+          gameDate: Date;
+          participants: Array<{
+            id: string;
+            championName: string | null;
+            kills: number;
+            deaths: number;
+            assists: number;
+            win: boolean;
+            player: { riotIdName: string; riotIdTag: string; };
+          }>
+        };
       }>;
       champions: Array<{
         championId: number;
@@ -132,7 +143,7 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
 
   const participants = await prisma.matchParticipant.findMany({
     where: { playerId: player.id, match: { gameMode: "MAYHEM" } },
-    include: { match: true },
+    include: { match: { include: { participants: { include: { player: true } } } } },
     orderBy: { match: { gameDate: "desc" } },
     take: 100
   });
@@ -172,7 +183,21 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
         championName: p.championName ?? "Unknown",
         damageToChampions: p.damageToChampions,
         healingDone: p.healingDone,
-        match: { gameDate: p.match.gameDate }
+        match: {
+            gameDate: p.match.gameDate,
+            participants: p.match.participants.map(part => ({
+                id: part.id,
+                championName: part.championName,
+                kills: part.kills,
+                deaths: part.deaths,
+                assists: part.assists,
+                win: part.win,
+                player: {
+                    riotIdName: part.player.riotIdName,
+                    riotIdTag: part.player.riotIdTag
+                }
+            }))
+        }
     })),
     champions: await buildChampionStats(participants)
   };

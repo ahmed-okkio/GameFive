@@ -1,7 +1,8 @@
 "use client";
 
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
 import { ProgressScreen } from "@/components/ProgressScreen";
 import { getLatestDDragonVersion, getProfileIconUrl } from "@/lib/riot/ddragon";
 
@@ -15,15 +16,6 @@ type ProfileJobSnapshot = {
   error?: string | null;
   completedAt?: string | null;
   updatedAt?: string | null;
-};
-
-type EnrichmentJobSnapshot = {
-  status: string;
-  depthReached: number;
-  callsMade: number;
-  totalCallsEstimate: number;
-  queuePosition?: number | null;
-  completedAt?: string | null;
 };
 
 type StatusResponse =
@@ -61,6 +53,15 @@ type StatusResponse =
         healingDone: number;
         match: {
           gameDate: string;
+          participants: Array<{
+            id: string;
+            championName: string | null;
+            kills: number;
+            deaths: number;
+            assists: number;
+            win: boolean;
+            player: { riotIdName: string; riotIdTag: string; };
+          }>
         };
       }>;
       champions: Array<{
@@ -85,6 +86,7 @@ type ProfileClientProps = {
 export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClientProps) {
   const [status, setStatus] = useState<StatusResponse | null>(initialStatus ?? null);
   const [tab, setTab] = useState("matches");
+  const [expandedMatchId, setExpandedMatchId] = useState<string | null>(null);
   const [ddragonVersion, setDdragonVersion] = useState<string | null>(null);
   const [refreshState, setRefreshState] = useState<{ loading: boolean; message: string | null; error: string | null }>({
     loading: false,
@@ -200,7 +202,11 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
             {tab === "matches" ? (
                 <div className="space-y-2">
                     {status.matches.map((match) => (
-                        <div key={match.id} className="flex items-center justify-between rounded border border-line bg-black/20 p-3 text-sm">
+                      <div key={match.id}>
+                        <div 
+                          className="flex items-center justify-between rounded border border-line bg-black/20 p-3 text-sm cursor-pointer hover:bg-black/30"
+                          onClick={() => setExpandedMatchId(expandedMatchId === match.id ? null : match.id)}
+                        >
                             <div className="flex items-center gap-4">
                                 <span className={`w-16 font-bold ${match.win ? "text-jade" : "text-red-400"}`}>
                                     {match.win ? "WIN" : "LOSS"}
@@ -215,10 +221,26 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
                                     <p>Healing: {match.healingDone.toLocaleString()}</p>
                                 </div>
                             </div>
-                            <span className="font-mono font-bold text-gold">
-                                {match.isPlacement ? "Placement" : (match.lpDelta >= 0 ? `+${match.lpDelta} LP` : `${match.lpDelta} LP`)}
-                            </span>
+                            <div className="flex items-center gap-2">
+                                <span className="font-mono font-bold text-gold">
+                                    {match.isPlacement ? "Placement" : (match.lpDelta >= 0 ? `+${match.lpDelta} LP` : `${match.lpDelta} LP`)}
+                                </span>
+                                {expandedMatchId === match.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                            </div>
                         </div>
+                        {expandedMatchId === match.id && (
+                          <div className="bg-black/10 p-4 border-x border-b border-line rounded-b-lg">
+                              {match.match.participants.map(p => (
+                                  <div key={p.id} className="flex justify-between py-1 text-sm border-t border-line/50 first:border-0">
+                                      <Link href={`/player/${encodeURIComponent(p.player.riotIdName)}/${encodeURIComponent(p.player.riotIdTag)}`} className="text-white hover:text-gold">
+                                        {p.player.riotIdName}#{p.player.riotIdTag} - {p.championName}
+                                      </Link>
+                                      <span className="text-stone-300">{p.kills}/{p.deaths}/{p.assists}</span>
+                                  </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
                     ))}
                 </div>
             ) : (

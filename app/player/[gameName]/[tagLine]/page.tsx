@@ -59,7 +59,19 @@ export default async function PlayerPage({ params }: PageProps) {
               damageToChampions: m.damageToChampions,
               healingDone: m.healingDone,
               match: {
-                  gameDate: m.match.gameDate.toISOString()
+                  gameDate: m.match.gameDate.toISOString(),
+                  participants: m.match.participants.map(part => ({
+                      id: part.id,
+                      championName: part.championName,
+                      kills: part.kills,
+                      deaths: part.deaths,
+                      assists: part.assists,
+                      win: part.win,
+                      player: {
+                          riotIdName: part.player.riotIdName,
+                          riotIdTag: part.player.riotIdTag
+                      }
+                  }))
               }
           })),
           activeJob: null,
