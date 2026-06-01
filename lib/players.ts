@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { DEFAULT_MEDIAN_MMR } from "@/lib/mmr/ranked";
 import { getTierLabel } from "@/lib/mmr/tier";
-import { CHAMPION_MAP } from "@/lib/riot/champions";
+import { getChampionMap } from "@/lib/riot/champions";
 import { riotClient } from "@/lib/riot/client";
 import { Player } from "@prisma/client";
 
@@ -25,30 +25,58 @@ export async function getPlayerByRiotId(gameName: string, tagLine: string) {
   });
 }
 
+export async function upsertPlayer(
+  riotIdName: string,
+  riotIdTag: string,
+  puuid: string | null | undefined,
+  profileIconId?: number | null
+) {
+  const normalizedName = riotIdName.toLowerCase();
+  const normalizedTag = riotIdTag.toLowerCase();
+  const safePuuid = (puuid && puuid.length > 10) ? puuid : `local_${normalizedName}#${normalizedTag}`;
+  
+  const player = await prisma.player.findFirst({
+    where: {
+        OR: [
+            { puuid: safePuuid },
+            { 
+                riotIdName: { equals: normalizedName, mode: 'insensitive' }, 
+                riotIdTag: { equals: normalizedTag, mode: 'insensitive' } 
+            }
+        ]
+    },
+  });
+
+  if (player) {
+    return await prisma.player.update({
+      where: { id: player.id },
+      data: {
+        puuid: safePuuid,
+        riotIdName: riotIdName,
+        riotIdTag: riotIdTag,
+        profileIconId: profileIconId ?? player.profileIconId,
+      },
+    });
+  } else {
+    return await prisma.player.create({
+      data: {
+        puuid: safePuuid,
+        riotIdName,
+        riotIdTag,
+        profileIconId,
+      },
+    });
+  }
+}
+
 export async function ensurePlayerExists(gameName: string, tagLine: string): Promise<Player | null> {
     let player = await getPlayerByRiotId(gameName, tagLine);
-
     try {
         console.log(`Ensuring player ${gameName}#${tagLine} exists in DB...`);
         const account = await riotClient.getAccountByRiotId(gameName, tagLine);
         if (account) {
             const summoner = await riotClient.getSummonerByPuuid(account.puuid);
-            
-            player = await prisma.player.upsert({
-                where: { puuid: account.puuid },
-                update: {
-                    riotIdName: account.gameName,
-                    riotIdTag: account.tagLine,
-                    profileIconId: summoner.profileIconId
-                },
-                create: {
-                    puuid: account.puuid,
-                    riotIdName: account.gameName,
-                    riotIdTag: account.tagLine,
-                    profileIconId: summoner.profileIconId
-                }
-            });
-            console.log(`Upserted player in DB: ${player.id}`);
+            player = await upsertPlayer(account.gameName, account.tagLine, account.puuid, summoner.profileIconId);
         }
     } catch (e) {
         console.error(`Failed to fetch/upsert player from Riot API: ${gameName}#${tagLine}`, e);
@@ -135,6 +163,8 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
   const displayedMmr = Math.round(Math.max(0, player.rawMmr - decayAmount));
   const tier = getTierLabel(displayedMmr);
 
+  const champions = await buildChampionStats(participants);
+
   return {
     state: "ready",
     player: { ...player, isPlaced: player.isPlaced },
@@ -161,7 +191,7 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
         healingDone: p.healingDone,
         match: { gameDate: p.match.gameDate }
     })),
-    champions: buildChampionStats(participants)
+    champions
   };
 }
 
@@ -169,12 +199,13 @@ export async function readPlayerProfileStatus(gameName: string, tagLine: string)
   return getPlayerProfile(gameName, tagLine);
 }
 
-function buildChampionStats(
+async function buildChampionStats(
   participants: Array<{
     championId: number; win: boolean; kills: number; deaths: number; assists: number;
     damageToChampions: number; healingDone: number;
   }>
 ) {
+  const CHAMPION_MAP = await getChampionMap();
   const byChampion = new Map<
     number,
     {

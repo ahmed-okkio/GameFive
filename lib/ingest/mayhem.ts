@@ -4,8 +4,9 @@ import type { Player } from "@prisma/client";
 import { bestRankedMmr, DEFAULT_MEDIAN_MMR } from "@/lib/mmr/ranked";
 import { calculateLpDelta, calculatePlacementMmr } from "@/lib/mmr/calculate";
 import { getTierLabel } from "@/lib/mmr/tier";
-import { CHAMPION_MAP } from "@/lib/riot/champions";
+import { getChampionMap } from "@/lib/riot/champions";
 import { calculateAndStoreProfile } from "@/lib/mmr/calculate-profile";
+import { upsertPlayer } from "@/lib/players";
 
 export const companionMatchPayloadSchema = z.object({
   source: z.literal("lcu"),
@@ -68,27 +69,14 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
 
   const globalMedianMmr = await getGlobalMedianMmr();
   const playerRows = new Map<string, Player>();
+  const CHAMPION_MAP = await getChampionMap();
 
   // 1. Resolve or create all players
   for (const participant of payload.participants) {
     const riotIdName = participant.gameName?.trim() || participant.summonerName?.trim() || "Unknown";
     const riotIdTag = participant.tagLine?.trim() || "EUW";
 
-    let player = await prisma.player.findUnique({ where: { puuid: participant.puuid } });
-
-    if (!player && riotIdName !== "Unknown") {
-      player = await prisma.player.findFirst({ where: { riotIdName, riotIdTag } });
-      if (player && participant.puuid.length > 50 && player.puuid.length <= 50) {
-        player = await prisma.player.update({ where: { id: player.id }, data: { puuid: participant.puuid } });
-      }
-    }
-
-    if (!player) {
-      player = await prisma.player.create({ data: { puuid: participant.puuid, riotIdName, riotIdTag } });
-    } else if (participant.gameName && participant.tagLine) {
-      player = await prisma.player.update({ where: { id: player.id }, data: { riotIdName, riotIdTag } });
-    }
-
+    const player = await upsertPlayer(riotIdName, riotIdTag, participant.puuid);
     playerRows.set(participant.puuid, player);
   }
 
@@ -147,6 +135,8 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
     const player = playerRows.get(participant.puuid);
     if (!player) continue;
 
+    const championName = CHAMPION_MAP[participant.championId] ?? `Champion ${participant.championId}`;
+
     await prisma.matchParticipant.create({
       data: {
         matchId: storedMatch.id,
@@ -154,7 +144,7 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
         team: participant.teamId,
         win: participant.win,
         championId: participant.championId,
-        championName: CHAMPION_MAP[participant.championId] ?? `Champion ${participant.championId}`,
+        championName: championName,
         kills: participant.kills,
         deaths: participant.deaths,
         assists: participant.assists,
