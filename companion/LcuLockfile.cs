@@ -62,7 +62,8 @@ internal static class LcuLockfile
                 {
                     foreach (var path in associatedClient.EnumerateObject())
                     {
-                        if (path.Name.Contains("League of Legends", StringComparison.OrdinalIgnoreCase))
+                        if (path.Name.Contains("League of Legends", StringComparison.OrdinalIgnoreCase) && 
+                            !path.Name.Contains("PBE", StringComparison.OrdinalIgnoreCase))
                         {
                             var lockfilePath = Path.Combine(path.Name, "lockfile");
                             logger.Info($"Checking RiotClientInstalls path: {lockfilePath}");
