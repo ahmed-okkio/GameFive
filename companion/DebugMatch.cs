@@ -7,7 +7,19 @@ internal static class DebugMatch
     public static async Task Run(CompanionLogger logger, LcuConnection connection)
     {
         using var client = new LcuClient(connection, logger);
-        var puuid = await client.GetCurrentPuuidAsync(CancellationToken.None);
+        
+        // 1. Get Current Summoner (The "Current User" Endpoint)
+        var summoner = await client.GetCurrentSummonerAsync(CancellationToken.None);
+        
+        logger.Info("CURRENT SUMMONER (Raw API Response):");
+        if (summoner != null) {
+            logger.Info(JsonSerializer.Serialize(summoner, new JsonSerializerOptions { WriteIndented = true }));
+        } else {
+            logger.Info("Failed to get current summoner.");
+        }
+
+        // 2. Get Recent Match
+        var puuid = summoner?.Puuid;
         if (string.IsNullOrEmpty(puuid))
         {
             logger.Info("No PUUID found.");

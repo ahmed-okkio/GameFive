@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Microsoft.Win32;
 using System.Text.Json;
 
 namespace GameFive.Companion;
@@ -41,15 +40,15 @@ internal static class LcuLockfile
             Thread.Sleep(2000);
         }
 
-        logger.Warn("Could not find LCU lockfile from RiotClientInstalls.json or common paths.");
+        logger.Error("Could not find LCU lockfile from RiotClientInstalls.json. Exiting.");
+        Environment.Exit(1);
         return null;
     }
 
     private static IEnumerable<string> CandidatePaths(CompanionLogger logger)
     {
         var foundPaths = new List<string>();
-
-        // 1. Primary: RiotClientInstalls.json
+        
         var programData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
         var installsFile = Path.Combine(programData, "Riot Games", "RiotClientInstalls.json");
         
@@ -77,54 +76,7 @@ internal static class LcuLockfile
                 logger.Error($"Failed to parse RiotClientInstalls.json: {ex.Message}", ex);
             }
         }
-
-        // 2. Fallback: Check Registry
-        try {
-            using var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Riot Games, Inc\League of Legends");
-            var path = key?.GetValue("Location") as string;
-            if (!string.IsNullOrEmpty(path)) {
-                var lockfilePath = Path.Combine(path, "lockfile");
-                logger.Info($"Checking registry path lockfile: {lockfilePath}");
-                foundPaths.Add(lockfilePath);
-            }
-        } catch {}
-
-        // 3. Fallback: Common paths
-        var commonRoots = new[]
-        {
-            @"C:\Riot Games\League of Legends",
-            @"C:\Program Files\Riot Games\League of Legends",
-            @"C:\Program Files (x86)\Riot Games\League of Legends"
-        };
-
-        foreach (var root in commonRoots)
-        {
-            var lockfilePath = Path.Combine(root, "lockfile");
-            logger.Info($"Checking common root lockfile: {lockfilePath}");
-            foundPaths.Add(lockfilePath);
-        }
-
-        // 4. Last resort: running process
-        var processes = Process.GetProcessesByName("LeagueClient");
-        foreach (var process in processes)
-        {
-            try
-            {
-                var path = Path.GetDirectoryName(process.MainModule?.FileName);
-                if (!string.IsNullOrEmpty(path))
-                {
-                    var lockfilePath = Path.Combine(path, "lockfile");
-                    logger.Info($"Checking process directory lockfile: {lockfilePath}");
-                    foundPaths.Add(lockfilePath);
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.Warn($"Could not access path for LeagueClient process (PID {process.Id}): Access denied.");
-            }
-        }
-
-        return foundPaths.Distinct();
+        return foundPaths;
     }
 
     private static string ReadShared(string path)

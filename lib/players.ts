@@ -5,8 +5,6 @@ import { getChampionMap } from "@/lib/riot/champions";
 import { riotClient } from "@/lib/riot/client";
 import { Player } from "@prisma/client";
 
-const CACHE_MS = 60 * 60 * 1000;
-
 export async function getGlobalMedianMmr() {
   const players = await prisma.player.findMany({
     where: { rawMmr: { gt: 0 } },
@@ -31,42 +29,29 @@ export async function upsertPlayer(
   puuid: string | null | undefined,
   profileIconId?: number | null
 ) {
+  // Always anchor by Name + Tag
   const normalizedName = riotIdName.toLowerCase();
   const normalizedTag = riotIdTag.toLowerCase();
-  const safePuuid = (puuid && puuid.length > 10) ? puuid : `local_${normalizedName}#${normalizedTag}`;
   
-  const player = await prisma.player.findFirst({
+  // Find existing player or create if not exists
+  return await prisma.player.upsert({
     where: {
-        OR: [
-            { puuid: safePuuid },
-            { 
-                riotIdName: { equals: normalizedName, mode: 'insensitive' }, 
-                riotIdTag: { equals: normalizedTag, mode: 'insensitive' } 
-            }
-        ]
+        riotIdName_riotIdTag: {
+            riotIdName: normalizedName,
+            riotIdTag: normalizedTag
+        }
+    },
+    update: {
+        puuid: (puuid && puuid.length > 10) ? puuid : undefined, // Update PUUID only if new one is valid
+        profileIconId: profileIconId ?? undefined,
+    },
+    create: {
+        puuid: (puuid && puuid.length > 10) ? puuid : null,
+        riotIdName: normalizedName,
+        riotIdTag: normalizedTag,
+        profileIconId,
     },
   });
-
-  if (player) {
-    return await prisma.player.update({
-      where: { id: player.id },
-      data: {
-        puuid: safePuuid,
-        riotIdName: riotIdName,
-        riotIdTag: riotIdTag,
-        profileIconId: profileIconId ?? player.profileIconId,
-      },
-    });
-  } else {
-    return await prisma.player.create({
-      data: {
-        puuid: safePuuid,
-        riotIdName,
-        riotIdTag,
-        profileIconId,
-      },
-    });
-  }
 }
 
 export async function ensurePlayerExists(gameName: string, tagLine: string): Promise<Player | null> {
@@ -91,7 +76,7 @@ export type PlayerProfile =
       state: "ready";
       player: {
         id: string;
-        puuid: string;
+        puuid: string | null;
         riotIdName: string;
         riotIdTag: string;
         profileIconId: number | null;
@@ -163,8 +148,6 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
   const displayedMmr = Math.round(Math.max(0, player.rawMmr - decayAmount));
   const tier = getTierLabel(displayedMmr);
 
-  const champions = await buildChampionStats(participants);
-
   return {
     state: "ready",
     player: { ...player, isPlaced: player.isPlaced },
@@ -191,7 +174,7 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
         healingDone: p.healingDone,
         match: { gameDate: p.match.gameDate }
     })),
-    champions
+    champions: buildChampionStats(participants)
   };
 }
 
@@ -199,13 +182,12 @@ export async function readPlayerProfileStatus(gameName: string, tagLine: string)
   return getPlayerProfile(gameName, tagLine);
 }
 
-async function buildChampionStats(
+function buildChampionStats(
   participants: Array<{
     championId: number; win: boolean; kills: number; deaths: number; assists: number;
     damageToChampions: number; healingDone: number;
   }>
 ) {
-  const CHAMPION_MAP = await getChampionMap();
   const byChampion = new Map<
     number,
     {
@@ -217,7 +199,7 @@ async function buildChampionStats(
   for (const participant of participants) {
     const current = byChampion.get(participant.championId) ?? {
         championId: participant.championId,
-        championName: CHAMPION_MAP[participant.championId] ?? `Champion ${participant.championId}`,
+        championName: "Unknown", // This will be fixed by ingest logic
         games: 0, wins: 0, kills: 0, deaths: 0, assists: 0, damage: 0, healing: 0
       };
 

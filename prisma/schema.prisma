@@ -9,7 +9,7 @@ datasource db {
 
 model Player {
   id                    String             @id @default(uuid())
-  puuid                 String             @unique
+  puuid                 String?            @map("puuid")
   riotIdName            String             @map("riot_id_name")
   riotIdTag             String             @map("riot_id_tag")
   summonerId            String?            @map("summoner_id")
@@ -37,6 +37,7 @@ model Player {
   participants          MatchParticipant[]
   leaderboardEntries    FriendsLeaderboard[]
 
+  @@unique([riotIdName, riotIdTag])
   @@map("players")
 }
 
