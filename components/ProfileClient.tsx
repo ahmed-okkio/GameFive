@@ -174,6 +174,12 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
                 <RefreshCw className={refreshState.loading ? "animate-spin" : ""} size={16} />
                 {refreshState.loading ? "Refreshing..." : "Refresh Profile"}
             </button>
+            {refreshState.message && (
+              <p className="mt-3 text-xs text-jade">{refreshState.message}</p>
+            )}
+            {refreshState.error && (
+              <p className="mt-3 text-xs text-red-400">{refreshState.error}</p>
+            )}
         </aside>
 
         <div className="rounded-lg border border-line bg-panel p-5">
