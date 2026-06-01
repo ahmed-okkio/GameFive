@@ -23,51 +23,51 @@ export async function getPlayerByRiotId(gameName: string, tagLine: string) {
   });
 }
 
+// ALWAYS use the "Official" Riot-provided name and tag to ensure correct casing
 export async function upsertPlayer(
   riotIdName: string,
   riotIdTag: string,
   puuid: string | null | undefined,
   profileIconId?: number | null
 ) {
-  // Always anchor by Name + Tag
-  const normalizedName = riotIdName.toLowerCase();
-  const normalizedTag = riotIdTag.toLowerCase();
-  
-  // Find existing player or create if not exists
   return await prisma.player.upsert({
     where: {
         riotIdName_riotIdTag: {
-            riotIdName: normalizedName,
-            riotIdTag: normalizedTag
+            riotIdName: riotIdName,
+            riotIdTag: riotIdTag
         }
     },
     update: {
-        puuid: (puuid && puuid.length > 10) ? puuid : undefined, // Update PUUID only if new one is valid
+        puuid: (puuid && puuid.length > 10) ? puuid : undefined,
         profileIconId: profileIconId ?? undefined,
+        // Ensure we update to the official casing provided by Riot
+        riotIdName: riotIdName,
+        riotIdTag: riotIdTag,
     },
     create: {
         puuid: (puuid && puuid.length > 10) ? puuid : null,
-        riotIdName: normalizedName,
-        riotIdTag: normalizedTag,
+        riotIdName: riotIdName,
+        riotIdTag: riotIdTag,
         profileIconId,
     },
   });
 }
 
 export async function ensurePlayerExists(gameName: string, tagLine: string): Promise<Player | null> {
-    let player = await getPlayerByRiotId(gameName, tagLine);
     try {
-        console.log(`Ensuring player ${gameName}#${tagLine} exists in DB...`);
+        console.log(`Ensuring player ${gameName}#${tagLine} exists in DB (Official Riot Casing)...`);
         const account = await riotClient.getAccountByRiotId(gameName, tagLine);
         if (account) {
             const summoner = await riotClient.getSummonerByPuuid(account.puuid);
-            player = await upsertPlayer(account.gameName, account.tagLine, account.puuid, summoner.profileIconId);
+            // PASS THE OFFICIAL ACCOUNT.GAMENAME AND TAGLINE!
+            return await upsertPlayer(account.gameName, account.tagLine, account.puuid, summoner.profileIconId);
         }
     } catch (e) {
         console.error(`Failed to fetch/upsert player from Riot API: ${gameName}#${tagLine}`, e);
     }
     
-    return player;
+    // Fallback: If not found on Riot, find locally (already cased)
+    return await getPlayerByRiotId(gameName, tagLine);
 }
 
 export type PlayerProfile = 
@@ -174,7 +174,7 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
         healingDone: p.healingDone,
         match: { gameDate: p.match.gameDate }
     })),
-    champions: buildChampionStats(participants)
+    champions: await buildChampionStats(participants)
   };
 }
 
@@ -182,12 +182,13 @@ export async function readPlayerProfileStatus(gameName: string, tagLine: string)
   return getPlayerProfile(gameName, tagLine);
 }
 
-function buildChampionStats(
+async function buildChampionStats(
   participants: Array<{
     championId: number; win: boolean; kills: number; deaths: number; assists: number;
     damageToChampions: number; healingDone: number;
   }>
 ) {
+  const CHAMPION_MAP = await getChampionMap();
   const byChampion = new Map<
     number,
     {
@@ -199,7 +200,7 @@ function buildChampionStats(
   for (const participant of participants) {
     const current = byChampion.get(participant.championId) ?? {
         championId: participant.championId,
-        championName: "Unknown", // This will be fixed by ingest logic
+        championName: CHAMPION_MAP[participant.championId] ?? `Champion ${participant.championId}`,
         games: 0, wins: 0, kills: 0, deaths: 0, assists: 0, damage: 0, healing: 0
       };
 
