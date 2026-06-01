@@ -3,52 +3,62 @@ import { DEFAULT_MEDIAN_MMR } from "@/lib/mmr/ranked";
 import { getTierLabel } from "@/lib/mmr/tier";
 import { CHAMPION_MAP } from "@/lib/riot/champions";
 import { riotClient } from "@/lib/riot/client";
+import { Player } from "@prisma/client";
 
 const CACHE_MS = 60 * 60 * 1000;
 
 export async function getGlobalMedianMmr() {
   const players = await prisma.player.findMany({
-    where: {
-      rawMmr: {
-        gt: 0
-      }
-    },
-    select: {
-      rawMmr: true
-    },
-    orderBy: {
-      rawMmr: "asc"
-    }
+    where: { rawMmr: { gt: 0 } },
+    select: { rawMmr: true },
+    orderBy: { rawMmr: "asc" }
   });
-
-  if (players.length < 10) {
-    return DEFAULT_MEDIAN_MMR;
-  }
-
-  return players[Math.floor(players.length / 2)].rawMmr;
+  return players.length < 10 ? DEFAULT_MEDIAN_MMR : players[Math.floor(players.length / 2)].rawMmr;
 }
 
 export async function getPlayerByRiotId(gameName: string, tagLine: string) {
   return await prisma.player.findFirst({
     where: {
-      riotIdName: {
-        equals: gameName,
-        mode: 'insensitive',
-      },
-      riotIdTag: {
-        equals: tagLine,
-        mode: 'insensitive',
-      },
+      riotIdName: { equals: gameName, mode: 'insensitive' },
+      riotIdTag: { equals: tagLine, mode: 'insensitive' },
     },
   });
 }
 
-export type PlayerProfile = 
-  | {
-      state: "awaiting";
-      player: null;
-      job: null;
+export async function ensurePlayerExists(gameName: string, tagLine: string): Promise<Player | null> {
+    let player = await getPlayerByRiotId(gameName, tagLine);
+
+    try {
+        console.log(`Ensuring player ${gameName}#${tagLine} exists in DB...`);
+        const account = await riotClient.getAccountByRiotId(gameName, tagLine);
+        if (account) {
+            const summoner = await riotClient.getSummonerByPuuid(account.puuid);
+            
+            player = await prisma.player.upsert({
+                where: { puuid: account.puuid },
+                update: {
+                    riotIdName: account.gameName,
+                    riotIdTag: account.tagLine,
+                    profileIconId: summoner.profileIconId
+                },
+                create: {
+                    puuid: account.puuid,
+                    riotIdName: account.gameName,
+                    riotIdTag: account.tagLine,
+                    profileIconId: summoner.profileIconId
+                }
+            });
+            console.log(`Upserted player in DB: ${player.id}`);
+        }
+    } catch (e) {
+        console.error(`Failed to fetch/upsert player from Riot API: ${gameName}#${tagLine}`, e);
     }
+    
+    return player;
+}
+
+export type PlayerProfile = 
+  | { state: "awaiting"; player: null; job: null; }
   | {
       state: "ready";
       player: {
@@ -72,10 +82,7 @@ export type PlayerProfile =
         mayhemGames: number;
         aramGames: number;
       };
-      tier: {
-        label: string;
-        tier: string;
-      };
+      tier: { label: string; tier: string; };
       matches: Array<{
         id: string;
         win: boolean;
@@ -88,9 +95,7 @@ export type PlayerProfile =
         championName: string;
         damageToChampions: number;
         healingDone: number;
-        match: {
-          gameDate: Date;
-        };
+        match: { gameDate: Date; };
       }>;
       champions: Array<{
         championId: number;
@@ -106,60 +111,16 @@ export type PlayerProfile =
     };
 
 export async function getPlayerProfile(gameName: string, tagLine: string): Promise<PlayerProfile> {
-  let player = await getPlayerByRiotId(gameName, tagLine);
+  const player = await ensurePlayerExists(gameName, tagLine);
 
   if (!player) {
-      try {
-        console.log(`Player ${gameName}#${tagLine} not in DB, fetching from Riot...`);
-        const account = await riotClient.getAccountByRiotId(gameName, tagLine);
-        if (account) {
-            // Fetch summoner to get profileIconId
-            const summoner = await riotClient.getSummonerByPuuid(account.puuid);
-            
-            player = await prisma.player.upsert({
-                where: { puuid: account.puuid },
-                update: {
-                    riotIdName: account.gameName,
-                    riotIdTag: account.tagLine,
-                    profileIconId: summoner.profileIconId
-                },
-                create: {
-                    puuid: account.puuid,
-                    riotIdName: account.gameName,
-                    riotIdTag: account.tagLine,
-                    profileIconId: summoner.profileIconId
-                }
-            });
-            console.log(`Upserted player in DB: ${player.id}`);
-        }
-      } catch (e) {
-          console.error(`Failed to fetch/upsert player from Riot API: ${gameName}#${tagLine}`, e);
-      }
-  }
-
-  if (!player) {
-    return {
-      state: "awaiting",
-      player: null,
-      job: null
-    };
+    return { state: "awaiting", player: null, job: null };
   }
 
   const participants = await prisma.matchParticipant.findMany({
-    where: {
-      playerId: player.id,
-      match: {
-          gameMode: "MAYHEM"
-      }
-    },
-    include: {
-      match: true
-    },
-    orderBy: {
-      match: {
-        gameDate: "desc"
-      }
-    },
+    where: { playerId: player.id, match: { gameMode: "MAYHEM" } },
+    include: { match: true },
+    orderBy: { match: { gameDate: "desc" } },
     take: 100
   });
 
@@ -176,10 +137,7 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
 
   return {
     state: "ready",
-    player: {
-        ...player,
-        isPlaced: player.isPlaced
-    },
+    player: { ...player, isPlaced: player.isPlaced },
     mmr: {
         rawMmr: Math.round(player.rawMmr),
         displayedMmr,
@@ -201,9 +159,7 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
         championName: p.championName ?? "Unknown",
         damageToChampions: p.damageToChampions,
         healingDone: p.healingDone,
-        match: {
-            gameDate: p.match.gameDate
-        }
+        match: { gameDate: p.match.gameDate }
     })),
     champions: buildChampionStats(participants)
   };
@@ -215,43 +171,23 @@ export async function readPlayerProfileStatus(gameName: string, tagLine: string)
 
 function buildChampionStats(
   participants: Array<{
-    championId: number;
-    win: boolean;
-    kills: number;
-    deaths: number;
-    assists: number;
-    damageToChampions: number;
-    healingDone: number;
+    championId: number; win: boolean; kills: number; deaths: number; assists: number;
+    damageToChampions: number; healingDone: number;
   }>
 ) {
   const byChampion = new Map<
     number,
     {
-      championId: number;
-      championName: string;
-      games: number;
-      wins: number;
-      kills: number;
-      deaths: number;
-      assists: number;
-      damage: number;
-      healing: number;
+      championId: number; championName: string; games: number; wins: number;
+      kills: number; deaths: number; assists: number; damage: number; healing: number;
     }
   >();
 
   for (const participant of participants) {
-    const current =
-      byChampion.get(participant.championId) ??
-      {
+    const current = byChampion.get(participant.championId) ?? {
         championId: participant.championId,
         championName: CHAMPION_MAP[participant.championId] ?? `Champion ${participant.championId}`,
-        games: 0,
-        wins: 0,
-        kills: 0,
-        deaths: 0,
-        assists: 0,
-        damage: 0,
-        healing: 0
+        games: 0, wins: 0, kills: 0, deaths: 0, assists: 0, damage: 0, healing: 0
       };
 
     current.games += 1;
