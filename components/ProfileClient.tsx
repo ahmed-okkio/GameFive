@@ -347,8 +347,8 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
                                     {match.kills}/{match.deaths}/{match.assists}
                                 </span>
                                 <div className="text-xs text-stone-400">
-                                    <p>DMG: {match.damageToChampions.toLocaleString()}</p>
-                                    <p>HL: {match.healingDone.toLocaleString()}</p>
+                                    <p>Damage: {match.damageToChampions.toLocaleString()}</p>
+                                    <p>Healing: {match.healingDone.toLocaleString()}</p>
                                 </div>
                             </div>
                             <span className={`font-mono font-bold ${match.lpDelta >= 0 ? "text-gold" : "text-stone-400"}`}>
