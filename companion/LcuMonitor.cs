@@ -30,6 +30,14 @@ internal sealed class LcuMonitor : IDisposable
         _timer.Start();
     }
 
+    public void Reconnect()
+    {
+        _logger.Info("Manual reconnect requested.");
+        CleanupConnection();
+        // Force a fresh check
+        CheckLeagueProcess(null, null!);
+    }
+
     public void Stop()
     {
         _timer.Stop();
@@ -58,23 +66,32 @@ internal sealed class LcuMonitor : IDisposable
 
     private void InitializeConnection()
     {
-        var lockfile = LcuLockfile.TryRead(_logger);
-        if (lockfile != null)
+        _ = Task.Run(async () =>
         {
-            _logger.Info("Lockfile read successfully, initiating connection...");
-            var lcuConnection = new LcuConnection { Port = lockfile.Port, AuthToken = lockfile.AuthToken, Protocol = lockfile.Protocol };
-            var lcuService = new LcuService(lcuConnection, _logger, _uploader, (isConnected) => {
-                _logger.Info($"StatusChanged invoked: Connected={isConnected}");
-                StatusChanged?.Invoke(this, isConnected ? LcuStatus.Connected : LcuStatus.Disconnected);
-            });
-            lcuService.Connect();
-            
-            _connection = lcuConnection; 
-        }
-        else
-        {
-            _logger.Warn("InitializeConnection: lockfile was null.");
-        }
+            for (int i = 0; i < 3; i++) // Try 3 times to connect
+            {
+                var lockfile = LcuLockfile.TryRead(_logger);
+                if (lockfile != null)
+                {
+                    _logger.Info($"Lockfile read successfully, attempting connection (attempt {i+1}/3)...");
+                    var lcuConnection = new LcuConnection { Port = lockfile.Port, AuthToken = lockfile.AuthToken, Protocol = lockfile.Protocol };
+                    var lcuService = new LcuService(lcuConnection, _logger, _uploader, (isConnected) => {
+                        _logger.Info($"StatusChanged invoked: Connected={isConnected}");
+                        StatusChanged?.Invoke(this, isConnected ? LcuStatus.Connected : LcuStatus.Disconnected);
+                    });
+                    
+                    if (await lcuService.ConnectAsync(CancellationToken.None))
+                    {
+                        _connection = lcuConnection;
+                        return; // Success!
+                    }
+                }
+                
+                _logger.Warn($"Connection attempt {i+1} failed. Retrying in 5 seconds...");
+                await Task.Delay(5000);
+            }
+            _logger.Error("Failed to connect to LCU after 3 attempts.");
+        });
     }
 
     private void CleanupConnection()

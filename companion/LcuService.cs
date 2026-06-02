@@ -26,7 +26,7 @@ internal sealed class LcuService : IDisposable
         _ = Task.Run(() => ConnectAsync(_cts.Token));
     }
 
-    private async Task ConnectAsync(CancellationToken ct)
+    public async Task<bool> ConnectAsync(CancellationToken ct)
     {
         _webSocket = new ClientWebSocket();
         // Disable SSL validation for LCU self-signed cert
@@ -46,11 +46,13 @@ internal sealed class LcuService : IDisposable
             await _webSocket.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(subscribeMessage)), WebSocketMessageType.Text, true, ct);
 
             await ListenAsync(ct);
+            return true;
         }
         catch (Exception ex)
         {
             _logger.Error("LCU WebSocket connection failed.", ex);
             _onConnectionChanged(false); // Signal disconnected
+            return false;
         }
     }
 

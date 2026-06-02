@@ -29,17 +29,18 @@ public class CompanionWorker : BackgroundService
 
         StartupRegistration.EnsureRegistered(_logger);
 
+        // Start WMI Monitor
+        var uploader = new GameFiveUploader(config, new UploadQueue(_appPaths.FailedUploadsPath, _logger), _logger);
+        using var monitor = new LcuMonitor(config, _logger, uploader);
+        
         // Start Tray Icon thread
-        var trayIcon = new TrayIcon(_logger);
+        var trayIcon = new TrayIcon(_logger, monitor);
         var trayThread = new Thread(() =>
         {
             trayIcon.Run();
         });
         trayThread.SetApartmentState(ApartmentState.STA);
         trayThread.Start();
-
-        // Start WMI Monitor
-        var uploader = new GameFiveUploader(config, new UploadQueue(_appPaths.FailedUploadsPath, _logger), _logger);
         
         // Flush queue on startup to handle failed uploads from previous sessions
         await uploader.FlushAsync(stoppingToken);
@@ -47,7 +48,6 @@ public class CompanionWorker : BackgroundService
         try
         {
             _logger.Info("Initializing LCU Monitor...");
-            using var monitor = new LcuMonitor(config, _logger, uploader);
             
             // Hook up status change to tray icon
             monitor.StatusChanged += (s, status) => {

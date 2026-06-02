@@ -7,6 +7,7 @@ namespace GameFive.Companion;
 internal sealed class TrayIcon : IDisposable
 {
     private readonly CompanionLogger _logger;
+    private readonly LcuMonitor _monitor;
     private NotifyIcon? _notifyIcon;
     private ContextMenuStrip? _menu;
     private System.Windows.Forms.Timer? _timer;
@@ -14,9 +15,10 @@ internal sealed class TrayIcon : IDisposable
     private string _currentText = "GameFive: Initializing...";
     private readonly object _lock = new();
 
-    public TrayIcon(CompanionLogger logger)
+    public TrayIcon(CompanionLogger logger, LcuMonitor monitor)
     {
         _logger = logger;
+        _monitor = monitor;
     }
 
     public void SetConnected(bool isConnected)
@@ -48,6 +50,7 @@ internal sealed class TrayIcon : IDisposable
         };
 
         _menu = new ContextMenuStrip();
+        _menu.Items.Add("Reconnect", null, (_, _) => _monitor.Reconnect());
         _menu.Items.Add("Open Log", null, (_, _) => OpenLog());
         _menu.Items.Add("Exit", null, (_, _) => {
             Application.Exit();
