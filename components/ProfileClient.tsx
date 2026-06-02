@@ -124,10 +124,13 @@ function getKillParticipation(participant: Pick<MatchParticipant, "kills" | "ass
 function StatBar({ value, max, color }: { value: number; max: number; color: "damage" | "healing" }) {
   const width = max > 0 ? Math.max(4, Math.round((value / max) * 100)) : 0;
   const barColor = color === "damage" ? "bg-red-400" : "bg-emerald-400";
+  const label = color === "damage" ? "Damage " : "Healing ";
 
   return (
     <div className="min-w-0">
-      <div className="mb-1 text-right font-mono text-[11px] text-stone-300">{value.toLocaleString()}</div>
+      <div className="mb-1 text-right font-mono text-[11px] text-stone-300">
+        {label}{value.toLocaleString()}
+      </div>
       <div className="h-1.5 w-full rounded bg-stone-700/70">
         <div className={`h-1.5 rounded ${barColor}`} style={{ width: `${width}%` }} />
       </div>
