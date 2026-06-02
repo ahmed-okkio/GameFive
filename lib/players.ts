@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { DEFAULT_MEDIAN_MMR } from "@/lib/mmr/ranked";
 import { getTierLabel } from "@/lib/mmr/tier";
-import { getChampionMap } from "@/lib/riot/champions";
+import { getChampionAssetMap, getChampionMap } from "@/lib/riot/champions";
 import { riotClient } from "@/lib/riot/client";
 import { Player } from "@prisma/client";
 
@@ -106,16 +106,22 @@ export type PlayerProfile =
         isPlacement: boolean;
         championId: number;
         championName: string;
+        championImage: string | null;
         damageToChampions: number;
         healingDone: number;
         match: {
           gameDate: Date;
+          durationSeconds: number;
           participants: Array<{
             id: string;
+            championId: number;
             championName: string | null;
+            championImage: string | null;
             kills: number;
             deaths: number;
             assists: number;
+            damageToChampions: number;
+            healingDone: number;
             win: boolean;
             team: number;
             player: { riotIdName: string; riotIdTag: string; };
@@ -125,6 +131,7 @@ export type PlayerProfile =
       champions: Array<{
         championId: number;
         championName: string;
+        championImage: string | null;
         games: number;
         wins: number;
         kills: number;
@@ -159,6 +166,7 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
   
   const displayedMmr = Math.round(Math.max(0, player.rawMmr - decayAmount));
   const tier = getTierLabel(displayedMmr);
+  const championAssets = await getChampionAssetMap();
 
   return {
     state: "ready",
@@ -182,16 +190,22 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
         isPlacement: p.isPlacement,
         championId: p.championId,
         championName: p.championName ?? "Unknown",
+        championImage: championAssets[p.championId]?.imageUrl ?? null,
         damageToChampions: p.damageToChampions,
         healingDone: p.healingDone,
         match: {
             gameDate: p.match.gameDate,
+            durationSeconds: p.match.durationSeconds,
             participants: p.match.participants.map(part => ({
                 id: part.id,
+                championId: part.championId,
                 championName: part.championName,
+                championImage: championAssets[part.championId]?.imageUrl ?? null,
                 kills: part.kills,
                 deaths: part.deaths,
                 assists: part.assists,
+                damageToChampions: part.damageToChampions,
+                healingDone: part.healingDone,
                 win: part.win,
                 team: part.team,
                 player: {
@@ -219,15 +233,17 @@ async function buildChampionStats(
   const byChampion = new Map<
     number,
     {
-      championId: number; championName: string; games: number; wins: number;
+      championId: number; championName: string; championImage: string | null; games: number; wins: number;
       kills: number; deaths: number; assists: number; damage: number; healing: number;
     }
   >();
+  const championAssets = await getChampionAssetMap();
 
   for (const participant of participants) {
     const current = byChampion.get(participant.championId) ?? {
         championId: participant.championId,
         championName: CHAMPION_MAP[participant.championId] ?? `Champion ${participant.championId}`,
+        championImage: championAssets[participant.championId]?.imageUrl ?? null,
         games: 0, wins: 0, kills: 0, deaths: 0, assists: 0, damage: 0, healing: 0
       };
 

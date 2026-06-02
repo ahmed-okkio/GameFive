@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
-import { appConfig } from "@/lib/config";
 import { Download } from "lucide-react";
 import { SearchForm } from "@/components/SearchForm";
 
@@ -23,15 +22,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 <SearchForm />
             </div>
             <nav className="flex items-center gap-3 text-sm">
-              {appConfig.companionDownloadUrl && (
-                <a
-                  href={appConfig.companionDownloadUrl}
-                  className="inline-flex items-center gap-2 rounded bg-gold px-3 py-1.5 font-semibold text-black hover:bg-gold/90"
-                >
-                  <Download size={14} />
-                  Download Companion
-                </a>
-              )}
+              <Link
+                href="/companion"
+                className="inline-flex items-center gap-2 rounded bg-gold px-3 py-1.5 font-semibold text-black hover:bg-gold/90"
+              >
+                <Download size={14} />
+                Download Companion
+              </Link>
               <span className="rounded border border-gold/50 px-2 py-1 text-gold">EUW</span>
               <Link href="/leaderboard" className="text-stone-300 hover:text-white">
                 Leaderboard

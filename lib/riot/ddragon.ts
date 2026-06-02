@@ -9,3 +9,7 @@ export async function getLatestDDragonVersion(): Promise<string> {
 export function getProfileIconUrl(iconId: number, version: string) {
   return `https://ddragon.leagueoflegends.com/cdn/${version}/img/profileicon/${iconId}.png`;
 }
+
+export function getChampionIconUrl(imageFull: string, version: string) {
+  return `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${imageFull}`;
+}

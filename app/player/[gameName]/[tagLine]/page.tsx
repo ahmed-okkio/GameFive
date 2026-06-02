@@ -56,16 +56,22 @@ export default async function PlayerPage({ params }: PageProps) {
               isPlacement: m.isPlacement,
               championId: m.championId,
               championName: m.championName ?? "Unknown",
+              championImage: m.championImage,
               damageToChampions: m.damageToChampions,
               healingDone: m.healingDone,
               match: {
                   gameDate: m.match.gameDate.toISOString(),
+                  durationSeconds: m.match.durationSeconds,
                   participants: m.match.participants.map(part => ({
                       id: part.id,
+                      championId: part.championId,
                       championName: part.championName,
+                      championImage: part.championImage,
                       kills: part.kills,
                       deaths: part.deaths,
                       assists: part.assists,
+                      damageToChampions: part.damageToChampions,
+                      healingDone: part.healingDone,
                       win: part.win,
                       team: part.team,
                       player: {
@@ -81,6 +87,7 @@ export default async function PlayerPage({ params }: PageProps) {
           champions: profile.champions.map(c => ({
               championId: c.championId,
               championName: c.championName,
+              championImage: c.championImage,
               games: c.games,
               wins: c.wins,
               kills: c.kills,
