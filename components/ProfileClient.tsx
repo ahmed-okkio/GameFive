@@ -420,10 +420,6 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
                                   </div>
                                 </div>
                             </div>
-                            <div className="grid w-full grid-cols-2 gap-3 md:w-72">
-                                <StatBar value={match.damageToChampions} max={maxDamage} color="damage" />
-                                <StatBar value={match.healingDone} max={maxHealing} color="healing" />
-                            </div>
                             <div className="flex items-center justify-between gap-3 md:justify-end">
                                 <span className="font-mono font-bold text-gold">
                                     {match.isPlacement ? "Placement" : (match.lpDelta >= 0 ? `+${match.lpDelta} LP` : `${match.lpDelta} LP`)}
