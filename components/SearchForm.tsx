@@ -4,7 +4,11 @@ import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
-export function SearchForm() {
+type SearchFormProps = {
+  compact?: boolean;
+};
+
+export function SearchForm({ compact = false }: SearchFormProps) {
   const router = useRouter();
   const [riotId, setRiotId] = useState("");
   const [error, setError] = useState("");
@@ -22,7 +26,7 @@ export function SearchForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex w-full flex-col gap-3 sm:flex-row">
+    <form onSubmit={onSubmit} className={`flex w-full flex-col gap-3 sm:flex-row ${compact ? "text-sm" : ""}`}>
       <div className="flex-1">
         <input
           value={riotId}
@@ -36,11 +40,11 @@ export function SearchForm() {
             }
           }}
           placeholder="Enter Riot ID (e.g. PlayerName#EUW)"
-          className="w-full rounded border border-line bg-black/30 px-4 py-3 text-stone-100 outline-none ring-gold/30 placeholder:text-stone-500 focus:ring-2"
+          className={`${compact ? "py-2.5" : "py-3"} w-full rounded border border-line bg-black/30 px-4 text-stone-100 outline-none ring-gold/30 placeholder:text-stone-500 focus:ring-2`}
         />
         {error ? <p className="mt-2 text-sm text-ember">{error}</p> : null}
       </div>
-      <button className="inline-flex items-center justify-center gap-2 rounded bg-gold px-5 py-3 font-bold text-black hover:bg-[#7db7ff]">
+      <button className={`${compact ? "py-2.5" : "py-3"} inline-flex items-center justify-center gap-2 rounded bg-gold px-5 font-bold text-black hover:bg-[#7db7ff]`}>
         <Search size={18} />
         Search
       </button>

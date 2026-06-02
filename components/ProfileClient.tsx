@@ -139,7 +139,7 @@ function ChampionAvatar({ image, name, size = "md" }: { image: string | null; na
   const sizeClass = size === "lg" ? "h-14 w-14" : size === "sm" ? "h-8 w-8" : "h-11 w-11";
 
   return (
-    <div className={`${sizeClass} shrink-0 overflow-hidden rounded bg-black/40 ring-1 ring-white/10`}>
+    <div className={`${sizeClass} shrink-0 overflow-hidden rounded-full bg-black/40 ring-1 ring-white/10`}>
       {image ? (
         <img src={image} alt={name} className="h-full w-full object-cover" />
       ) : (
@@ -246,9 +246,9 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
   };
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-8">
+    <section className="mx-auto max-w-6xl px-3 py-6 sm:px-4 sm:py-8">
       <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
-        <aside className="rounded-lg border border-line bg-panel p-5">
+        <aside className="rounded-lg border border-line bg-panel/95 p-5 shadow-xl shadow-black/20">
             <div className="flex flex-col items-center text-center">
                 <div className="h-24 w-24 rounded-full bg-black/30 flex items-center justify-center mb-4 overflow-hidden">
                      {ddragonVersion && status.player.profileIconId ? (
@@ -306,7 +306,7 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
             )}
         </aside>
 
-        <div className="rounded-lg border border-line bg-panel p-5">
+        <div className="min-w-0 rounded-lg border border-line bg-panel/95 p-3 shadow-xl shadow-black/20 sm:p-5">
             {recentSummary && (
               <div className="mb-5 border-b border-line pb-5">
                 <div className="mb-3 flex items-center justify-between">
@@ -314,7 +314,7 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
                   <span className="text-xs text-stone-500">Past {recentSummary.games} Mayhem games</span>
                 </div>
                 <div className="grid gap-4 md:grid-cols-[180px_1fr_1.2fr]">
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-center gap-4 sm:justify-start">
                     <div
                       className="grid h-24 w-24 shrink-0 place-items-center rounded-full"
                       style={{
@@ -339,7 +339,7 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
                         <span className="text-stone-500"> / </span>
                         <span>{recentSummary.avgAssists.toFixed(1)}</span>
                       </div>
-                      <div className="text-3xl font-black text-white">
+                      <div className="text-2xl font-black text-white sm:text-3xl">
                         {formatKda(recentSummary.avgKills, recentSummary.avgDeaths, recentSummary.avgAssists)}:1
                       </div>
                       <div className="text-xs font-bold text-red-300">P/Kill {recentSummary.avgKp}%</div>
@@ -368,7 +368,7 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
               </div>
             )}
 
-            <div className="flex gap-6 border-b border-line mb-4">
+            <div className="mb-4 flex gap-6 overflow-x-auto border-b border-line">
                 {["matches", "champions"].map((item) => (
                     <button
                         key={item}
@@ -395,7 +395,7 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
                       const maxHealing = Math.max(...match.match.participants.map((participant) => participant.healingDone), 1);
 
                       return (
-                      <div key={match.id} className={`overflow-hidden rounded border ${match.win ? "border-sky-500/40 bg-sky-950/20" : "border-red-500/40 bg-red-950/20"}`}>
+                      <div key={match.id} className={`overflow-hidden rounded-lg border ${match.win ? "border-sky-500/40 bg-sky-950/20" : "border-red-500/40 bg-red-950/20"}`}>
                         <div 
                           className="flex cursor-pointer flex-col gap-3 p-3 text-sm hover:bg-black/20 md:flex-row md:items-center md:justify-between"
                           onClick={() => setExpandedMatchId(expandedMatchId === match.id ? null : match.id)}
@@ -417,7 +417,7 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
                                   </div>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-3 md:w-72">
+                            <div className="grid w-full grid-cols-2 gap-3 md:w-72">
                                 <StatBar value={match.damageToChampions} max={maxDamage} color="damage" />
                                 <StatBar value={match.healingDone} max={maxHealing} color="healing" />
                             </div>
@@ -429,9 +429,9 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
                             </div>
                         </div>
                         {expandedMatchId === match.id && (
-                          <div className="border-t border-line/70">
+                          <div className="overflow-x-auto border-t border-line/70">
                               {[100, 200].map(teamId => (
-                                <div key={teamId} className={`${teamId === viewedTeam ? "bg-white/[0.03]" : "bg-black/10"} p-3`}>
+                                <div key={teamId} className={`${teamId === viewedTeam ? "bg-white/[0.03]" : "bg-black/10"} min-w-[720px] p-3`}>
                                     <h4 className={`mb-2 px-1 text-xs font-bold uppercase tracking-widest ${teamId === viewedTeam ? "text-gold" : "text-stone-500"}`}>
                                         {teamId === viewedTeam ? "Your Team" : "Enemy Team"} <span className="font-normal tracking-normal text-stone-500">({teamId === 100 ? "Blue" : "Red"})</span>
                                     </h4>
