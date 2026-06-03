@@ -51,6 +51,13 @@ internal sealed class TrayIcon : IDisposable
 
         _menu = new ContextMenuStrip();
         _menu.Items.Add("Reconnect", null, (_, _) => _monitor.Reconnect());
+        _menu.Items.Add("Collect debug log", null, async (_, _) => {
+            var lockfile = LcuLockfile.TryRead(_logger);
+            if (lockfile != null) {
+                var connection = new LcuConnection { Port = lockfile.Port, AuthToken = lockfile.AuthToken, Protocol = lockfile.Protocol };
+                await DiagnosticCollector.CollectAsync(_logger, connection, _monitor._config.DiagnosticMatchLimit);
+            }
+        });
         _menu.Items.Add("Open Log", null, (_, _) => OpenLog());
         _menu.Items.Add("Exit", null, (_, _) => {
             Application.Exit();

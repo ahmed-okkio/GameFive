@@ -6,6 +6,9 @@ internal sealed class LcuSummoner
 {
     [JsonPropertyName("puuid")]
     public string Puuid { get; set; } = "";
+    
+    [JsonPropertyName("displayName")]
+    public string DisplayName { get; set; } = "";
 }
 
 internal sealed class LcuMatchHistoryResponse
