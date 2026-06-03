@@ -33,8 +33,8 @@ export function calculateLpDelta(input: LpDeltaInput): number {
         // Loss: Lose less for higher lobby MMR (mitigation)
         opponentFactor = input.playerCurrentMmr / Math.max(input.lobbyAvgMmr, 1);
     }
-    // Clamp to reasonable range (0.5x to 2.0x)
-    opponentFactor = Math.min(2.0, Math.max(0.5, opponentFactor));
+    // Clamp to reasonable range (0.75x to 1.5x)
+    opponentFactor = Math.min(1.5, Math.max(0.75, opponentFactor));
   }
   
   const streakMultiplier = 1 + (0.05 * Math.min(input.consecutiveStreak, 5));

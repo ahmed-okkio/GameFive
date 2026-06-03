@@ -50,7 +50,7 @@ BASE_LP = 25
 ### Opponent Factor
 ```
 opponentFactor = lobbyAvgMmr / playerCurrentMmr
-opponentFactor = clamp(opponentFactor, 0.5, 2.0)
+opponentFactor = clamp(opponentFactor, 0.75, 1.5)
 ```
 If `lobbyAvgMmr` is null or uncalculable, the opponent factor defaults to `1.0` — neutral, no adjustment. The player gains or loses base LP only. The streak multiplier still applies.
 
@@ -105,7 +105,7 @@ There is no hardcoded fallback value. Null means uncalculable and propagates cle
 | Lobby calculation | Ranked data only (Solo/Duo → Flex), exclude unknowns, null if no data |
 | GameFive rawMmr | Display value only — never used as input to any calculation |
 | LP when lobby null | Neutral factor 1.0, base 25 LP |
-| Opponent factor clamp | 0.5x–2.0x |
+| Opponent factor clamp | 0.75x–1.5x |
 | Streak multiplier | Applies to wins and losses, max 1.25x |
 | Loss mitigation | None |
 | Promotion series | Tier boundaries only, not divisions |
