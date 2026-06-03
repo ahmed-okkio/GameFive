@@ -55,7 +55,7 @@ internal sealed class TrayIcon : IDisposable
             var lockfile = LcuLockfile.TryRead(_logger);
             if (lockfile != null) {
                 var connection = new LcuConnection { Port = lockfile.Port, AuthToken = lockfile.AuthToken, Protocol = lockfile.Protocol };
-                await DiagnosticCollector.CollectAsync(_logger, connection, _monitor._config.DiagnosticMatchLimit);
+                await DiagnosticCollector.CollectAsync(connection, _monitor._config.DiagnosticMatchLimit);
             }
         });
         _menu.Items.Add("Open Log", null, (_, _) => OpenLog());

@@ -9,8 +9,9 @@ namespace GameFive.Companion;
 
 internal static class DiagnosticCollector
 {
-    public static async Task CollectAsync(CompanionLogger logger, LcuConnection connection, int matchLimit)
+    public static async Task CollectAsync(LcuConnection connection, int matchLimit)
     {
+        var logger = new CompanionLogger(Path.Combine(AppContext.BaseDirectory, "diagnostic.log"));
         logger.Info($"Starting manual diagnostic match collection (Limit: {matchLimit})...");
         using var client = new LcuClient(connection, logger);
 
