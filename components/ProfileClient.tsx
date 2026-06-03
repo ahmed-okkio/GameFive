@@ -108,7 +108,10 @@ function formatDuration(seconds: number) {
 
 function formatTimeAgo(dateValue: string) {
   const elapsedMs = Date.now() - new Date(dateValue).getTime();
-  const hours = Math.max(1, Math.floor(elapsedMs / 3_600_000));
+  const minutes = Math.floor(elapsedMs / 60_000);
+  const hours = Math.floor(elapsedMs / 3_600_000);
+  
+  if (minutes < 60) return `${minutes} minutes ago`;
   if (hours < 24) return `${hours} hours ago`;
   return `${Math.floor(hours / 24)} days ago`;
 }
