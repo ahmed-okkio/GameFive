@@ -2,15 +2,15 @@ import { rankedToMmr } from "@/lib/mmr/ranked";
 
 export type PlacementInput = {
   mayhemWins: number;
-  lobbyAnchorMmr: number | null;
+  placementLobbyAvgMmr: number | null;
 };
 
 export function calculatePlacementMmr(input: PlacementInput): number {
-  const { mayhemWins, lobbyAnchorMmr } = input;
+  const { mayhemWins, placementLobbyAvgMmr } = input;
   const GOLD_3_MMR = 1400;
 
   // Requirement: Anchor is lobby average -> Gold III fallback
-  const anchorMmr = lobbyAnchorMmr ?? GOLD_3_MMR;
+  const anchorMmr = placementLobbyAvgMmr ?? GOLD_3_MMR;
 
   const winRateBonus = (mayhemWins - 5) * 100; 
   return anchorMmr + winRateBonus;

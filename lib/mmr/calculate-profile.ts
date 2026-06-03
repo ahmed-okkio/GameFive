@@ -16,14 +16,14 @@ export async function calculateAndStoreProfile(player: Player) {
     if (mayhemGamesCount >= 10 && !player.isPlaced) {
         // Calculate average lobby MMR across all placement games where it was calculable
         const calculableMatches = participants.filter(p => p.match.lobbyAvgMmr !== null);
-        const lobbyAnchorMmr = calculableMatches.length > 0 
+        const placementLobbyAvgMmr = calculableMatches.length > 0 
             ? calculableMatches.reduce((sum, p) => sum + (p.match.lobbyAvgMmr ?? 0), 0) / calculableMatches.length 
             : null;
 
         const wins = participants.filter(g => g.win).length;
         const startingMmr = calculatePlacementMmr({
             mayhemWins: wins,
-            lobbyAnchorMmr
+            placementLobbyAvgMmr
         });
 
         const tier = getTierLabel(startingMmr);
