@@ -58,7 +58,7 @@ model Match {
 model MatchParticipant {
   id                 String   @id @default(uuid())
   matchId            String   @map("match_id")
-  playerId           String   @map("player_id")
+  playerId           String?  @map("player_id")
   team               Int
   win                Boolean
   championId         Int      @map("champion_id")
@@ -76,9 +76,8 @@ model MatchParticipant {
   isPlacement        Boolean  @default(false) @map("is_placement")
   createdAt          DateTime @default(now()) @map("created_at")
   match              Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
-  player             Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  player             Player?  @relation(fields: [playerId], references: [id], onDelete: Cascade)
 
-  @@unique([matchId, playerId])
   @@map("match_participants")
   }
 

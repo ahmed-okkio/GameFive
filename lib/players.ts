@@ -209,8 +209,8 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
                 win: part.win,
                 team: part.team,
                 player: {
-                    riotIdName: part.player.riotIdName,
-                    riotIdTag: part.player.riotIdTag
+                    riotIdName: part.player?.riotIdName ?? "Unknown",
+                    riotIdTag: part.player?.riotIdTag ?? "EUW"
                 }
             }))
         }

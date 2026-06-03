@@ -5,7 +5,6 @@ import { bestRankedMmr } from "@/lib/mmr/ranked";
 import { calculateLpDelta } from "@/lib/mmr/calculate";
 import { getTierLabel } from "@/lib/mmr/tier";
 import { getChampionMap } from "@/lib/riot/champions";
-import { calculateAndStoreProfile } from "@/lib/mmr/calculate-profile";
 import { upsertPlayer } from "@/lib/players";
 
 export const companionMatchPayloadSchema = z.object({
@@ -148,56 +147,103 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
       console.log("Debug LP: Uploader not found, skipping delta calculation.");
   }
 
-  // 5. Create match participants
+  // 5. Create match participants and update known players
   for (const participant of payload.participants) {
-    const player = playerRows.get(participant.puuid);
-    if (!player) continue;
+    // Lookup player in DB, don't create if missing
+    const player = await prisma.player.findFirst({
+        where: {
+            puuid: participant.puuid // PUUID is the most reliable lookup for known players
+        }
+    });
 
+    // 1. Calculate stats for the match participant
     const championName = CHAMPION_MAP[participant.championId] ?? `Champion ${participant.championId}`;
 
-    await prisma.matchParticipant.create({
-      data: {
-        matchId: storedMatch.id,
-        playerId: player.id,
-        team: participant.teamId,
-        win: participant.win,
-        championId: participant.championId,
-        championName: championName,
-        kills: participant.kills,
-        deaths: participant.deaths,
-        assists: participant.assists,
-        damageToChampions: participant.totalDamageDealtToChampions,
-        healingDone: participant.totalHeal,
-        killParticipation: 0,
-        damageShare: 0,
-        healingShare: 0,
-        performanceScore: 0,
-        lpDelta: participant.puuid === payload.uploaderPuuid ? calculatedLpDelta : 0,
-        isPlacement: !player.isPlaced
-      }
-    });
-  }
+    // 2. Calculate LP delta only if player exists and is placed
+    let participantLpDelta = 0;
+    if (player && player.isPlaced) {
+        const last5Games = await prisma.matchParticipant.findMany({
+            where: { playerId: player.id, match: { gameMode: "MAYHEM" } },
+            include: { match: true },
+            orderBy: { match: { gameDate: "desc" } },
+            take: 5
+        });
+        
+        let consecutiveStreak = 0;
+        for (const g of last5Games) {
+            if (g.win === participant.win) consecutiveStreak++;
+            else break;
+        }
+        
+        const delta = calculateLpDelta({
+            playerCurrentMmr: player.rawMmr,
+            lobbyAvgMmr: lobbyAvgMmr,
+            consecutiveStreak: consecutiveStreak,
+            win: participant.win
+        });
+        participantLpDelta = Math.round(participant.win ? delta : -delta);
 
-  // 6. Update uploader MMR/LP
-  if (uploader) {
-      if (uploader.isPlaced) {
-          const newMmr = uploader.rawMmr + calculatedLpDelta;
-          const tier = getTierLabel(newMmr);
+        // 3. Update player MMR/LP
+        const newMmr = player.rawMmr + participantLpDelta;
+        const tier = getTierLabel(newMmr);
 
-          await prisma.player.update({
-              where: { id: uploader.id },
-              data: {
-                  rawMmr: newMmr,
-                  currentLp: Math.round(newMmr % 100),
-                  mayhemGames: { increment: 1 },
-                  lastGameDate: new Date(payload.gameCreation),
-                  lastGameTier: tier.tier,
-                  cacheUpdatedAt: new Date()
-              }
-          });
-      } else {
-        await calculateAndStoreProfile(uploader);
-      }
+        await prisma.player.update({
+            where: { id: player.id },
+            data: {
+                rawMmr: newMmr,
+                currentLp: Math.round(newMmr % 100),
+                mayhemGames: { increment: 1 },
+                lastGameDate: new Date(payload.gameCreation),
+                lastGameTier: tier.tier,
+                cacheUpdatedAt: new Date()
+            }
+        });
+    }
+
+    if (player) {
+        await prisma.matchParticipant.create({
+            data: {
+                matchId: storedMatch.id,
+                playerId: player.id,
+                team: participant.teamId,
+                win: participant.win,
+                championId: participant.championId,
+                championName: championName,
+                kills: participant.kills,
+                deaths: participant.deaths,
+                assists: participant.assists,
+                damageToChampions: participant.totalDamageDealtToChampions,
+                healingDone: participant.totalHeal,
+                killParticipation: 0,
+                damageShare: 0,
+                healingShare: 0,
+                performanceScore: 0,
+                lpDelta: participantLpDelta,
+                isPlacement: !player.isPlaced
+            }
+        });
+    } else {
+        await prisma.matchParticipant.create({
+            data: {
+                matchId: storedMatch.id,
+                team: participant.teamId,
+                win: participant.win,
+                championId: participant.championId,
+                championName: championName,
+                kills: participant.kills,
+                deaths: participant.deaths,
+                assists: participant.assists,
+                damageToChampions: participant.totalDamageDealtToChampions,
+                healingDone: participant.totalHeal,
+                killParticipation: 0,
+                damageShare: 0,
+                healingShare: 0,
+                performanceScore: 0,
+                lpDelta: 0,
+                isPlacement: false
+            }
+        });
+    }
   }
 
   return {
