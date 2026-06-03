@@ -14,3 +14,4 @@ companion/bin/
 companion/obj/
 .DS_Store
 Thumbs.db
+scripts/ingest-from-log.ts
