@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import type { Player } from "@prisma/client";
-import { bestRankedMmr, DEFAULT_MEDIAN_MMR } from "@/lib/mmr/ranked";
-import { calculateLpDelta, calculatePlacementMmr } from "@/lib/mmr/calculate";
+import { bestRankedMmr } from "@/lib/mmr/ranked";
+import { rankedToMmr } from "@/lib/mmr/ranked";
+import { calculateLpDelta } from "@/lib/mmr/calculate";
 import { getTierLabel } from "@/lib/mmr/tier";
 import { getChampionMap } from "@/lib/riot/champions";
 import { calculateAndStoreProfile } from "@/lib/mmr/calculate-profile";
@@ -67,7 +68,6 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
     };
   }
 
-  const globalMedianMmr = await getGlobalMedianMmr();
   const playerRows = new Map<string, Player>();
   const CHAMPION_MAP = await getChampionMap();
 
@@ -84,10 +84,23 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
   const uploader = playerRows.get(payload.uploaderPuuid);
   const opponents = [...playerRows.values()].filter(p => p.id !== uploader?.id);
   
-  const lobbyAvgMmr = opponents.reduce((sum, player) => {
-    const pMmr = player.isPlaced ? player.rawMmr : bestRankedMmr(player.soloDuoTier, player.soloDuoDivision, player.flexTier, player.flexDivision, globalMedianMmr);
-    return sum + (pMmr ?? globalMedianMmr);
-  }, 0) / Math.max(opponents.length, 1);
+  // Filter for players with real rank data
+  const validOpponents = opponents.filter(p => 
+      (p.soloDuoTier && p.soloDuoTier !== "UNRANKED") || 
+      (p.flexTier && p.flexTier !== "UNRANKED")
+  );
+
+  let lobbyAvgMmr = 0;
+  if (validOpponents.length > 0) {
+      lobbyAvgMmr = validOpponents.reduce((sum, player) => {
+        // Resolve best rank signal (Solo/Duo OR Flex)
+        const pMmr = bestRankedMmr(player.soloDuoTier, player.soloDuoDivision, player.flexTier, player.flexDivision, null);
+        return sum + (pMmr ?? 0);
+      }, 0) / validOpponents.length;
+  } else {
+      // Fallback: use uploader's own rawMmr
+      lobbyAvgMmr = uploader?.rawMmr ?? 1100;
+  }
 
   // 3. Create the match
   const storedMatch = await prisma.match.create({
@@ -188,13 +201,4 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
     matchId,
     participants: payload.participants.length
   };
-}
-
-async function getGlobalMedianMmr() {
-  const players = await prisma.player.findMany({
-    where: { rawMmr: { gt: 0 } },
-    select: { rawMmr: true },
-    orderBy: { rawMmr: "asc" }
-  });
-  return players.length < 10 ? DEFAULT_MEDIAN_MMR : players[Math.floor(players.length / 2)].rawMmr;
 }

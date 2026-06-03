@@ -8,6 +8,8 @@ export type MmrGame = {
   gameMode: "MAYHEM";
 };
 
+const PLACEMENT_BASELINE_MMR = 1100;
+
 export type PlacementInput = {
   soloDuoTier?: string | null;
   soloDuoDivision?: string | null;
@@ -16,11 +18,10 @@ export type PlacementInput = {
   historicalTier?: string | null;
   historicalDivision?: string | null;
   mayhemWins: number;
-  globalMedianMmr: number;
 };
 
 export function calculatePlacementMmr(input: PlacementInput): number {
-  const { globalMedianMmr, mayhemWins } = input;
+  const { mayhemWins } = input;
   
   // Resolve ranked signals
   const soloDuoMmr = rankedToMmr(input.soloDuoTier, input.soloDuoDivision, null);
@@ -30,22 +31,18 @@ export function calculatePlacementMmr(input: PlacementInput): number {
   const bestCurrentRanked = soloDuoMmr ?? flexMmr ?? historicalMmr;
   
   // Win rate component (30% weight usually)
-  // Win rate anchored around the best available ranked signal, or global median
-  const anchorMmr = bestCurrentRanked ?? globalMedianMmr;
-  const winRateBonus = (mayhemWins - 5) * 100; // +100 for each win above 5, -100 for each below
+  // Win rate anchored around the best available ranked signal, or baseline
+  const anchorMmr = bestCurrentRanked ?? PLACEMENT_BASELINE_MMR;
+  const winRateBonus = (mayhemWins - 5) * 100; 
   const mayhemMmr = anchorMmr + winRateBonus;
 
   if (soloDuoMmr !== null) {
-    // Standard weights: 50% Solo, 20% Flex, 30% Mayhem
-    const flexComponent = flexMmr ?? soloDuoMmr; // Use solo as fallback for flex if solo exists
+    const flexComponent = flexMmr ?? soloDuoMmr;
     return soloDuoMmr * 0.5 + flexComponent * 0.2 + mayhemMmr * 0.3;
   } else if (flexMmr !== null || historicalMmr !== null) {
-    // No Solo/Duo: 30% Flex/Historical, 70% Mayhem (wait, spec says "total Mayhem win rate becomes 50%")
-    // Spec: "Redistribute Solo/Duo's 50% as: Flex 30%, Mayhem win rate 20% (total Mayhem win rate becomes 50%)"
     const bestFlexHist = flexMmr ?? historicalMmr!;
-    return bestFlexHist * (0.2 + 0.3) + mayhemMmr * (0.3 + 0.2); // 50% Flex/Hist, 50% Mayhem
+    return bestFlexHist * 0.5 + mayhemMmr * 0.5;
   } else {
-    // No ranked data at all: 100% Mayhem
     return mayhemMmr;
   }
 }
