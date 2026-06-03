@@ -94,7 +94,7 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
   if (validOpponents.length > 0) {
       lobbyAvgMmr = validOpponents.reduce((sum, player) => {
         // Resolve best rank signal (Solo/Duo OR Flex)
-        const pMmr = bestRankedMmr(player.soloDuoTier, player.soloDuoDivision, player.flexTier, player.flexDivision, null);
+        const pMmr = bestRankedMmr(player.soloDuoTier, player.soloDuoDivision, player.flexTier, player.flexDivision);
         return sum + (pMmr ?? 0);
       }, 0) / validOpponents.length;
   } else {

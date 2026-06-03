@@ -22,39 +22,37 @@ export const DEFAULT_MEDIAN_MMR = 1500;
 
 export function rankedToMmr(
   tier: string | null | undefined,
-  division: string | null | undefined,
-  median: number | null = DEFAULT_MEDIAN_MMR
-) {
+  division: string | null | undefined
+): number | null {
   if (!tier) {
-    return median;
+    return null;
   }
 
   const normalizedTier = tier.toUpperCase();
   const base = TIER_BASE[normalizedTier];
 
   if (base === undefined) {
-    return median;
+    return null;
   }
 
   if (normalizedTier === "MASTER" || normalizedTier === "GRANDMASTER" || normalizedTier === "CHALLENGER") {
     return base;
   }
 
-  return base + DIVISION_OFFSET[(division ?? "IV").toUpperCase()];
+  return base + (DIVISION_OFFSET[division?.toUpperCase() ?? "IV"] ?? 0);
 }
 
 export function bestRankedMmr(
   soloDuoTier: string | null | undefined,
   soloDuoDivision: string | null | undefined,
   flexTier: string | null | undefined,
-  flexDivision: string | null | undefined,
-  median: number | null = DEFAULT_MEDIAN_MMR
-) {
-  const solo = rankedToMmr(soloDuoTier, soloDuoDivision, null);
+  flexDivision: string | null | undefined
+): number | null {
+  const solo = rankedToMmr(soloDuoTier, soloDuoDivision);
   if (solo !== null) return solo;
 
-  const flex = rankedToMmr(flexTier, flexDivision, null);
+  const flex = rankedToMmr(flexTier, flexDivision);
   if (flex !== null) return flex;
 
-  return median;
+  return null;
 }
