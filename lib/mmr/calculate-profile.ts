@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getTierLabel } from "@/lib/mmr/tier";
 import { calculatePlacementMmr } from "@/lib/mmr/calculate";
-import { DEFAULT_MEDIAN_MMR } from "@/lib/mmr/ranked";
 import { Player } from "@prisma/client";
 
 export async function calculateAndStoreProfile(player: Player) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
+import Image from "next/image";
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { ProgressScreen } from "@/components/ProgressScreen";
@@ -144,7 +145,7 @@ function ChampionAvatar({ image, name, size = "md" }: { image: string | null; na
   return (
     <div className={`${sizeClass} shrink-0 overflow-hidden rounded-full bg-black/40 ring-1 ring-white/10`}>
       {image ? (
-        <img src={image} alt={name} className="h-full w-full object-cover" />
+        <Image src={image} alt={name} width={44} height={44} className="h-full w-full object-cover" />
       ) : (
         <div className="flex h-full w-full items-center justify-center text-xs font-black text-stone-500">?</div>
       )}
@@ -255,9 +256,11 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
             <div className="flex flex-col items-center text-center">
                 <div className="h-24 w-24 rounded-full bg-black/30 flex items-center justify-center mb-4 overflow-hidden">
                      {ddragonVersion && status.player.profileIconId ? (
-                         <img 
+                         <Image 
                             src={getProfileIconUrl(status.player.profileIconId, ddragonVersion)} 
                             alt="Profile Icon" 
+                            width={96}
+                            height={96}
                             className="h-full w-full object-cover"
                          />
                      ) : (

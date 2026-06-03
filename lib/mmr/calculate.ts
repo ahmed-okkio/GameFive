@@ -1,5 +1,3 @@
-import { rankedToMmr } from "@/lib/mmr/ranked";
-
 export type PlacementInput = {
   mayhemWins: number;
   placementLobbyAvgMmr: number | null;

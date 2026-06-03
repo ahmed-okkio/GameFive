@@ -2,7 +2,6 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import type { Player } from "@prisma/client";
 import { bestRankedMmr } from "@/lib/mmr/ranked";
-import { rankedToMmr } from "@/lib/mmr/ranked";
 import { calculateLpDelta } from "@/lib/mmr/calculate";
 import { getTierLabel } from "@/lib/mmr/tier";
 import { getChampionMap } from "@/lib/riot/champions";
