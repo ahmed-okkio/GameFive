@@ -11,7 +11,7 @@ export function calculatePlacementMmr(input: PlacementInput): number {
 
   // Requirement: Anchor is lobby average -> Gold III fallback
   const anchorMmr = lobbyAnchorMmr ?? GOLD_3_MMR;
-  
+
   const winRateBonus = (mayhemWins - 5) * 100; 
   return anchorMmr + winRateBonus;
 }

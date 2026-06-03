@@ -7,7 +7,7 @@ This document outlines the current logic for MMR estimation and LP delta calcula
 When a player has played fewer than 10 Mayhem games they are "unplaced." Once they reach 10 games their starting MMR is calculated as follows.
 
 ### Anchor Selection
-The primary anchor is the average of `lobbyAvgMmr` across all 10 placement games, using only games where `lobbyAvgMmr` was calculable (i.e. at least one opponent had ranked or GameFive data). Games where no opponent had any data are excluded from the average.
+The primary anchor is the average of `lobbyAvgMmr` across all 10 placement games, using only games where `lobbyAvgMmr` was calculable (i.e. at least one opponent had ranked data). Games where no opponent had any data are excluded from the average.
 
 If `lobbyAnchorMmr` cannot be calculated, fall back to the player's best current ranked signal — Solo/Duo first, then Flex.
 
@@ -72,12 +72,11 @@ on loss: newMmr = currentMmr - lpDelta
 
 ## 3. Lobby Average MMR (`lobbyAvgMmr`)
 
-Calculated during match ingestion. For each opponent resolve their MMR using this priority:
+Calculated during match ingestion. GameFive's own calculated MMR is never used as an input — it is a display value only. For each opponent resolve their MMR using this priority:
 
-1. Their stored GameFive `rawMmr` if `isPlaced === true`
-2. Their Solo/Duo rank converted to MMR via `rankedToMmr`
-3. Their Flex rank converted to MMR via `rankedToMmr`
-4. If none of the above return a value — exclude them from the average entirely
+1. Their Solo/Duo rank converted to MMR via `rankedToMmr`
+2. Their Flex rank converted to MMR via `rankedToMmr`
+3. If neither returns a value — exclude them from the average entirely
 
 `lobbyAvgMmr` is the average MMR of only the opponents for whom data was available. If zero opponents have any data, `lobbyAvgMmr` is stored as `null`.
 
@@ -103,7 +102,8 @@ There is no hardcoded fallback value. Null means uncalculable and propagates cle
 | Global median | Removed entirely |
 | Historical rank | Removed entirely |
 | Hardcoded baseline | Removed entirely |
-| Lobby calculation | Real data only, exclude unknowns, null if no data |
+| Lobby calculation | Ranked data only (Solo/Duo → Flex), exclude unknowns, null if no data |
+| GameFive rawMmr | Display value only — never used as input to any calculation |
 | LP when lobby null | Neutral factor 1.0, base 25 LP |
 | Opponent factor clamp | 0.5x–2.0x |
 | Streak multiplier | Applies to wins and losses, max 1.25x |
