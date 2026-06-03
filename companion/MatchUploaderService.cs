@@ -7,12 +7,11 @@ using System.Threading.Tasks;
 
 namespace GameFive.Companion;
 
-internal static class DiagnosticCollector
+internal static class MatchUploaderService
 {
-    public static async Task CollectAsync(LcuConnection connection, int matchLimit)
+    public static async Task UploadRecentMatchesAsync(LcuConnection connection, GameFiveUploader uploader, int matchLimit, CompanionLogger logger)
     {
-        var logger = new CompanionLogger(Path.Combine(AppContext.BaseDirectory, "diagnostic.log"));
-        logger.Info($"Starting manual diagnostic match collection (Limit: {matchLimit})...");
+        logger.Info($"Starting manual match upload (Limit: {matchLimit})...");
         using var client = new LcuClient(connection, logger);
 
         try 
@@ -36,9 +35,8 @@ internal static class DiagnosticCollector
                         var fullMatch = await client.TryGetMatchDetailsAsync(match.GameId, CancellationToken.None);
                         
                         if (fullMatch != null) {
-                            logger.Info("MATCH_PAYLOAD_START");
-                            logger.Info(JsonSerializer.Serialize(fullMatch, new JsonSerializerOptions { WriteIndented = true }));
-                            logger.Info("MATCH_PAYLOAD_END");
+                            var upload = MatchMapper.ToUpload(fullMatch, summoner.Puuid);
+                            await uploader.UploadOrQueueAsync(upload, CancellationToken.None);
                         }
                     }
                 }
@@ -50,9 +48,9 @@ internal static class DiagnosticCollector
         }
         catch (Exception ex)
         {
-            logger.Error("Fatal error during diagnostic collection.", ex);
+            logger.Error("Fatal error during match upload.", ex);
         }
 
-        logger.Info("Diagnostic collection complete. Please send 'diagnostic.log' to the developer.");
+        logger.Info("Match upload complete.");
     }
 }

@@ -51,11 +51,11 @@ internal sealed class TrayIcon : IDisposable
 
         _menu = new ContextMenuStrip();
         _menu.Items.Add("Reconnect", null, (_, _) => _monitor.Reconnect());
-        _menu.Items.Add("Collect debug log", null, async (_, _) => {
+        _menu.Items.Add("Upload recent games", null, async (_, _) => {
             var lockfile = LcuLockfile.TryRead(_logger);
             if (lockfile != null) {
                 var connection = new LcuConnection { Port = lockfile.Port, AuthToken = lockfile.AuthToken, Protocol = lockfile.Protocol };
-                await DiagnosticCollector.CollectAsync(connection, _monitor._config.DiagnosticMatchLimit);
+                await MatchUploaderService.UploadRecentMatchesAsync(connection, _monitor._uploader, _monitor._config.DiagnosticMatchLimit, _logger);
             }
         });
         _menu.Items.Add("Open Log", null, (_, _) => OpenLog());

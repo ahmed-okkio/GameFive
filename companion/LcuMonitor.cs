@@ -6,8 +6,8 @@ namespace GameFive.Companion;
 internal sealed class LcuMonitor : IDisposable
 {
     public readonly CompanionConfig _config;
+    public readonly GameFiveUploader _uploader;
     private readonly CompanionLogger _logger;
-    private readonly GameFiveUploader _uploader;
     private LcuConnection? _connection;
     private readonly System.Timers.Timer _timer;
     private bool _wasRunning = false;
