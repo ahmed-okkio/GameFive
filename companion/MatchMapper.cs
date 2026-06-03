@@ -20,6 +20,7 @@ internal static class MatchMapper
             MapId = match.MapId,
             GameCreation = match.GameCreation,
             GameDuration = match.GameDuration,
+            Teams = match.Teams.Cast<object>().ToList(),
             Participants = match.Participants.Select(participant =>
             {
                 identities.TryGetValue(participant.ParticipantId, out var player);
@@ -39,7 +40,33 @@ internal static class MatchMapper
                     Assists = participant.Stats.Assists,
                     TotalDamageDealtToChampions = participant.Stats.TotalDamageDealtToChampions,
                     TotalHeal = participant.Stats.TotalHeal,
-                    GoldEarned = participant.Stats.GoldEarned
+                    GoldEarned = participant.Stats.GoldEarned,
+                    Spell1Id = participant.Spell1Id,
+                    Spell2Id = participant.Spell2Id,
+                    ChampLevel = participant.Stats.ChampLevel,
+                    GoldSpent = participant.Stats.GoldSpent,
+                    DamageTaken = participant.Stats.TotalDamageTaken,
+                    SelfMitigated = participant.Stats.DamageSelfMitigated,
+                    MinionsKilled = participant.Stats.TotalMinionsKilled,
+                    Items = new List<int>
+                    {
+                        participant.Stats.Item0,
+                        participant.Stats.Item1,
+                        participant.Stats.Item2,
+                        participant.Stats.Item3,
+                        participant.Stats.Item4,
+                        participant.Stats.Item5,
+                        participant.Stats.Item6
+                    },
+                    Augments = new List<int>
+                    {
+                        participant.Stats.PlayerAugment1,
+                        participant.Stats.PlayerAugment2,
+                        participant.Stats.PlayerAugment3,
+                        participant.Stats.PlayerAugment4,
+                        participant.Stats.PlayerAugment5,
+                        participant.Stats.PlayerAugment6
+                    }.Where(a => a > 0).ToList()
                 };
             }).Where(participant => !string.IsNullOrWhiteSpace(participant.Puuid)).ToList()
         };

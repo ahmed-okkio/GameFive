@@ -8,22 +8,26 @@ internal sealed class TrayIcon : IDisposable
 {
     private readonly CompanionLogger _logger;
     private readonly LcuMonitor _monitor;
+    private readonly UpdateManager _updateManager;
     private NotifyIcon? _notifyIcon;
     private ContextMenuStrip? _menu;
     private System.Windows.Forms.Timer? _timer;
     private ApplicationContext? _context;
     private string _currentText = "GameFive: Initializing...";
+    private bool _isConnected = false;
     private readonly object _lock = new();
 
-    public TrayIcon(CompanionLogger logger, LcuMonitor monitor)
+    public TrayIcon(CompanionLogger logger, LcuMonitor monitor, UpdateManager updateManager)
     {
         _logger = logger;
         _monitor = monitor;
+        _updateManager = updateManager;
     }
 
     public void SetConnected(bool isConnected)
     {
         lock (_lock) {
+            _isConnected = isConnected;
             _currentText = isConnected ? "GameFive: Connected" : "GameFive: Disconnected";
         }
     }
@@ -41,10 +45,16 @@ internal sealed class TrayIcon : IDisposable
     {
         _logger.Info("Tray icon loop starting.");
         
-        // Use the icon embedded in the executable via <ApplicationIcon>
+        var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+        using var connectedStream = assembly.GetManifestResourceStream("GameFive.Companion.connected.ico");
+        using var disconnectedStream = assembly.GetManifestResourceStream("GameFive.Companion.disconnected.ico");
+
+        Icon connectedIcon = connectedStream != null ? new Icon(connectedStream) : Icon.ExtractAssociatedIcon(Process.GetCurrentProcess().MainModule!.FileName!)!;
+        Icon disconnectedIcon = disconnectedStream != null ? new Icon(disconnectedStream) : Icon.ExtractAssociatedIcon(Process.GetCurrentProcess().MainModule!.FileName!)!;
+
         _notifyIcon = new NotifyIcon
         {
-            Icon = Icon.ExtractAssociatedIcon(Process.GetCurrentProcess().MainModule!.FileName!),
+            Icon = disconnectedIcon,
             Text = _currentText,
             Visible = true
         };
@@ -59,6 +69,7 @@ internal sealed class TrayIcon : IDisposable
             }
         });
         _menu.Items.Add("Open Log", null, (_, _) => OpenLog());
+        _menu.Items.Add("Check for updates", null, (_, _) => _ = _updateManager.CheckForUpdatesAsync(CancellationToken.None));
         _menu.Items.Add("Exit", null, (_, _) => {
             Application.Exit();
             Environment.Exit(0);
@@ -67,12 +78,18 @@ internal sealed class TrayIcon : IDisposable
         _notifyIcon.ContextMenuStrip = _menu;
         _context = new ApplicationContext();
 
-        // UI Timer: Updates the text on the UI thread every 500ms
+        // UI Timer: Updates the text and icon on the UI thread every 500ms
         _timer = new System.Windows.Forms.Timer { Interval = 500 };
         _timer.Tick += (s, e) => {
             lock (_lock) {
-                if (_notifyIcon != null && _notifyIcon.Text != _currentText) {
-                    _notifyIcon.Text = _currentText;
+                if (_notifyIcon != null) {
+                    if (_notifyIcon.Text != _currentText) {
+                        _notifyIcon.Text = _currentText;
+                    }
+                    var expectedIcon = _isConnected ? connectedIcon : disconnectedIcon;
+                    if (_notifyIcon.Icon != expectedIcon) {
+                        _notifyIcon.Icon = expectedIcon;
+                    }
                 }
             }
         };

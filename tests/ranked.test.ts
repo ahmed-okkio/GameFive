@@ -3,27 +3,22 @@ import { calculatePlacementMmr, calculateLpDelta } from "@/lib/mmr/calculate";
 import { rankedToMmr } from "@/lib/mmr/ranked";
 
 describe("calculatePlacementMmr", () => {
-  it("uses 100% Mayhem win rate weighting when no ranked history exists", () => {
+  it("uses fallback when no lobby MMR exists", () => {
     const mmr = calculatePlacementMmr({
       mayhemWins: 5,
-      globalMedianMmr: 1500
+      placementLobbyAvgMmr: null
     });
-    // 5 wins - 5 = 0 bonus => 1500
-    expect(mmr).toBe(1500);
+    // 5 wins - 5 = 0 bonus => 1400 (GOLD_3_MMR)
+    expect(mmr).toBe(1400);
   });
 
-  it("adjusts MMR based on win rate and best ranked signal", () => {
+  it("adjusts MMR based on win rate and lobby average", () => {
     const mmr = calculatePlacementMmr({
-      soloDuoTier: "GOLD",
-      soloDuoDivision: "II",
       mayhemWins: 6,
-      globalMedianMmr: 1500
+      placementLobbyAvgMmr: 1500
     });
-    // Gold II = 1500. 6 wins => +100 bonus (Mayhem MMR = 1600).
-    // SoloDuo (50%) + FlexFallback (20%) + Mayhem (30%)
-    // (1500 * 0.5) + (1500 * 0.2) + (1600 * 0.3)
-    // 750 + 300 + 480 = 1530
-    expect(mmr).toBe(1530);
+    // 6 wins => +100 bonus (1500 + 100 = 1600)
+    expect(mmr).toBe(1600);
   });
 });
 

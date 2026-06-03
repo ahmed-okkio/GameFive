@@ -1,0 +1,157 @@
+using System.Diagnostics;
+using System.Net.Http.Json;
+using System.Text.Json.Serialization;
+
+namespace GameFive.Companion;
+
+internal sealed class UpdateManager
+{
+    private readonly CompanionConfig _config;
+    private readonly CompanionLogger _logger;
+    private readonly HttpClient _httpClient;
+    private string? _pendingUpdatePath;
+
+    public UpdateManager(CompanionConfig config, CompanionLogger logger)
+    {
+        _config = config;
+        _logger = logger;
+        _httpClient = new HttpClient();
+        _httpClient.DefaultRequestHeaders.Add("User-Agent", "GameFiveCompanion");
+
+#if !DEBUG
+        AppDomain.CurrentDomain.ProcessExit += (s, e) => ApplyUpdate();
+#endif
+    }
+
+    public async Task CheckForUpdatesAsync(CancellationToken ct)
+    {
+#if DEBUG
+        _logger.Info("Auto-update disabled in debug build.");
+        await Task.CompletedTask;
+        return;
+#else
+        try
+        {
+            _logger.Info($"Checking for updates from {_config.GitHubRepo}...");
+            var release = await _httpClient.GetFromJsonAsync<GitHubRelease>(
+                $"https://api.github.com/repos/{_config.GitHubRepo}/releases/latest", ct);
+
+            if (release?.TagName == null) return;
+
+            if (IsNewer(release.TagName, _config.CurrentVersion))
+            {
+                _logger.Info($"New version found: {release.TagName}. Current version: {_config.CurrentVersion}");
+                var asset = release.Assets.FirstOrDefault(a => a.Name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase));
+                if (asset != null)
+                {
+                    await DownloadUpdateAsync(asset.BrowserDownloadUrl, ct);
+                }
+                else
+                {
+                    _logger.Warn("New version found but no .exe asset found in release.");
+                }
+            }
+            else
+            {
+                _logger.Info("App is up to date.");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Failed to check for updates", ex);
+        }
+#endif
+    }
+
+    private bool IsNewer(string latest, string current)
+    {
+        try
+        {
+            var l = Version.Parse(latest.TrimStart('v'));
+            var c = Version.Parse(current.TrimStart('v'));
+            return l > c;
+        }
+        catch
+        {
+            return latest != current;
+        }
+    }
+
+    private async Task DownloadUpdateAsync(string url, CancellationToken ct)
+    {
+        try
+        {
+            _logger.Info($"Downloading update from {url}...");
+            var response = await _httpClient.GetAsync(url, ct);
+            response.EnsureSuccessStatusCode();
+
+            var tempPath = Path.Combine(Path.GetTempPath(), $"GameFive_Update_{Guid.NewGuid():N}.exe");
+            using (var fs = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                await response.Content.CopyToAsync(fs, ct);
+            }
+
+            _pendingUpdatePath = tempPath;
+            _logger.Info($"Update downloaded to {_pendingUpdatePath}. It will be applied on next exit.");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Failed to download update", ex);
+        }
+    }
+
+    public void ApplyUpdate()
+    {
+        if (string.IsNullOrEmpty(_pendingUpdatePath) || !File.Exists(_pendingUpdatePath)) return;
+
+        try
+        {
+            var currentExe = Process.GetCurrentProcess().MainModule?.FileName;
+            if (currentExe == null) return;
+
+            var batchPath = Path.Combine(Path.GetTempPath(), "gamefive_update.bat");
+            var batchContent = $@"
+@echo off
+timeout /t 1 /nobreak > nul
+move /y ""{_pendingUpdatePath}"" ""{currentExe}""
+start """" ""{currentExe}""
+del ""%~f0""
+";
+            File.WriteAllText(batchPath, batchContent);
+
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                Arguments = $"/c \"{batchPath}\"",
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                WindowStyle = ProcessWindowStyle.Hidden
+            };
+
+            _logger.Info("Starting update script and exiting...");
+            Process.Start(startInfo);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Failed to apply update", ex);
+        }
+    }
+
+    private class GitHubRelease
+    {
+        [JsonPropertyName("tag_name")]
+        public string TagName { get; set; } = "";
+
+        [JsonPropertyName("assets")]
+        public List<GitHubAsset> Assets { get; set; } = [];
+    }
+
+    private class GitHubAsset
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = "";
+
+        [JsonPropertyName("browser_download_url")]
+        public string BrowserDownloadUrl { get; set; } = "";
+    }
+}

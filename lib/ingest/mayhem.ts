@@ -16,6 +16,7 @@ export const companionMatchPayloadSchema = z.object({
   mapId: z.number().int().nullable().optional(),
   gameCreation: z.number().int().positive(),
   gameDuration: z.number().int().nonnegative(),
+  teams: z.array(z.record(z.any())).optional(),
   participants: z
     .array(
       z.object({
@@ -32,7 +33,16 @@ export const companionMatchPayloadSchema = z.object({
         assists: z.number().int().nonnegative(),
         totalDamageDealtToChampions: z.number().int().nonnegative(),
         totalHeal: z.number().int().nonnegative(),
-        goldEarned: z.number().int().nonnegative().optional()
+        goldEarned: z.number().int().nonnegative().optional(),
+        spell1Id: z.number().int().nullable().optional(),
+        spell2Id: z.number().int().nullable().optional(),
+        items: z.array(z.number().int().nonnegative()).max(7).optional(),
+        augments: z.array(z.number().int().nonnegative()).max(6).optional(),
+        champLevel: z.number().int().nonnegative().optional(),
+        goldSpent: z.number().int().nonnegative().optional(),
+        damageTaken: z.number().int().nonnegative().optional(),
+        selfMitigated: z.number().int().nonnegative().optional(),
+        minionsKilled: z.number().int().nonnegative().optional()
       })
     )
     .min(1)
@@ -108,7 +118,8 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
       gameDate: new Date(payload.gameCreation),
       durationSeconds: payload.gameDuration,
       queueId: payload.queueId,
-      lobbyAvgMmr
+      lobbyAvgMmr,
+      teamsJson: payload.teams ?? undefined
     }
   });
 
@@ -219,7 +230,17 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
                 healingShare: 0,
                 performanceScore: 0,
                 lpDelta: participantLpDelta,
-                isPlacement: !player.isPlaced
+                isPlacement: !player.isPlaced,
+                itemsJson: participant.items,
+                augmentsJson: participant.augments,
+                spell1Id: participant.spell1Id,
+                spell2Id: participant.spell2Id,
+                champLevel: participant.champLevel,
+                goldEarned: participant.goldEarned,
+                goldSpent: participant.goldSpent,
+                damageTaken: participant.damageTaken,
+                selfMitigated: participant.selfMitigated,
+                minionsKilled: participant.minionsKilled
             }
         });
     } else {
@@ -240,7 +261,17 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
                 healingShare: 0,
                 performanceScore: 0,
                 lpDelta: 0,
-                isPlacement: false
+                isPlacement: false,
+                itemsJson: participant.items,
+                augmentsJson: participant.augments,
+                spell1Id: participant.spell1Id,
+                spell2Id: participant.spell2Id,
+                champLevel: participant.champLevel,
+                goldEarned: participant.goldEarned,
+                goldSpent: participant.goldSpent,
+                damageTaken: participant.damageTaken,
+                selfMitigated: participant.selfMitigated,
+                minionsKilled: participant.minionsKilled
             }
         });
     }

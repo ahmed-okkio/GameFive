@@ -28,6 +28,9 @@ internal sealed class CompanionMatchUpload
     [JsonPropertyName("gameDuration")]
     public int GameDuration { get; set; }
 
+    [JsonPropertyName("teams")]
+    public List<object> Teams { get; set; } = [];
+
     [JsonPropertyName("participants")]
     public List<CompanionParticipantUpload> Participants { get; set; } = [];
 }
@@ -75,4 +78,31 @@ internal sealed class CompanionParticipantUpload
 
     [JsonPropertyName("goldEarned")]
     public int GoldEarned { get; set; }
+
+    [JsonPropertyName("spell1Id")]
+    public int Spell1Id { get; set; }
+
+    [JsonPropertyName("spell2Id")]
+    public int Spell2Id { get; set; }
+
+    [JsonPropertyName("items")]
+    public List<int> Items { get; set; } = [];
+
+    [JsonPropertyName("augments")]
+    public List<int> Augments { get; set; } = [];
+
+    [JsonPropertyName("champLevel")]
+    public int ChampLevel { get; set; }
+
+    [JsonPropertyName("goldSpent")]
+    public int GoldSpent { get; set; }
+
+    [JsonPropertyName("damageTaken")]
+    public int DamageTaken { get; set; }
+
+    [JsonPropertyName("selfMitigated")]
+    public int SelfMitigated { get; set; }
+
+    [JsonPropertyName("minionsKilled")]
+    public int MinionsKilled { get; set; }
 }

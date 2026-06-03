@@ -48,6 +48,21 @@ internal sealed class LcuGame
 
     [JsonPropertyName("participantIdentities")]
     public List<LcuParticipantIdentity> ParticipantIdentities { get; set; } = [];
+
+    [JsonPropertyName("teams")]
+    public List<LcuTeam> Teams { get; set; } = [];
+}
+
+internal sealed class LcuTeam
+{
+    [JsonPropertyName("teamId")]
+    public int TeamId { get; set; }
+
+    [JsonPropertyName("win")]
+    public string? Win { get; set; }
+
+    [JsonExtensionData]
+    public Dictionary<string, object>? ExtraData { get; set; }
 }
 
 internal sealed class LcuParticipant
@@ -60,6 +75,12 @@ internal sealed class LcuParticipant
 
     [JsonPropertyName("championId")]
     public int ChampionId { get; set; }
+
+    [JsonPropertyName("spell1Id")]
+    public int Spell1Id { get; set; }
+
+    [JsonPropertyName("spell2Id")]
+    public int Spell2Id { get; set; }
 
     [JsonPropertyName("stats")]
     public LcuParticipantStats Stats { get; set; } = new();
@@ -87,6 +108,60 @@ internal sealed class LcuParticipantStats
 
     [JsonPropertyName("goldEarned")]
     public int GoldEarned { get; set; }
+
+    [JsonPropertyName("item0")]
+    public int Item0 { get; set; }
+
+    [JsonPropertyName("item1")]
+    public int Item1 { get; set; }
+
+    [JsonPropertyName("item2")]
+    public int Item2 { get; set; }
+
+    [JsonPropertyName("item3")]
+    public int Item3 { get; set; }
+
+    [JsonPropertyName("item4")]
+    public int Item4 { get; set; }
+
+    [JsonPropertyName("item5")]
+    public int Item5 { get; set; }
+
+    [JsonPropertyName("item6")]
+    public int Item6 { get; set; }
+
+    [JsonPropertyName("playerAugment1")]
+    public int PlayerAugment1 { get; set; }
+
+    [JsonPropertyName("playerAugment2")]
+    public int PlayerAugment2 { get; set; }
+
+    [JsonPropertyName("playerAugment3")]
+    public int PlayerAugment3 { get; set; }
+
+    [JsonPropertyName("playerAugment4")]
+    public int PlayerAugment4 { get; set; }
+
+    [JsonPropertyName("playerAugment5")]
+    public int PlayerAugment5 { get; set; }
+
+    [JsonPropertyName("playerAugment6")]
+    public int PlayerAugment6 { get; set; }
+
+    [JsonPropertyName("champLevel")]
+    public int ChampLevel { get; set; }
+
+    [JsonPropertyName("goldSpent")]
+    public int GoldSpent { get; set; }
+
+    [JsonPropertyName("totalDamageTaken")]
+    public int TotalDamageTaken { get; set; }
+
+    [JsonPropertyName("damageSelfMitigated")]
+    public int DamageSelfMitigated { get; set; }
+
+    [JsonPropertyName("totalMinionsKilled")]
+    public int TotalMinionsKilled { get; set; }
 }
 
 internal sealed class LcuParticipantIdentity

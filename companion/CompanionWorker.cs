@@ -29,12 +29,15 @@ public class CompanionWorker : BackgroundService
 
         StartupRegistration.EnsureRegistered(_logger);
 
+        var updateManager = new UpdateManager(config, _logger);
+        _ = updateManager.CheckForUpdatesAsync(stoppingToken);
+
         // Start WMI Monitor
         var uploader = new GameFiveUploader(config, new UploadQueue(_appPaths.FailedUploadsPath, _logger), _logger);
         using var monitor = new LcuMonitor(config, _logger, uploader);
         
         // Start Tray Icon thread
-        var trayIcon = new TrayIcon(_logger, monitor);
+        var trayIcon = new TrayIcon(_logger, monitor, updateManager);
         var trayThread = new Thread(() =>
         {
             trayIcon.Run();
@@ -59,6 +62,7 @@ public class CompanionWorker : BackgroundService
             
             // Keep running until stopped
             int counter = 0;
+            int updateCounter = 0;
             while (!stoppingToken.IsCancellationRequested)
             {
                 await Task.Delay(1000, stoppingToken);
@@ -68,6 +72,13 @@ public class CompanionWorker : BackgroundService
                 {
                     counter = 0;
                     await uploader.FlushAsync(stoppingToken);
+                }
+
+                // Check for updates every 12 hours (43200 seconds)
+                if (++updateCounter >= 43200)
+                {
+                    updateCounter = 0;
+                    _ = updateManager.CheckForUpdatesAsync(stoppingToken);
                 }
             }
             monitor.Stop();
