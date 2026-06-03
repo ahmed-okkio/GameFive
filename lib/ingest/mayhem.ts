@@ -117,6 +117,7 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
   let calculatedLpDelta = 0;
   if (uploader) {
     const isWin = payload.participants.find(p => p.puuid === payload.uploaderPuuid)?.win ?? false;
+    console.log(`Debug LP: uploader=${uploader.riotIdName}, isPlaced=${uploader.isPlaced}, isWin=${isWin}`);
     
     if (uploader.isPlaced) {
         const last5Games = await prisma.matchParticipant.findMany({
@@ -139,7 +140,12 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
             win: isWin
         });
         calculatedLpDelta = Math.round(isWin ? delta : -delta);
+        console.log(`Debug LP: Calculated delta=${calculatedLpDelta}`);
+    } else {
+        console.log("Debug LP: Uploader not placed, skipping delta calculation.");
     }
+  } else {
+      console.log("Debug LP: Uploader not found, skipping delta calculation.");
   }
 
   // 5. Create match participants
