@@ -49,10 +49,8 @@ export function bestRankedMmr(
   flexDivision: string | null | undefined
 ): number | null {
   const solo = rankedToMmr(soloDuoTier, soloDuoDivision);
-  if (solo !== null) return solo;
-
   const flex = rankedToMmr(flexTier, flexDivision);
-  if (flex !== null) return flex;
 
-  return null;
+  if (solo !== null && flex !== null) return Math.max(solo, flex);
+  return solo ?? flex;
 }
