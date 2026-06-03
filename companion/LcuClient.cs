@@ -38,7 +38,9 @@ internal sealed class LcuClient : IDisposable
 
     public async Task<LcuMatchHistoryResponse?> GetMatchHistoryAsync(string puuid, CancellationToken cancellationToken)
     {
-        return await GetJsonAsync<LcuMatchHistoryResponse>($"/lol-match-history/v1/games/by-puuid/{puuid}", cancellationToken);
+        return await GetJsonAsync<LcuMatchHistoryResponse>(
+            $"/lol-match-history/v1/products/lol/{Uri.EscapeDataString(puuid)}/matches", 
+            cancellationToken);
     }
 
     public async Task<string?> GetCurrentPuuidAsync(CancellationToken cancellationToken)
