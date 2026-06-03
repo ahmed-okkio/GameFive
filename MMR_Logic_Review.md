@@ -34,3 +34,10 @@ When a placed player completes a match, their LP gain/loss is calculated:
     *   `1 + (0.05 * min(consecutiveStreak, 5))`.
 
 4.  **Final Formula:** `25 * OpponentFactor * StreakMultiplier`.
+
+## 3. Lobby Average MMR (`lobbyAvgMmr`)
+*   Calculated during match ingestion.
+*   Only considers opponents with established **official Riot ranked data**:
+    *   For each opponent, resolve MMR for both `Solo/Duo` and `Flex`.
+    *   Use `Math.max()` to pick the **highest** of the available ranks.
+*   **Fallback:** If no opponents have any usable rank data, the lobby average defaults to the **uploader's own `rawMmr`** (resulting in a neutral factor of 1.0 and base 25 LP gain/loss).
