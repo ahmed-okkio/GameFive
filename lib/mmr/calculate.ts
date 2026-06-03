@@ -24,10 +24,16 @@ export type LpDeltaInput = {
 export function calculateLpDelta(input: LpDeltaInput): number {
   const BASE_LP = 25;
   
-  // Requirement: Neutral factor 1.0 if uncalculable
   let opponentFactor = 1.0;
   if (input.lobbyAvgMmr !== null) {
-    opponentFactor = input.lobbyAvgMmr / Math.max(input.playerCurrentMmr, 1);
+    if (input.win) {
+        // Win: Gain more for higher lobby MMR
+        opponentFactor = input.lobbyAvgMmr / Math.max(input.playerCurrentMmr, 1);
+    } else {
+        // Loss: Lose less for higher lobby MMR (mitigation)
+        opponentFactor = input.playerCurrentMmr / Math.max(input.lobbyAvgMmr, 1);
+    }
+    // Clamp to reasonable range (0.5x to 2.0x)
     opponentFactor = Math.min(2.0, Math.max(0.5, opponentFactor));
   }
   
