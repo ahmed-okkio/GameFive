@@ -22,22 +22,9 @@ export async function calculateAndStoreProfile(player: Player) {
 
         const wins = participants.filter(g => g.win).length;
         const startingMmr = calculatePlacementMmr({
-            soloDuoTier: player.soloDuoTier,
-            soloDuoDivision: player.soloDuoDivision,
-            flexTier: player.flexTier,
-            flexDivision: player.flexDivision,
             mayhemWins: wins,
             lobbyAnchorMmr
         });
-
-        // Defer placement if MMR is still uncalculable (null)
-        if (startingMmr === null) {
-            await prisma.player.update({
-                where: { id: player.id },
-                data: { mayhemGames: mayhemGamesCount, cacheUpdatedAt: new Date() }
-            });
-            return;
-        }
 
         const tier = getTierLabel(startingMmr);
 

@@ -5,23 +5,19 @@ This document outlines the current logic for MMR estimation and LP delta calcula
 ## 1. Initial Placement MMR (`calculatePlacementMmr`)
 When a player has played fewer than 10 Mayhem games, they are "unplaced." Once they reach 10 games, their starting MMR is calculated as follows:
 
-1.  **Rank Signal Resolution:**
-    *   `soloDuoMmr`: Converted from current Solo/Duo rank.
-    *   `flexMmr`: Converted from current Flex rank.
-    *   `historicalMmr`: Converted from the highest historical rank stored in the database.
+1.  **Anchor Selection:**
+    *   The anchor is the average of `lobbyAvgMmr` across all 10 placement games, using only games where `lobbyAvgMmr` was calculable.
+    *   **Fallback:** If `lobbyAnchorMmr` is null, the anchor defaults to a fixed **Gold III MMR (1400)**.
 
-2.  **Anchor Selection:**
-    *   The system uses the highest available rank signal (`Solo/Duo` > `Flex` > `Historical`).
-    *   If **no** rank data exists across all three, it uses a hardcoded `PLACEMENT_BASELINE_MMR` of **1100** (equivalent to Silver II).
+2.  **Mayhem Performance (`mayhemMmr`):**
+    *   Anchored to the `anchorMmr` and adjusted by win rate across the 10 placement games:
+        ```
+        mayhemMmr = anchorMmr + ((mayhemWins - 5) * 100)
+        ```
+    *   This produces a bonus/penalty of +100 MMR per win above 5 and -100 per win below 5.
 
-3.  **Mayhem Performance (`mayhemMmr`):**
-    *   Anchored to the selected Rank Signal (or the 1100 baseline).
-    *   Adjusted by win rate: `+100` for each win above 5, `-100` for each loss below 5.
-
-4.  **Final Weighting:**
-    *   **With Solo/Duo rank:** 50% Solo, 20% Flex/Hist, 30% Mayhem.
-    *   **Without Solo/Duo rank:** 50% Flex/Hist, 50% Mayhem.
-    *   **Without any rank:** 100% Mayhem.
+3.  **Ranked Signals:**
+    *   Ranked signals (Solo/Duo/Flex) are **not used** in the placement MMR calculation.
 
 ## 2. LP Delta Calculation (`calculateLpDelta`)
 When a placed player completes a match, their LP gain/loss is calculated:
