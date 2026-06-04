@@ -159,6 +159,10 @@ export type PlayerProfile =
         rawMmr: number;
         currentLp: number;
         isPlaced: boolean;
+        promoFromTier: string | null;
+        promoToTier: string | null;
+        promoWins: number;
+        promoLosses: number;
         mayhemGames: number;
         aramGames: number;
         cacheUpdatedAt: Date | null;
@@ -250,7 +254,14 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
 
   return {
     state: "ready",
-    player: { ...player, isPlaced: player.isPlaced },
+    player: {
+      ...player,
+      isPlaced: player.isPlaced,
+      promoFromTier: player.promoFromTier,
+      promoToTier: player.promoToTier,
+      promoWins: player.promoWins,
+      promoLosses: player.promoLosses
+    },
     mmr: {
         rawMmr: Math.round(player.rawMmr),
         displayedMmr,

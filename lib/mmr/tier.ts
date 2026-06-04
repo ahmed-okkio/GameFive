@@ -5,6 +5,19 @@ export type TierLabel = {
   lp: number | null;
 };
 
+export const TIER_ORDER = [
+  "Iron",
+  "Bronze",
+  "Silver",
+  "Gold",
+  "Platinum",
+  "Emerald",
+  "Diamond",
+  "Master",
+  "Grandmaster",
+  "Challenger"
+] as const;
+
 const STATIC_BOUNDARIES = [
   ["Iron", "IV", 0],
   ["Iron", "III", 100],
@@ -38,6 +51,19 @@ const STATIC_BOUNDARIES = [
   ["Grandmaster", null, 3250],
   ["Challenger", null, 3400]
 ] as const;
+
+export function getTierBoundary(tier: string, division: string | null = "IV") {
+  return [...STATIC_BOUNDARIES].find(([boundaryTier, boundaryDivision]) => boundaryTier === tier && boundaryDivision === division) ?? null;
+}
+
+export function getNextTier(tier: string): string | null {
+  const index = TIER_ORDER.indexOf(tier as (typeof TIER_ORDER)[number]);
+  if (index === -1 || index === TIER_ORDER.length - 1) {
+    return null;
+  }
+
+  return TIER_ORDER[index + 1];
+}
 
 export function getTierLabel(displayedMmr: number): TierLabel {
   const boundary = [...STATIC_BOUNDARIES]

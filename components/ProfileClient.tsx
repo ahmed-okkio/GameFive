@@ -31,6 +31,10 @@ type StatusResponse =
         riotIdTag: string;
         isPlaced: boolean;
         profileIconId: number | null;
+        promoFromTier: string | null;
+        promoToTier: string | null;
+        promoWins: number;
+        promoLosses: number;
       };
       mmr: {
         currentLp: number;
@@ -250,7 +254,11 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
     return <ProgressScreen gameName={gameName} tagLine={tagLine} status="loading" completedSteps={0} totalSteps={100} />;
   }
 
-  const rankLabel = status.player.isPlaced ? status.tier.label : "Unranked";
+  const promoLabel =
+    status.player.promoFromTier && status.player.promoToTier
+      ? `${status.player.promoFromTier} I PROMO (${status.player.promoWins}W ${status.player.promoLosses}L)`
+      : null;
+  const rankLabel = status.player.isPlaced ? (promoLabel ?? status.tier.label) : "Unranked";
     
   const getTierIcon = (tierName: string) => {
     const formattedTier = tierName.charAt(0).toUpperCase() + tierName.slice(1).toLowerCase();
@@ -284,6 +292,7 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
                     <div className="flex flex-col items-center gap-2">
                         <img src={getTierIcon(status.tier.tier)} alt={status.tier.tier} className="h-24 w-24 object-contain" />
                         <span className="text-lg font-bold text-gold">{rankLabel}</span>
+                        {promoLabel ? <span className="text-xs text-stone-400">{status.tier.label}</span> : null}
                         <span className="text-sm text-stone-300">{status.mmr.currentLp} LP</span>
                     </div>
                 ) : (

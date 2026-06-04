@@ -36,7 +36,11 @@ export default async function PlayerPage({ params }: PageProps) {
             riotIdName: profile.player.riotIdName,
             riotIdTag: profile.player.riotIdTag,
             isPlaced: profile.player.isPlaced,
-            profileIconId: profile.player.profileIconId
+            profileIconId: profile.player.profileIconId,
+            promoFromTier: profile.player.promoFromTier,
+            promoToTier: profile.player.promoToTier,
+            promoWins: profile.player.promoWins,
+            promoLosses: profile.player.promoLosses
           },
           mmr: {
             rawMmr: Math.round(profile.mmr.rawMmr),

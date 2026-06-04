@@ -35,7 +35,11 @@ export default async function LeaderboardPage() {
             </thead>
             <tbody>
               {players.map((player, index) => {
-                const tier = player.isPlaced ? getTierLabel(player.rawMmr) : { label: "Unranked" };
+                const promoLabel =
+                  player.promoFromTier && player.promoToTier
+                    ? `${player.promoFromTier} I PROMO (${player.promoWins}W ${player.promoLosses}L)`
+                    : null;
+                const tier = player.isPlaced ? (promoLabel ?? getTierLabel(player.rawMmr).label) : "Unranked";
 
                 return (
                   <tr key={player.id} className="border-t border-line">
@@ -48,7 +52,7 @@ export default async function LeaderboardPage() {
                         {player.riotIdName}#{player.riotIdTag}
                       </Link>
                     </td>
-                    <td className="p-3 text-gold">{tier.label}</td>
+                    <td className="p-3 text-gold">{tier}</td>
                     <td className="p-3 text-right font-bold">{player.isPlaced ? player.currentLp.toLocaleString() : "-"}</td>
                   </tr>
                 );

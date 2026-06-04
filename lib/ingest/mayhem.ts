@@ -2,6 +2,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import type { Player } from "@prisma/client";
 import { bestRankedMmrWithHistoricalFallback } from "@/lib/mmr/ranked";
+import { applyPromoUpdate, getPromoRankLabel } from "@/lib/mmr/promos";
 import { calculateLpDelta } from "@/lib/mmr/calculate";
 import { getTierLabel } from "@/lib/mmr/tier";
 import { getChampionMap } from "@/lib/riot/champions";
@@ -192,16 +193,38 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
 
         // 3. Update player MMR/LP
         const newMmr = player.rawMmr + participantLpDelta;
-        const tier = getTierLabel(newMmr);
+        const promoState = applyPromoUpdate({
+          previousMmr: player.rawMmr,
+          updatedMmr: newMmr,
+          win: participant.win,
+          promo: {
+            promoFromTier: player.promoFromTier,
+            promoToTier: player.promoToTier,
+            promoWins: player.promoWins,
+            promoLosses: player.promoLosses
+          }
+        });
+        const resolvedMmr = promoState.rawMmr;
+        const tier = getTierLabel(resolvedMmr);
 
         await prisma.player.update({
             where: { id: player.id },
             data: {
-                rawMmr: newMmr,
-                currentLp: Math.round(newMmr % 100),
+                rawMmr: resolvedMmr,
+                currentLp: Math.round(resolvedMmr % 100),
                 mayhemGames: { increment: 1 },
                 lastGameDate: new Date(payload.gameCreation),
-                lastGameTier: tier.tier,
+                lastGameTier: promoState.promoFromTier && promoState.promoToTier ? getPromoRankLabel({
+                  promoFromTier: promoState.promoFromTier,
+                  promoToTier: promoState.promoToTier,
+                  promoWins: promoState.promoWins,
+                  promoLosses: promoState.promoLosses,
+                  rawMmr: resolvedMmr
+                }) : tier.label,
+                promoFromTier: promoState.promoFromTier,
+                promoToTier: promoState.promoToTier,
+                promoWins: promoState.promoWins,
+                promoLosses: promoState.promoLosses,
                 cacheUpdatedAt: new Date()
             }
         });

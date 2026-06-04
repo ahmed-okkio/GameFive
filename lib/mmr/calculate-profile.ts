@@ -35,6 +35,10 @@ export async function calculateAndStoreProfile(player: Player) {
                 currentLp: Math.round(startingMmr % 100),
                 mayhemGames: mayhemGamesCount,
                 lastGameTier: tier.tier,
+                promoFromTier: null,
+                promoToTier: null,
+                promoWins: 0,
+                promoLosses: 0,
                 cacheUpdatedAt: new Date()
             }
         });
