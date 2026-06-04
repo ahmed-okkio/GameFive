@@ -90,24 +90,21 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
 
   // 2. Calculate Lobby Average MMR
   const uploader = playerRows.get(payload.uploaderPuuid);
-  const opponents = [...playerRows.values()].filter(p => p.id !== uploader?.id);
+  const participants = [...playerRows.values()];
   
-  // Filter for players with real rank data
-  const validOpponents = opponents.filter(p => 
+  // Filter for players with real rank data (Solo/Duo OR Flex)
+  const rankedParticipants = participants.filter(p => 
       (p.soloDuoTier && p.soloDuoTier !== "UNRANKED") || 
       (p.flexTier && p.flexTier !== "UNRANKED")
   );
 
-  let lobbyAvgMmr = 0;
-  if (validOpponents.length > 0) {
-      lobbyAvgMmr = validOpponents.reduce((sum, player) => {
+  let lobbyAvgMmr: number | null = null;
+  if (rankedParticipants.length > 0) {
+      lobbyAvgMmr = rankedParticipants.reduce((sum, player) => {
         // Resolve best rank signal (Solo/Duo OR Flex)
         const pMmr = bestRankedMmr(player.soloDuoTier, player.soloDuoDivision, player.flexTier, player.flexDivision);
         return sum + (pMmr ?? 0);
-      }, 0) / validOpponents.length;
-  } else {
-      // Fallback: use uploader's own rawMmr
-      lobbyAvgMmr = uploader?.rawMmr ?? 1100;
+      }, 0) / rankedParticipants.length;
   }
 
   // 3. Create the match
