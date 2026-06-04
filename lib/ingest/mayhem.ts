@@ -1,11 +1,11 @@
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import type { Player } from "@prisma/client";
-import { bestRankedMmr } from "@/lib/mmr/ranked";
+import { bestRankedMmrWithHistoricalFallback } from "@/lib/mmr/ranked";
 import { calculateLpDelta } from "@/lib/mmr/calculate";
 import { getTierLabel } from "@/lib/mmr/tier";
 import { getChampionMap } from "@/lib/riot/champions";
-import { upsertPlayer } from "@/lib/players";
+import { getPlayerByPuuid } from "@/lib/players";
 
 export const companionMatchPayloadSchema = z.object({
   source: z.literal("lcu"),
@@ -79,13 +79,12 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
   const playerRows = new Map<string, Player>();
   const CHAMPION_MAP = await getChampionMap();
 
-  // 1. Resolve or create all players
+  // 1. Resolve only players that already exist in the database
   for (const participant of payload.participants) {
-    const riotIdName = participant.gameName?.trim() || participant.summonerName?.trim() || "Unknown";
-    const riotIdTag = participant.tagLine?.trim() || "EUW";
-
-    const player = await upsertPlayer(riotIdName, riotIdTag, participant.puuid);
-    playerRows.set(participant.puuid, player);
+    const player = await getPlayerByPuuid(participant.puuid);
+    if (player) {
+      playerRows.set(participant.puuid, player);
+    }
   }
 
   // 2. Calculate Lobby Average MMR
@@ -93,16 +92,28 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
   const participants = [...playerRows.values()];
   
   // Filter for players with real rank data (Solo/Duo OR Flex)
-  const rankedParticipants = participants.filter(p => 
-      (p.soloDuoTier && p.soloDuoTier !== "UNRANKED") || 
-      (p.flexTier && p.flexTier !== "UNRANKED")
+  const rankedParticipants = participants.filter((player) =>
+    bestRankedMmrWithHistoricalFallback({
+      soloDuoTier: player.soloDuoTier,
+      soloDuoDivision: player.soloDuoDivision,
+      flexTier: player.flexTier,
+      flexDivision: player.flexDivision,
+      historicalTier: player.historicalTier,
+      historicalDivision: player.historicalDivision
+    }) !== null
   );
 
   let lobbyAvgMmr: number | null = null;
   if (rankedParticipants.length > 0) {
       lobbyAvgMmr = rankedParticipants.reduce((sum, player) => {
-        // Resolve best rank signal (Solo/Duo OR Flex)
-        const pMmr = bestRankedMmr(player.soloDuoTier, player.soloDuoDivision, player.flexTier, player.flexDivision);
+        const pMmr = bestRankedMmrWithHistoricalFallback({
+          soloDuoTier: player.soloDuoTier,
+          soloDuoDivision: player.soloDuoDivision,
+          flexTier: player.flexTier,
+          flexDivision: player.flexDivision,
+          historicalTier: player.historicalTier,
+          historicalDivision: player.historicalDivision
+        });
         return sum + (pMmr ?? 0);
       }, 0) / rankedParticipants.length;
   }
@@ -157,12 +168,7 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
 
   // 5. Create match participants and update known players
   for (const participant of payload.participants) {
-    // Lookup player in DB, don't create if missing
-    const player = await prisma.player.findFirst({
-        where: {
-            puuid: participant.puuid // PUUID is the most reliable lookup for known players
-        }
-    });
+    const player = playerRows.get(participant.puuid) ?? null;
 
     // 1. Calculate stats for the match participant
     const championName = CHAMPION_MAP[participant.championId] ?? `Champion ${participant.championId}`;
@@ -208,70 +214,37 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
         });
     }
 
-    if (player) {
-        await prisma.matchParticipant.create({
-            data: {
-                matchId: storedMatch.id,
-                playerId: player.id,
-                team: participant.teamId,
-                win: participant.win,
-                championId: participant.championId,
-                championName: championName,
-                kills: participant.kills,
-                deaths: participant.deaths,
-                assists: participant.assists,
-                damageToChampions: participant.totalDamageDealtToChampions,
-                healingDone: participant.totalHeal,
-                killParticipation: 0,
-                damageShare: 0,
-                healingShare: 0,
-                performanceScore: 0,
-                lpDelta: participantLpDelta,
-                isPlacement: !player.isPlaced,
-                itemsJson: participant.items,
-                augmentsJson: participant.augments,
-                spell1Id: participant.spell1Id,
-                spell2Id: participant.spell2Id,
-                champLevel: participant.champLevel,
-                goldEarned: participant.goldEarned,
-                goldSpent: participant.goldSpent,
-                damageTaken: participant.damageTaken,
-                selfMitigated: participant.selfMitigated,
-                minionsKilled: participant.minionsKilled
-            }
-        });
-    } else {
-        await prisma.matchParticipant.create({
-            data: {
-                matchId: storedMatch.id,
-                team: participant.teamId,
-                win: participant.win,
-                championId: participant.championId,
-                championName: championName,
-                kills: participant.kills,
-                deaths: participant.deaths,
-                assists: participant.assists,
-                damageToChampions: participant.totalDamageDealtToChampions,
-                healingDone: participant.totalHeal,
-                killParticipation: 0,
-                damageShare: 0,
-                healingShare: 0,
-                performanceScore: 0,
-                lpDelta: 0,
-                isPlacement: false,
-                itemsJson: participant.items,
-                augmentsJson: participant.augments,
-                spell1Id: participant.spell1Id,
-                spell2Id: participant.spell2Id,
-                champLevel: participant.champLevel,
-                goldEarned: participant.goldEarned,
-                goldSpent: participant.goldSpent,
-                damageTaken: participant.damageTaken,
-                selfMitigated: participant.selfMitigated,
-                minionsKilled: participant.minionsKilled
-            }
-        });
-    }
+    await prisma.matchParticipant.create({
+      data: {
+        matchId: storedMatch.id,
+        playerId: player?.id,
+        team: participant.teamId,
+        win: participant.win,
+        championId: participant.championId,
+        championName,
+        kills: participant.kills,
+        deaths: participant.deaths,
+        assists: participant.assists,
+        damageToChampions: participant.totalDamageDealtToChampions,
+        healingDone: participant.totalHeal,
+        killParticipation: 0,
+        damageShare: 0,
+        healingShare: 0,
+        performanceScore: 0,
+        lpDelta: participantLpDelta,
+        isPlacement: player ? !player.isPlaced : false,
+        itemsJson: participant.items,
+        augmentsJson: participant.augments,
+        spell1Id: participant.spell1Id,
+        spell2Id: participant.spell2Id,
+        champLevel: participant.champLevel,
+        goldEarned: participant.goldEarned,
+        goldSpent: participant.goldSpent,
+        damageTaken: participant.damageTaken,
+        selfMitigated: participant.selfMitigated,
+        minionsKilled: participant.minionsKilled
+      }
+    });
   }
 
   return {

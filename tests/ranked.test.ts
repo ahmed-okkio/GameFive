@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { calculatePlacementMmr, calculateLpDelta } from "@/lib/mmr/calculate";
-import { rankedToMmr } from "@/lib/mmr/ranked";
+import { bestRankedMmrWithHistoricalFallback, rankedToMmr } from "@/lib/mmr/ranked";
+import { extractBestHistoricalRankFromOpggRsc } from "@/lib/riot/opgg";
 
 describe("calculatePlacementMmr", () => {
   it("uses fallback when no lobby MMR exists", () => {
@@ -41,5 +42,44 @@ describe("calculateLpDelta", () => {
       win: true
     });
     expect(delta).toBe(31.25); // 25 * 1.0 * 1.25
+  });
+});
+
+describe("rankedToMmr", () => {
+  it("accepts OP.GG numeric divisions", () => {
+    expect(rankedToMmr("PLATINUM", "3")).toBe(1800);
+    expect(rankedToMmr("PLATINUM", "4")).toBe(1700);
+  });
+});
+
+describe("OP.GG historical ranks", () => {
+  it("picks the highest historical season rank from the RSC payload", () => {
+    const payload = [
+      '0:{"a":"$@1","f":"","b":"1780272246"}',
+      '1:{"data":[{"season":"S2025","rank_entries":{"high_rank_info":{"tier":"","lp":null,"tier_image_url":"","tier_mini_image_url":""},"rank_info":{"tier":"gold 3","lp":"65","tier_image_url":"x","tier_mini_image_url":"y"}}},{"season":"S2024 S3","rank_entries":{"high_rank_info":{"tier":"","lp":null,"tier_image_url":"","tier_mini_image_url":""},"rank_info":{"tier":"platinum 4","lp":"16","tier_image_url":"x","tier_mini_image_url":"y"}}}]}'
+    ].join("\n");
+
+    const rank = extractBestHistoricalRankFromOpggRsc(payload);
+
+    expect(rank).toEqual({
+      season: "S2024 S3",
+      tier: "PLATINUM",
+      division: "4",
+      lp: 16,
+      mmr: 1700
+    });
+  });
+
+  it("uses historical rank as a fallback when current solo/flex data is missing", () => {
+    expect(
+      bestRankedMmrWithHistoricalFallback({
+        soloDuoTier: null,
+        soloDuoDivision: null,
+        flexTier: null,
+        flexDivision: null,
+        historicalTier: "PLATINUM",
+        historicalDivision: "4"
+      })
+    ).toBe(1700);
   });
 });

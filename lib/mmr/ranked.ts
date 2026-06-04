@@ -13,9 +13,13 @@ const TIER_BASE: Record<string, number> = {
 
 const DIVISION_OFFSET: Record<string, number> = {
   IV: 0,
+  "4": 0,
   III: 100,
+  "3": 100,
   II: 200,
-  I: 300
+  "2": 200,
+  I: 300,
+  "1": 300
 };
 
 export const DEFAULT_MEDIAN_MMR = 1500;
@@ -53,4 +57,26 @@ export function bestRankedMmr(
 
   if (solo !== null && flex !== null) return Math.max(solo, flex);
   return solo ?? flex;
+}
+
+export function bestRankedMmrWithHistoricalFallback(input: {
+  soloDuoTier: string | null | undefined;
+  soloDuoDivision: string | null | undefined;
+  flexTier: string | null | undefined;
+  flexDivision: string | null | undefined;
+  historicalTier: string | null | undefined;
+  historicalDivision: string | null | undefined;
+}): number | null {
+  const current = bestRankedMmr(
+    input.soloDuoTier,
+    input.soloDuoDivision,
+    input.flexTier,
+    input.flexDivision
+  );
+
+  if (current !== null) {
+    return current;
+  }
+
+  return rankedToMmr(input.historicalTier, input.historicalDivision);
 }

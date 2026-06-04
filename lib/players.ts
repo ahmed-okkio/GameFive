@@ -3,6 +3,8 @@ import { DEFAULT_MEDIAN_MMR } from "@/lib/mmr/ranked";
 import { getTierLabel } from "@/lib/mmr/tier";
 import { getChampionAssetMap, getChampionMap } from "@/lib/riot/champions";
 import { riotClient } from "@/lib/riot/client";
+import { fetchOpggHistoricalRank } from "@/lib/riot/opgg";
+import { extractRankedSnapshot } from "@/lib/riot/ranked";
 import { Player } from "@prisma/client";
 
 export async function getGlobalMedianMmr() {
@@ -23,6 +25,14 @@ export async function getPlayerByRiotId(gameName: string, tagLine: string) {
   });
 }
 
+export async function getPlayerByPuuid(puuid: string) {
+  return prisma.player.findFirst({
+    where: {
+      puuid
+    }
+  });
+}
+
 // ALWAYS use the "Official" Riot-provided name and tag to ensure correct casing
 export async function upsertPlayer(
   riotIdName: string,
@@ -30,7 +40,7 @@ export async function upsertPlayer(
   puuid: string | null | undefined,
   profileIconId?: number | null
 ) {
-  return await prisma.player.upsert({
+  const player = await prisma.player.upsert({
     where: {
         riotIdName_riotIdTag: {
             riotIdName: riotIdName,
@@ -50,6 +60,72 @@ export async function upsertPlayer(
         riotIdTag: riotIdTag,
         profileIconId,
     },
+  });
+
+  return hydrateRankedSignals(player);
+}
+
+export async function hydrateRankedSignals(player: Player): Promise<Player> {
+  if (!player.puuid) {
+    return player;
+  }
+
+  const cacheAgeMs = player.cacheUpdatedAt ? Date.now() - player.cacheUpdatedAt.getTime() : Number.POSITIVE_INFINITY;
+  const rankCacheTtlMs = 7 * 24 * 60 * 60 * 1000;
+
+  if ((player.soloDuoTier || player.flexTier || player.historicalTier) && cacheAgeMs < rankCacheTtlMs) {
+    return player;
+  }
+
+  try {
+    const entries = await riotClient.getLeagueEntriesByPuuid(player.puuid);
+
+    if (entries.length > 0) {
+      const rankedSnapshot = extractRankedSnapshot(entries);
+
+      return await prisma.player.update({
+        where: { id: player.id },
+        data: {
+          soloDuoTier: rankedSnapshot.soloDuoTier ?? undefined,
+          soloDuoDivision: rankedSnapshot.soloDuoDivision ?? undefined,
+          flexTier: rankedSnapshot.flexTier ?? undefined,
+          flexDivision: rankedSnapshot.flexDivision ?? undefined,
+          cacheUpdatedAt: new Date()
+        }
+      });
+    }
+  } catch (error) {
+    console.warn(`Failed to fetch Riot ranked entries for ${player.riotIdName}#${player.riotIdTag}`, error);
+  }
+
+  try {
+    const historicalRank = await fetchOpggHistoricalRank(
+      player.region,
+      player.riotIdName,
+      player.riotIdTag
+    );
+
+    if (historicalRank) {
+      return await prisma.player.update({
+        where: { id: player.id },
+        data: {
+          historicalTier: historicalRank.tier,
+          historicalDivision: historicalRank.division ?? undefined,
+          cacheUpdatedAt: new Date()
+        }
+      });
+    }
+  } catch (error) {
+    console.warn(`Failed to fetch OP.GG historical rank for ${player.riotIdName}#${player.riotIdTag}`, error);
+  }
+
+  return await prisma.player.update({
+    where: { id: player.id },
+    data: {
+      historicalTier: "UNRANKED",
+      historicalDivision: null,
+      cacheUpdatedAt: new Date()
+    }
   });
 }
 
