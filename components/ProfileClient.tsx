@@ -68,7 +68,11 @@ type StatusResponse =
             healingDone: number;
             win: boolean;
             team: number;
-            player: { riotIdName: string; riotIdTag: string; };
+            player: { riotIdName: string; riotIdTag: string; } | null;
+            playerRiotIdName: string | null;
+            playerRiotIdTag: string | null;
+            rankSignalMmr: number | null;
+            rankLabelAtMatch: string;
           }>
         };
       }>;
@@ -192,10 +196,11 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
     const wins = recentMatches.filter((match) => match.win).length;
     const totals = recentMatches.reduce(
       (acc, match) => {
-        const viewedParticipant = match.match.participants.find(
-          (participant) =>
-            participant.player.riotIdName === status.player.riotIdName && participant.player.riotIdTag === status.player.riotIdTag
-        );
+        const viewedParticipant = match.match.participants.find((participant) => {
+          const participantName = participant.player?.riotIdName ?? participant.playerRiotIdName;
+          const participantTag = participant.player?.riotIdTag ?? participant.playerRiotIdTag;
+          return participantName === status.player.riotIdName && participantTag === status.player.riotIdTag;
+        });
         acc.kills += match.kills;
         acc.deaths += match.deaths;
         acc.assists += match.assists;
@@ -394,10 +399,11 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
             {tab === "matches" ? (
                 <div className="space-y-2">
                     {status.matches.slice(0, 20).map((match) => {
-                      const viewedParticipant = match.match.participants.find(
-                        (participant) =>
-                          participant.player.riotIdName === status.player.riotIdName && participant.player.riotIdTag === status.player.riotIdTag
-                      );
+                      const viewedParticipant = match.match.participants.find((participant) => {
+                        const participantName = participant.player?.riotIdName ?? participant.playerRiotIdName;
+                        const participantTag = participant.player?.riotIdTag ?? participant.playerRiotIdTag;
+                        return participantName === status.player.riotIdName && participantTag === status.player.riotIdTag;
+                      });
                       const viewedTeam = viewedParticipant?.team ?? match.match.participants.find((participant) => participant.win === match.win)?.team ?? 0;
                       const kp = viewedParticipant ? getKillParticipation(viewedParticipant, match.match.participants) : 0;
                       const maxDamage = Math.max(...match.match.participants.map((participant) => participant.damageToChampions), 1);
@@ -452,12 +458,31 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
                                             .filter(p => p.team === teamId)
                                             .map(p => (
                                             <div key={p.id} className="grid grid-cols-[minmax(160px,1.5fr)_90px_70px_minmax(80px,1fr)_minmax(80px,1fr)] items-center gap-3 rounded bg-black/20 px-3 py-2 text-sm">
-                                                <Link href={`/player/${encodeURIComponent(p.player.riotIdName)}/${encodeURIComponent(p.player.riotIdTag)}`} className="flex min-w-0 items-center gap-2 font-semibold text-white hover:text-gold">
-                                                    <ChampionAvatar image={p.championImage} name={p.championName ?? "Unknown"} size="sm" />
-                                                    <span className="truncate">
-                                                    {p.player.riotIdName}#{p.player.riotIdTag}
-                                                    </span>
-                                                </Link>
+                                                {(() => {
+                                                  const playerName = p.player?.riotIdName ?? p.playerRiotIdName;
+                                                  const playerTag = p.player?.riotIdTag ?? p.playerRiotIdTag;
+                                                  const displayName = playerName ? `${playerName}${playerTag ? `#${playerTag}` : ""}` : "Unknown name";
+                                                  const rankAtMatch = p.rankLabelAtMatch ?? "Unknown rank";
+                                                  const isLinked = Boolean(p.player && playerName && playerTag);
+
+                                                  return isLinked ? (
+                                                    <Link href={`/player/${encodeURIComponent(playerName!)}/${encodeURIComponent(playerTag!)}`} className="flex min-w-0 items-center gap-2 font-semibold text-white hover:text-gold">
+                                                      <ChampionAvatar image={p.championImage} name={p.championName ?? "Unknown"} size="sm" />
+                                                      <span className="min-w-0">
+                                                        <span className="block truncate">{displayName}</span>
+                                                        <span className={`block truncate text-[11px] font-normal ${rankAtMatch === "Unknown rank" ? "text-stone-500" : "text-gold/80"}`}>{rankAtMatch}</span>
+                                                      </span>
+                                                    </Link>
+                                                  ) : (
+                                                    <div className="flex min-w-0 items-center gap-2 font-semibold text-stone-400">
+                                                      <ChampionAvatar image={p.championImage} name={p.championName ?? "Unknown"} size="sm" />
+                                                      <span className="min-w-0">
+                                                        <span className="block truncate">{displayName}</span>
+                                                        <span className={`block truncate text-[11px] font-normal ${rankAtMatch === "Unknown rank" ? "text-stone-500" : "text-gold/80"}`}>{rankAtMatch}</span>
+                                                      </span>
+                                                    </div>
+                                                  );
+                                                })()}
                                                 <span className="text-right font-mono text-stone-300">{p.kills}/{p.deaths}/{p.assists}</span>
                                                 <span className="text-right font-mono text-stone-300">{getKillParticipation(p, match.match.participants)}%</span>
                                                 <StatBar value={p.damageToChampions} max={maxDamage} color="damage" />

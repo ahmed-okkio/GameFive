@@ -6,11 +6,6 @@ export const dynamic = "force-dynamic";
 
 export default async function LeaderboardPage() {
   const players = await prisma.player.findMany({
-    where: {
-      mayhemGames: {
-        gt: 0
-      }
-    },
     orderBy: [
       {
         rawMmr: "desc"
@@ -22,8 +17,8 @@ export default async function LeaderboardPage() {
     <section className="mx-auto max-w-6xl px-4 py-8">
       <div className="mb-6 flex items-end justify-between">
         <div>
-          <h1 className="text-3xl font-black text-white">Global Leaderboard</h1>
-          <p className="mt-1 text-sm text-stone-400">All players with Mayhem games, sorted by MMR.</p>
+          <h1 className="text-3xl font-black text-white">Leaderboard</h1>
+          <p className="mt-1 text-sm text-stone-400">All players in the database, sorted by MMR.</p>
         </div>
         <span className="rounded border border-gold/40 px-3 py-1 text-sm text-gold">EUW</span>
       </div>
@@ -61,7 +56,7 @@ export default async function LeaderboardPage() {
             </tbody>
           </table>
         ) : (
-          <p className="p-8 text-center text-stone-400">No players have played any Mayhem games yet.</p>
+          <p className="p-8 text-center text-stone-400">No players are in the database yet.</p>
         )}
       </div>
     </section>

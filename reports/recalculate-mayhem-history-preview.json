@@ -1,0 +1,6376 @@
+{
+  "mode": "preview",
+  "generatedAt": "2026-06-04T22:07:54.713Z",
+  "matchCount": 34,
+  "playerCount": 268,
+  "changedMatches": 33,
+  "changedPlayers": 268,
+  "matchSnapshots": [
+    {
+      "id": "b452a1c8-4853-4815-8cb9-5f7db01d6d5c",
+      "matchId": "LCU_7872944075",
+      "gameDate": "2026-06-01T13:41:01.909Z",
+      "oldLobbyAvgMmr": 1900,
+      "newLobbyAvgMmr": 1450,
+      "participantChanges": []
+    },
+    {
+      "id": "916be55a-c859-43fe-834c-3544e4db1704",
+      "matchId": "LCU_7873035938",
+      "gameDate": "2026-06-01T15:20:01.683Z",
+      "oldLobbyAvgMmr": 2266.666666666667,
+      "newLobbyAvgMmr": 1688.888888888889,
+      "participantChanges": []
+    },
+    {
+      "id": "ca311b84-ce32-4c85-b12b-764b72cc0ec8",
+      "matchId": "LCU_7873060334",
+      "gameDate": "2026-06-01T15:43:57.060Z",
+      "oldLobbyAvgMmr": 2266.666666666667,
+      "newLobbyAvgMmr": 1677.7777777777778,
+      "participantChanges": []
+    },
+    {
+      "id": "8270d482-45e3-4a45-84cf-f8d3d83aaba0",
+      "matchId": "LCU_7873080325",
+      "gameDate": "2026-06-01T16:02:24.864Z",
+      "oldLobbyAvgMmr": 2350,
+      "newLobbyAvgMmr": 1944.4444444444443,
+      "participantChanges": []
+    },
+    {
+      "id": "3364d97a-1766-4d1d-b312-042e3bee8bac",
+      "matchId": "LCU_7873199616",
+      "gameDate": "2026-06-01T17:36:44.665Z",
+      "oldLobbyAvgMmr": 2300,
+      "newLobbyAvgMmr": 1710,
+      "participantChanges": []
+    },
+    {
+      "id": "7843c9eb-7913-4580-9c56-c9821362b47d",
+      "matchId": "LCU_7873222419",
+      "gameDate": "2026-06-01T17:58:54.751Z",
+      "oldLobbyAvgMmr": 2300,
+      "newLobbyAvgMmr": 1600,
+      "participantChanges": []
+    },
+    {
+      "id": "bf113822-2e3a-4307-a703-58668c7894ef",
+      "matchId": "LCU_7873268802",
+      "gameDate": "2026-06-01T18:28:56.952Z",
+      "oldLobbyAvgMmr": 2300,
+      "newLobbyAvgMmr": 1711.111111111111,
+      "participantChanges": []
+    },
+    {
+      "id": "61c34aea-a336-4e06-ba10-75da76a9b83a",
+      "matchId": "LCU_7873541528",
+      "gameDate": "2026-06-01T21:22:14.416Z",
+      "oldLobbyAvgMmr": 2100,
+      "newLobbyAvgMmr": 1390,
+      "participantChanges": []
+    },
+    {
+      "id": "e9fdec57-168d-4d66-a6f8-372aef5ddc4c",
+      "matchId": "LCU_7873625038",
+      "gameDate": "2026-06-01T22:43:38.030Z",
+      "oldLobbyAvgMmr": 1600,
+      "newLobbyAvgMmr": 1250,
+      "participantChanges": []
+    },
+    {
+      "id": "e0baac76-2096-45cd-a308-b4ef9d0c20b6",
+      "matchId": "LCU_7874668822",
+      "gameDate": "2026-06-02T22:23:23.096Z",
+      "oldLobbyAvgMmr": 2250,
+      "newLobbyAvgMmr": 1370,
+      "participantChanges": []
+    },
+    {
+      "id": "c0b6ab76-62bf-4cfa-8486-d4b3a9739931",
+      "matchId": "LCU_7874688314",
+      "gameDate": "2026-06-02T22:49:44.104Z",
+      "oldLobbyAvgMmr": 2266.666666666667,
+      "newLobbyAvgMmr": 1860,
+      "participantChanges": []
+    },
+    {
+      "id": "9ead1adf-d048-4470-9782-f5f46df297d7",
+      "matchId": "LCU_7874710811",
+      "gameDate": "2026-06-02T23:12:44.986Z",
+      "oldLobbyAvgMmr": 2266.666666666667,
+      "newLobbyAvgMmr": 1766.6666666666667,
+      "participantChanges": []
+    },
+    {
+      "id": "3b317b98-73bf-4f2d-9768-bbd84fc986dd",
+      "matchId": "LCU_7874727042",
+      "gameDate": "2026-06-02T23:40:00.332Z",
+      "oldLobbyAvgMmr": 2350,
+      "newLobbyAvgMmr": 1822.2222222222222,
+      "participantChanges": []
+    },
+    {
+      "id": "8ee8d908-c9f0-4b63-b9c4-bc5eb8f3f86f",
+      "matchId": "LCU_7874746474",
+      "gameDate": "2026-06-03T00:07:25.836Z",
+      "oldLobbyAvgMmr": 2500,
+      "newLobbyAvgMmr": 1930,
+      "participantChanges": [
+        {
+          "participantId": "d13e2126-903d-4b16-8308-97b6b3726ebb",
+          "playerId": "313a3e03-a65d-4f0c-a8fc-c36087b625e9",
+          "label": "Aristo#Risto",
+          "win": false,
+          "oldLpDelta": -23,
+          "newLpDelta": 0,
+          "oldIsPlacement": false,
+          "newIsPlacement": true
+        }
+      ]
+    },
+    {
+      "id": "7640be8b-d960-4c55-9293-58c8d9b46889",
+      "matchId": "LCU_7874749978",
+      "gameDate": "2026-06-03T00:28:49.499Z",
+      "oldLobbyAvgMmr": 2600,
+      "newLobbyAvgMmr": 2311.1111111111113,
+      "participantChanges": [
+        {
+          "participantId": "bd1ea769-3730-43a1-a1f7-5ee5dc6dc7fd",
+          "playerId": "313a3e03-a65d-4f0c-a8fc-c36087b625e9",
+          "label": "Aristo#Risto",
+          "win": true,
+          "oldLpDelta": 29,
+          "newLpDelta": 33,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "902bb74e-06bd-46c8-a4e3-39ee2aa56288",
+      "matchId": "LCU_7874888966",
+      "gameDate": "2026-06-03T10:04:14.348Z",
+      "oldLobbyAvgMmr": 2600,
+      "newLobbyAvgMmr": 1587.5,
+      "participantChanges": []
+    },
+    {
+      "id": "3f35cba1-98fb-430b-85a6-75723d060378",
+      "matchId": "LCU_7874905467",
+      "gameDate": "2026-06-03T10:22:46.982Z",
+      "oldLobbyAvgMmr": 2600,
+      "newLobbyAvgMmr": 1500,
+      "participantChanges": []
+    },
+    {
+      "id": "0e591c23-c655-4bfd-b391-d124627b4780",
+      "matchId": "LCU_7874970399",
+      "gameDate": "2026-06-03T12:17:38.338Z",
+      "oldLobbyAvgMmr": 2391.666666666667,
+      "newLobbyAvgMmr": 1744.4444444444443,
+      "participantChanges": [
+        {
+          "participantId": "699edfb9-93bd-43f9-8d2d-b0b3e453b247",
+          "playerId": "313a3e03-a65d-4f0c-a8fc-c36087b625e9",
+          "label": "Aristo#Risto",
+          "win": true,
+          "oldLpDelta": 28,
+          "newLpDelta": 25,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "565a2647-f62b-450c-8020-805d79410e57",
+      "matchId": "LCU_7875033810",
+      "gameDate": "2026-06-03T13:31:35.805Z",
+      "oldLobbyAvgMmr": 2400,
+      "newLobbyAvgMmr": 1677.7777777777778,
+      "participantChanges": [
+        {
+          "participantId": "67dd1300-36a5-4940-8ed4-ad58b20b434c",
+          "playerId": "313a3e03-a65d-4f0c-a8fc-c36087b625e9",
+          "label": "Aristo#Risto",
+          "win": true,
+          "oldLpDelta": 27,
+          "newLpDelta": 25,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "05d563fd-af07-4493-99a0-1796c157a6b0",
+      "matchId": "LCU_7875049999",
+      "gameDate": "2026-06-03T13:51:35.778Z",
+      "oldLobbyAvgMmr": 2400,
+      "newLobbyAvgMmr": 1733.3333333333333,
+      "participantChanges": [
+        {
+          "participantId": "29cd5d89-14df-4207-a265-002f931e98ba",
+          "playerId": "ef282971-7986-424d-ad94-a64eb774a3e9",
+          "label": "GrandLift#ADC",
+          "win": false,
+          "oldLpDelta": -22,
+          "newLpDelta": -25,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        },
+        {
+          "participantId": "8884a74c-bbb4-4146-8a48-9449b0d7d797",
+          "playerId": "313a3e03-a65d-4f0c-a8fc-c36087b625e9",
+          "label": "Aristo#Risto",
+          "win": false,
+          "oldLpDelta": -24,
+          "newLpDelta": -27,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "3de59934-edd7-4ba1-ad4a-75dfc66973df",
+      "matchId": "LCU_7875085801",
+      "gameDate": "2026-06-03T14:28:48.089Z",
+      "oldLobbyAvgMmr": 2400,
+      "newLobbyAvgMmr": 1780,
+      "participantChanges": [
+        {
+          "participantId": "635f3b4c-9e81-4313-ad7f-3f81a4be2e20",
+          "playerId": "282d35ea-5ec0-4ba1-a7ad-39e81d86e528",
+          "label": "Okkio#ETU",
+          "win": false,
+          "oldLpDelta": -20,
+          "newLpDelta": -22,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        },
+        {
+          "participantId": "81d18c27-9af9-4eb4-aba9-b24cca71da06",
+          "playerId": "ef282971-7986-424d-ad94-a64eb774a3e9",
+          "label": "GrandLift#ADC",
+          "win": false,
+          "oldLpDelta": -23,
+          "newLpDelta": -25,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "0e18fe05-f82f-427f-b97c-bd76291dc3a9",
+      "matchId": "LCU_7875101977",
+      "gameDate": "2026-06-03T14:46:50.335Z",
+      "oldLobbyAvgMmr": 2400,
+      "newLobbyAvgMmr": 1650,
+      "participantChanges": [
+        {
+          "participantId": "09b0077e-2897-4031-bcee-89de9a22ec1e",
+          "playerId": "282d35ea-5ec0-4ba1-a7ad-39e81d86e528",
+          "label": "Okkio#ETU",
+          "win": true,
+          "oldLpDelta": 31,
+          "newLpDelta": 28,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        },
+        {
+          "participantId": "76a0a685-41ec-478b-a64e-89fbbee27bdc",
+          "playerId": "ef282971-7986-424d-ad94-a64eb774a3e9",
+          "label": "GrandLift#ADC",
+          "win": true,
+          "oldLpDelta": 28,
+          "newLpDelta": 25,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "1621e27f-048a-49d5-a635-6fec5fbb18de",
+      "matchId": "LCU_7875913051",
+      "gameDate": "2026-06-04T09:08:53.834Z",
+      "oldLobbyAvgMmr": null,
+      "newLobbyAvgMmr": 1466.6666666666667,
+      "participantChanges": []
+    },
+    {
+      "id": "f6a0cc1a-c18e-4277-99e4-bba865361c5e",
+      "matchId": "LCU_7875932457",
+      "gameDate": "2026-06-04T09:34:43.476Z",
+      "oldLobbyAvgMmr": 2600,
+      "newLobbyAvgMmr": 1777.7777777777778,
+      "participantChanges": []
+    },
+    {
+      "id": "ffdbb1d4-ad64-4bbc-9035-6e975938a6f4",
+      "matchId": "LCU_7876119152",
+      "gameDate": "2026-06-04T13:43:20.999Z",
+      "oldLobbyAvgMmr": 2500,
+      "newLobbyAvgMmr": 1920,
+      "participantChanges": [
+        {
+          "participantId": "17a84508-5c89-4c84-930f-f7ac3a39dbdc",
+          "playerId": "ef282971-7986-424d-ad94-a64eb774a3e9",
+          "label": "GrandLift#ADC",
+          "win": true,
+          "oldLpDelta": 29,
+          "newLpDelta": 30,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "eb6024cb-0283-4a6c-8a5f-2c999b79964f",
+      "matchId": "LCU_7876146569",
+      "gameDate": "2026-06-04T14:05:56.494Z",
+      "oldLobbyAvgMmr": 2500,
+      "newLobbyAvgMmr": 1975,
+      "participantChanges": [
+        {
+          "participantId": "0414459c-1c04-423e-afe6-304b682d6a11",
+          "playerId": "ef282971-7986-424d-ad94-a64eb774a3e9",
+          "label": "GrandLift#ADC",
+          "win": true,
+          "oldLpDelta": 30,
+          "newLpDelta": 32,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        },
+        {
+          "participantId": "9c5612a4-4870-4a72-a242-e807931342d7",
+          "playerId": "282d35ea-5ec0-4ba1-a7ad-39e81d86e528",
+          "label": "Okkio#ETU",
+          "win": true,
+          "oldLpDelta": 34,
+          "newLpDelta": 35,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "cb875ba6-3469-4b76-a567-7fd938ca0f27",
+      "matchId": "LCU_7876172645",
+      "gameDate": "2026-06-04T14:33:12.568Z",
+      "oldLobbyAvgMmr": 2500,
+      "newLobbyAvgMmr": 1911.111111111111,
+      "participantChanges": []
+    },
+    {
+      "id": "8a9ec157-b218-43e9-8a4b-a4ac8631dc8b",
+      "matchId": "LCU_7876191167",
+      "gameDate": "2026-06-04T14:55:42.978Z",
+      "oldLobbyAvgMmr": 2600,
+      "newLobbyAvgMmr": 1577.7777777777778,
+      "participantChanges": [
+        {
+          "participantId": "50b7ef3e-fc58-414d-938a-41eb293c6eaa",
+          "playerId": "282d35ea-5ec0-4ba1-a7ad-39e81d86e528",
+          "label": "Okkio#ETU",
+          "win": false,
+          "oldLpDelta": -21,
+          "newLpDelta": -26,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        },
+        {
+          "participantId": "27e1c527-13a6-46cd-9f8f-db3421beabb9",
+          "playerId": "ed1f6b03-cfc6-4e6b-8cf1-ab6f4c317408",
+          "label": "AIS Exile#EUW",
+          "win": false,
+          "oldLpDelta": -22,
+          "newLpDelta": -29,
+          "oldIsPlacement": true,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "9d024c68-2354-461a-9c1c-386824bf8c5d",
+      "matchId": "LCU_7876218885",
+      "gameDate": "2026-06-04T15:17:47.478Z",
+      "oldLobbyAvgMmr": 1655,
+      "newLobbyAvgMmr": 1550,
+      "participantChanges": [
+        {
+          "participantId": "afb996c9-007e-4ce8-ad45-e9a4bfbc2de3",
+          "playerId": "ed1f6b03-cfc6-4e6b-8cf1-ab6f4c317408",
+          "label": "AIS Exile#EUW",
+          "win": true,
+          "oldLpDelta": 25,
+          "newLpDelta": 23,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "bfc78b39-4693-4f97-a210-3cada9e7d253",
+      "matchId": "LCU_7876241034",
+      "gameDate": "2026-06-04T15:39:24.645Z",
+      "oldLobbyAvgMmr": 1680,
+      "newLobbyAvgMmr": 1620,
+      "participantChanges": [
+        {
+          "participantId": "423415dd-f66e-4db3-892f-100024696033",
+          "playerId": "ed1f6b03-cfc6-4e6b-8cf1-ab6f4c317408",
+          "label": "AIS Exile#EUW",
+          "win": false,
+          "oldLpDelta": -25,
+          "newLpDelta": -27,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "ab720380-e97e-4362-a8fa-bf94a820c69a",
+      "matchId": "LCU_7876254363",
+      "gameDate": "2026-06-04T15:53:28.698Z",
+      "oldLobbyAvgMmr": 1655,
+      "newLobbyAvgMmr": 1560,
+      "participantChanges": [
+        {
+          "participantId": "a22002b2-ba76-4665-b964-853b2609188a",
+          "playerId": "ed1f6b03-cfc6-4e6b-8cf1-ab6f4c317408",
+          "label": "AIS Exile#EUW",
+          "win": true,
+          "oldLpDelta": 25,
+          "newLpDelta": 23,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "8722c403-009e-46ef-918f-c98f1982b24f",
+      "matchId": "LCU_7876288831",
+      "gameDate": "2026-06-04T16:17:37.989Z",
+      "oldLobbyAvgMmr": 1680,
+      "newLobbyAvgMmr": 1537.5,
+      "participantChanges": [
+        {
+          "participantId": "49a68e6c-fa54-41e9-8fbd-f9af3d8b7dee",
+          "playerId": "ed1f6b03-cfc6-4e6b-8cf1-ab6f4c317408",
+          "label": "AIS Exile#EUW",
+          "win": false,
+          "oldLpDelta": -25,
+          "newLpDelta": -28,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "391c3945-2f4c-4b6e-9768-828d5217901f",
+      "matchId": "LCU_7876302546",
+      "gameDate": "2026-06-04T16:26:13.637Z",
+      "oldLobbyAvgMmr": 1655,
+      "newLobbyAvgMmr": 1666.6666666666667,
+      "participantChanges": []
+    }
+  ],
+  "playerSnapshots": [
+    {
+      "id": "0e5c9e2e-52d7-470f-bbbc-d5e77d94e9ff",
+      "label": "ΔΔΔΔΔΔΔΔ#19222",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:39.048Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "2ce10a01-132f-4945-85a2-025003d043e4",
+      "label": "Manoli Fernández#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:39.489Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "a896ee3b-c1aa-4eee-bdc1-48347de77a66",
+      "label": "IronZeuSs#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:39.953Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "0c1ed40d-2155-47a0-a869-8e9f1f510cc0",
+      "label": "Templerok3#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:40.386Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "bbd884d4-e2d3-4872-b369-1cb9a0bd6b7d",
+      "label": "uKgKennedy#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:40.842Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "ed1f6b03-cfc6-4e6b-8cf1-ab6f4c317408",
+      "label": "AIS Exile#EUW",
+      "old": {
+        "rawMmr": 2445,
+        "currentLp": 45,
+        "isPlaced": true,
+        "mayhemGames": 16,
+        "lastGameDate": "2026-06-04T16:26:13.637Z",
+        "lastGameTier": "Emerald",
+        "cacheUpdatedAt": "2026-06-04T20:15:11.826Z"
+      },
+      "next": {
+        "rawMmr": 1719,
+        "currentLp": 19,
+        "isPlaced": true,
+        "mayhemGames": 16,
+        "lastGameDate": "2026-06-04T16:26:13.637Z",
+        "lastGameTier": "Gold",
+        "cacheUpdatedAt": "2026-06-04T22:07:54.712Z"
+      }
+    },
+    {
+      "id": "cdf358c4-e0b8-4795-a4ae-fd5ab31db3cc",
+      "label": "kawabogga#1313",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:41.291Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "0d640278-4f19-4c0a-a8e2-3d55a315ee20",
+      "label": "Ritzz#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:44.660Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "282d35ea-5ec0-4ba1-a7ad-39e81d86e528",
+      "label": "Okkio#ETU",
+      "old": {
+        "rawMmr": 2435,
+        "currentLp": 35,
+        "isPlaced": true,
+        "mayhemGames": 16,
+        "lastGameDate": "2026-06-04T14:55:42.978Z",
+        "lastGameTier": "Emerald",
+        "cacheUpdatedAt": "2026-06-04T20:06:51.014Z"
+      },
+      "next": {
+        "rawMmr": 1527,
+        "currentLp": 27,
+        "isPlaced": true,
+        "mayhemGames": 16,
+        "lastGameDate": "2026-06-04T14:55:42.978Z",
+        "lastGameTier": "Gold",
+        "cacheUpdatedAt": "2026-06-04T22:07:54.712Z"
+      }
+    },
+    {
+      "id": "2a58a9bd-b8bd-41ad-aac6-125d6d928842",
+      "label": "Poupouf#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:36.937Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "4a3de1fe-1a18-4bbb-8b29-241580403ccb",
+      "label": "MrsMoon#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:41.720Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "7b25c9f2-f695-4b78-8446-beb0ef1cafd0",
+      "label": "ReasonPrototype#6969",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:37.368Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "2d5cf113-43d0-40e7-9990-2b79b0b85311",
+      "label": "SMILEPT#s8s",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:38.460Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "ab524c54-7b22-44b6-ad38-cd52995bb623",
+      "label": "Kaiba#KCS",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:42.166Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "8232ed54-9e8d-48dd-a5ac-1896565fca13",
+      "label": "CoutinHo#Don",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:42.666Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "2da64bac-1166-431d-b0c4-984023a3c5d5",
+      "label": "Riku100#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:43.559Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "0d3bb29a-29cd-4b56-8b63-5e66ed950bd1",
+      "label": "keineAhnung#7348",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:46.381Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "f688dac1-b91d-4777-af61-bfdd7f9904ff",
+      "label": "Mioo#2406",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:49.476Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "f4f322ef-0a2e-4207-8612-2ac5b546b82f",
+      "label": "ShacoSechsFünf#065",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:31.640Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "dd3d17cb-71c7-497c-ac74-3147544d3dd4",
+      "label": "fakeryasuoo#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-01T17:31:15.681Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "f62a8991-7ee3-4391-a47e-79b52085a7f9",
+      "label": "victor363#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:32.102Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "e9f56d58-fc11-4ff2-934c-24a58c6f92e0",
+      "label": "Sandbox91#Sand",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:48.108Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "5a4ba18e-746b-407c-be9f-4ddc6994bfa8",
+      "label": "MyAnata#123",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:45.788Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "b464fd12-b9f5-4905-ae5e-758d84541ea7",
+      "label": "Luna Lightsss#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:49.910Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "a8c9eb23-6bc8-4045-be68-883647fead65",
+      "label": "Lirzzz#DICI",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:45.135Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "0f447bd1-cff8-464d-80ab-3a293d2d4f2c",
+      "label": "ESKELICIOUS#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:33.188Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "e61e8feb-fda4-4fe3-aa3d-e7047f94a32d",
+      "label": "Wabbaboom#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:33.624Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "9993b98d-010a-4a43-b2a5-3ff211804b3a",
+      "label": "JackDa#007",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:34.081Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "b6a92b08-ef47-4e2b-9ada-1d77ecfd0ca8",
+      "label": "Rijo84#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:35.433Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "bfeceb1c-e957-4f48-86c5-a135be0b26b1",
+      "label": "Giant Meteorite#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:35.928Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "52822dec-a3d6-4e55-9da8-799eb1d3d014",
+      "label": "xbräive#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:36.358Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "7029c599-2cb9-48a2-8f14-b1ec8512c62d",
+      "label": "Labubu#Balu",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:50.811Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "3c685276-8c8c-4ed4-b79d-1997a44d7f8a",
+      "label": "Luxifero#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:51.267Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "c871ebc6-bc8e-4104-9ea0-21baca3cccb4",
+      "label": "sam#A216",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:52.418Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "09aa7441-ce98-4934-b1ac-7dffa942b9bc",
+      "label": "Tansnowey#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:53.704Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "1de95bcb-bf4e-4c78-b217-1972bda036f4",
+      "label": "korkusuz93#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:54.170Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "6cb8b5a1-d3bf-408d-bfdf-5dbaed89b888",
+      "label": "MetroMonster#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:55.972Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "e6f731dd-c27c-42c4-8965-57594a6c86ee",
+      "label": "Níðhöggrrrr#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:59.913Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "2c8f13b4-b9b6-4875-85e6-eb1a76f74187",
+      "label": "MrUnd3rcover#420",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:00.362Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "a7b59e49-bb23-43a0-ab93-a4fa31de5bc4",
+      "label": "5M1RN0FF1CE#SNUS",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:01.744Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "eb96fc97-bea6-49e8-9a33-e62529c7fb68",
+      "label": "STMXVNVX#669",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:04.556Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "9c889665-d280-4ddc-8a56-a15df8d1ceab",
+      "label": "xuehaiyoyo#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:05.048Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "b5565659-a558-470f-90f1-1409974a8001",
+      "label": "ReaperToxic#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:57.304Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "7453d668-667e-48de-9f89-25969554b465",
+      "label": "艾欧尼亚我的青春#2000",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:05.487Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "0e954165-af34-4d0b-b6c5-7203e089a5c9",
+      "label": "Shadeur#1044",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:58.703Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "160b91af-8fb9-4c46-9067-2bafbe60107f",
+      "label": "Xixons#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:06.828Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "5fe2e587-9180-454e-b973-4f7d896a1506",
+      "label": "Remeex#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:30.579Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "67293852-4a8b-4fca-921a-348c635b4570",
+      "label": "hsvsebi1233#8488",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:32.312Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "f877aa79-a582-4a15-8970-064a4929a9d7",
+      "label": "Toiler Johannes#GUS",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:32.902Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "fe9fb48b-7637-4c23-8f95-0234602de6f3",
+      "label": "Iceman1602#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:33.354Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "1c9c07ff-b8aa-4306-825f-0f1f13d9fe9c",
+      "label": "Eidechsenmann#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:34.424Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "29041d92-960f-4711-9201-bd41de2ecac6",
+      "label": "Send Some Noots#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:35.018Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "079fbb4b-b65b-485d-bf0e-39ef4b752d4a",
+      "label": "GrandHustler#42069",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:35.458Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "d826d2cc-b3d8-4ab8-905b-c466a6874f11",
+      "label": "kim gyuvin#oner",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:36.575Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "1f54185e-bbdd-4a2c-943d-49057dfe8d57",
+      "label": "jungkooks double#nya",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:37.542Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "78e91663-29c8-43c0-a01e-7e58e04780f8",
+      "label": "Adusko#1111",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:37.973Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "db0377d0-b5f2-4f2f-b287-9c4ce1402ea0",
+      "label": "Tscheins#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:38.481Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "1950c953-61c1-4a3b-a1bf-ef990f1b02a0",
+      "label": "Flywie1sAdler#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:39.603Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "a42c0ccf-e0cb-4718-b91b-c7ef6db22cdf",
+      "label": "p3t3rl1ng#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:40.528Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "f8956b56-7e49-4adf-bc9e-1286dc62430f",
+      "label": "Galloooo97#7284",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:40.982Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "67735c71-b075-4d6a-aea8-0d74e5e5f35f",
+      "label": "Ukuzeo#brrrr",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:41.451Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "f23a4d37-0291-48cc-9c59-8c01c032dde6",
+      "label": "Wodkafrodo#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:41.912Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "a8e86af8-f1b2-45bb-a1be-0b4bba4bcb94",
+      "label": "Ture Cavadu#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:42.400Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "a14099cf-871b-47e3-a132-c9934e502f1f",
+      "label": "Skaid#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:42.826Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "313a3e03-a65d-4f0c-a8fc-c36087b625e9",
+      "label": "Aristo#Risto",
+      "old": {
+        "rawMmr": 2654,
+        "currentLp": 54,
+        "isPlaced": true,
+        "mayhemGames": 14,
+        "lastGameDate": "2026-06-03T13:51:35.778Z",
+        "lastGameTier": "Emerald",
+        "cacheUpdatedAt": "2026-06-04T20:06:51.201Z"
+      },
+      "next": {
+        "rawMmr": 1827,
+        "currentLp": 27,
+        "isPlaced": true,
+        "mayhemGames": 14,
+        "lastGameDate": "2026-06-03T13:51:35.778Z",
+        "lastGameTier": "Gold",
+        "cacheUpdatedAt": "2026-06-04T22:07:54.711Z"
+      }
+    },
+    {
+      "id": "5e1fe0bc-12ca-4303-9688-dd2f154a9d42",
+      "label": "dieg#goat",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:46.031Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "6436783e-01f6-45c0-9fb3-f0e69ebf7b70",
+      "label": "sous chinoiシ#135",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:46.475Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "07a961a8-2be3-493e-9825-8359f960b072",
+      "label": "Choso#T0nic",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:46.959Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "46a19540-99f3-4a61-b1e2-dfbab7e27bee",
+      "label": "polazo#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:47.410Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "1ade6b7d-307a-4ef9-be35-cfe1c0ce694d",
+      "label": "kick kasskoo#990",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:05.162Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "374e5d05-0aba-49d2-8c86-c94f9c0fd241",
+      "label": "Clank#8041",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:47.869Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "467d2521-fedd-4b78-80e0-81b3f750e86c",
+      "label": "tankshcrader#2006",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:50.963Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "779f45b7-a115-401a-8462-aed12f313c1d",
+      "label": "Pocinho69#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:48.305Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "f49b5a93-721a-470c-bc0e-5db5d7a13633",
+      "label": "Demacia strick#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:49.252Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "6747380e-7ffe-4529-9701-b5fe28945caf",
+      "label": "THEPHAARMACIST#1999",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:51.385Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "1b2131d1-e677-4cea-b192-2152e1ada99a",
+      "label": "Yeriick19#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:51.889Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "b550995d-0fc7-4b83-88c6-d11779bdf349",
+      "label": "ENYEER#TNF",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:52.383Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "97bb8883-c521-49f1-b7d1-9432cced35f3",
+      "label": "GeyserDeCaca#0707",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:52.805Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "4af1b173-bfaf-4c62-a810-2271afbe19ae",
+      "label": "TixBelgium#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:05.603Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "40d4c6a2-752d-4d21-b3c7-ae5f2f7c66e0",
+      "label": "cabaobuyongzhi#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:06.954Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "6a98ac2c-8bfc-4355-a3f5-bd8319a73679",
+      "label": "t4xi#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:53.910Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "bb5304cb-2433-44d6-ae13-2709ea6ac6a7",
+      "label": "BWMZLT#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:30.475Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "0c0ed021-8d66-4adf-b26c-9f869301a892",
+      "label": "gkoi#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:43.764Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "3275a603-a560-468d-a3db-b8db9d593a7c",
+      "label": "RedArrow94#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:56.418Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "1641069a-b011-4305-8157-4a673ab9831c",
+      "label": "Michaël Youn#FATAL",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:58.952Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "dc272db7-6c7f-4c40-9724-317ea6c530dd",
+      "label": "Evelemon#999",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:31.221Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "ed46f908-5a72-4013-af30-149a366c16c8",
+      "label": "Vøid Güard#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:59.394Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "15715718-40d1-4f52-9eeb-9483b6f89a53",
+      "label": "shockwaves#oui",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:00.375Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "7c6368f4-31df-44a0-9d2e-1d3648d7c854",
+      "label": "Mayday#TNT",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:03.435Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "0c36253d-0360-45e9-bc1f-c8024b15c594",
+      "label": "D1e#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:33.962Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "a4ad6496-3d51-48b9-acb6-1c07cc734b22",
+      "label": "The human Hank#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:34.539Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "c71672aa-015b-4859-98e3-f263e6d2f984",
+      "label": "ionjii#7654",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:35.001Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "e00e39a2-3979-4b12-bbf9-793974fa0734",
+      "label": "Supahotfireee#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:36.336Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "33e7cd15-da1d-470f-987e-a60fcf5d3aa4",
+      "label": "ShacoNotFound404#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:37.801Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "560d7675-8b53-4670-b697-b39dae57f275",
+      "label": "ImperialDA#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:54.813Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "5b43d06f-f82c-4ef7-9341-b06f4bf22483",
+      "label": "MaaxLeChieng#chien",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:45.574Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "055295c8-1dc1-4402-8c56-6a89ad8b2b5d",
+      "label": "holdmybeerbroo#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:38.920Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "0a651d42-e24d-4308-8a2f-87c411356994",
+      "label": "krandsrand#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:39.522Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "c6f4e444-3a26-42c0-b470-d0f61bfeb288",
+      "label": "misya#TR1",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:40.623Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "926d0df8-2412-4809-bee0-3a5db102707a",
+      "label": "yiulzz#EU1",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:41.880Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "7f61e048-0669-472e-bcba-49aa479973c2",
+      "label": "C20H25Ν3O#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:42.321Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "f6292d98-43fb-469c-b50a-2a8dcc8a11aa",
+      "label": "LemmeSmashGurll#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:43.784Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "47b37735-6fc1-40ee-8895-90a457fcfdab",
+      "label": "kungmåns#roka",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:44.271Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "444c17c8-97a0-4e1b-88a3-806fe5ee2ef6",
+      "label": "Warwicks Puppy#uwu",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:44.721Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "32109037-cb13-4d15-8a32-93d67e547501",
+      "label": "Hasta La Vaynsta#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-01T23:00:43.392Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 2,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "45c85566-3c1c-41ec-b4cb-6939da472fc9",
+      "label": "Chinglish#11451",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:52.828Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "ca0bbc7d-bc5b-4727-a1b8-fc7d1667c6b8",
+      "label": "AdorableGoblín#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:53.677Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "8669f1eb-0ae5-49a3-bf96-9f7d4d40f1d3",
+      "label": "Snitchblasta56#9380",
+      "old": {
+        "rawMmr": 2480,
+        "currentLp": 80,
+        "isPlaced": true,
+        "mayhemGames": 10,
+        "lastGameDate": null,
+        "lastGameTier": "Emerald",
+        "cacheUpdatedAt": "2026-06-04T21:38:48.045Z"
+      },
+      "next": {
+        "rawMmr": 1847,
+        "currentLp": 47,
+        "isPlaced": true,
+        "mayhemGames": 10,
+        "lastGameDate": null,
+        "lastGameTier": "Gold",
+        "cacheUpdatedAt": "2026-06-04T22:07:54.712Z"
+      }
+    },
+    {
+      "id": "97676a80-834d-46d9-a165-1b512e6604b3",
+      "label": "Itchy Finger#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:50.214Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "0bb9d9c1-bb01-4b03-ae3e-256fc8016ecb",
+      "label": "iNoXaH Banchamek#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:50.668Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "2932819b-3707-4eb5-b282-14d1350a3d23",
+      "label": "díe for me#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:51.124Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "445aae80-acd1-47ba-982a-9ed7715d3ecb",
+      "label": "AdoRe#jxstn",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:52.233Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "65ce0922-9ad3-4f33-9abb-66f9464c1523",
+      "label": "Kadash#TOP",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:49.612Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 2,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "fd785e6b-ddd5-48c0-a52e-f42ba84d2d7b",
+      "label": "Cheesus123#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 2,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:37:44.258Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 2,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "5aa5df27-5df2-4730-be57-45e126872235",
+      "label": "SailorAhrii#slay",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:46.087Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "145c31eb-a42a-43ec-82bf-c7d10c72a547",
+      "label": "BonkoCat#Rawr",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:46.573Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "d2464cee-a403-45fd-b875-4d164691d367",
+      "label": "NoelNoel1#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:47.042Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "f7dbee82-d511-4184-b414-aa0cf7b1e02a",
+      "label": "Askharad#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:47.504Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "db364da0-b407-4c08-b1e9-0de3ff486efc",
+      "label": "Saxen#Nr20",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:54.226Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "56435dca-257d-49a4-a7d1-74b4e7771f3f",
+      "label": "Crack Comrad#HANK",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:55.647Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "c0ae2ce7-9917-482a-8dcc-30558415bf96",
+      "label": "LePotoRicotta#2688",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:56.097Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "79237d19-867f-437d-b98a-3e01d709b2e7",
+      "label": "Praise the Sun#00001",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:57.884Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "5a35497b-8f43-483b-b3ae-2278209df1c3",
+      "label": "BearToBear1133#3140",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:59.717Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "5a6661cd-a8b4-4f7d-b6af-eb6544f54326",
+      "label": "Beabadoobee#GIRL",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:00.206Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "7420923a-0415-40c5-9b9e-afa78718872d",
+      "label": "G Pété et Chié#CACA",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:01.874Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "db3a3d4b-60c6-47bf-a358-b35e49016df6",
+      "label": "SECONCIO#9200",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:02.369Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "b203b5ba-bda7-407d-a976-f7ad70c4cd33",
+      "label": "Nich normal#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:03.457Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "b21b59c2-60c0-4f1f-908b-fab56dc539e9",
+      "label": "darkfox853#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:03.946Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "9ab3bb31-8e15-4fae-b65c-3982769a31e6",
+      "label": "JeanNejer#WLKMB",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:04.413Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "3e58b216-8ab2-41bd-a543-558e7cdf91e4",
+      "label": "Tiandaochouqin#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:04.999Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "13e9b8ee-a906-4081-9a0e-294c0effad9b",
+      "label": "virjhin1airlines#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:06.066Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "8448761d-e42f-4057-9670-5e7fab28ced6",
+      "label": "Spasztik#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:06.572Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "98119eae-5ea0-41a9-9f54-edd14a00ac97",
+      "label": "ilomies#14444",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:08.442Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "ceb8b2b1-7481-4929-9edf-18d9a1a46e91",
+      "label": "GhostfacE#5018",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:30.886Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "e6c6805b-6c79-49f9-996c-2cb21e9fca28",
+      "label": "aestheticKiwe#K177",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:33.671Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "c02806dc-1146-44fc-a0f1-482d6326b278",
+      "label": "ƒavless#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:34.552Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "edc892ab-3638-465c-b020-7c2756c532ec",
+      "label": "VeliPentti#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:34.976Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "ab690867-74c3-4b71-b1e0-dc1ff7180224",
+      "label": "KuroKero#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:37.354Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "08112c5b-cb4f-4f43-99af-c0a27358de0f",
+      "label": "levya#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:37.950Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "84123699-9617-4b0b-a20c-d31ff928d99f",
+      "label": "lil jim bob#KAKA",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:38.431Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "7ec8c73a-a33b-4dd8-a5d4-b7f70befd182",
+      "label": "Jane Juliet#1207",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:39.347Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "a13c6ce9-115a-4b49-a7c6-a05a9f1197d1",
+      "label": "Fertig#Joa",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:39.814Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "8990fc22-661d-42c8-b604-3e6b7966791c",
+      "label": "DaDeceptive0ne#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:57.830Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "485c0481-0894-47c9-b1d5-d06dbcb0f475",
+      "label": "Like an Adam#Adam",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:40.295Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "be759a4a-3e49-413c-8016-601b140cedcd",
+      "label": "failixo#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:41.092Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "92db3394-934e-40af-9942-e4f6787aa7f1",
+      "label": "Tevenen#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:42.328Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "05c9257b-d600-4684-aa9c-46dec9f08bcd",
+      "label": "Yagiro#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:43.454Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "405e4812-8259-46d2-b38f-51f059ee0de4",
+      "label": "IceFlash8#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:44.234Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "ddaa6a83-f889-4cee-a2ec-0154bf78a815",
+      "label": "Daishoyna#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:44.919Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "a937b982-f2fd-4f23-97f9-a986d4b93f70",
+      "label": "Chezz132#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:45.372Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "a13620b5-de4a-455e-8591-482b7e3b47ad",
+      "label": "Pseudo#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:46.724Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "92994da5-e78b-491c-8c16-1e6cbd218844",
+      "label": "Fishingbait#9958",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:47.192Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "c2d2f796-8b03-4b33-a72e-53f1e6498af5",
+      "label": "Luffy#Mai",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:47.572Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "f64dc410-ac2e-41a2-b068-eed8cf506df0",
+      "label": "Miawstro#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:48.067Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "9c01a72a-a456-4dac-a861-f3b4917a8a5d",
+      "label": "鲨掉那个港独狗#9527",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:49.510Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "743788a4-27c4-4290-81f2-41405a6f2509",
+      "label": "FNC冠军含金量还在下降#种族骑士",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:49.954Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "84e1db7d-c017-4e49-aae0-d907404b670f",
+      "label": "OrsoSimo#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:50.462Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "a408e46d-7abc-4477-bda1-5fc767c5caf8",
+      "label": "Cεrbεrus#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:50.948Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "f00f58ac-aa5d-42e1-b507-466154d17de2",
+      "label": "Chrollo#0369",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:51.404Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "c36b3b3d-a8ea-4c96-a589-bb61c739bb73",
+      "label": "Ashlet つºЗºづ#4660",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:51.882Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "9d7fc97e-57e0-4c53-9fd6-17e126fb99ff",
+      "label": "Elin#0073",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:53.560Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "fe2855a2-e550-4d55-af0b-d09a1bdf768c",
+      "label": "BotPatrickxD#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:55.294Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "63dd0cb0-ef65-42e6-a0ea-1d5decc21cc1",
+      "label": "1Carmen#1Ca",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:56.282Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 2,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "7e3b21ba-638a-43d4-90a0-22a27d8351a7",
+      "label": "Twarnel#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:58.280Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "abe15ccf-f3f7-43ee-93c4-b583bb9140fe",
+      "label": "0Serafia0#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:58.729Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "699c38c2-99e4-4da5-aa9e-f665e0f8bce0",
+      "label": "Rrolls#2211",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:00.068Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "bc95a348-ac6b-4b01-8201-b3fa9e63240d",
+      "label": "DnY GøDyoda#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:00.674Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "ce4e7aba-127a-476c-9a3c-3f97ba173aa6",
+      "label": "EKIM90#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:01.158Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "771256f1-e634-40e6-8bb9-f326fc0c9beb",
+      "label": "CAN WIN#6099",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:02.362Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "7b810287-a51e-4231-82f4-3e7e78e80440",
+      "label": "Trowtyx#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:02.834Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "63aff77d-cdee-4026-b2d4-f3d91e6de697",
+      "label": "Bambusbernd#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:03.927Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "28901653-9c8d-4bc0-b080-f96aa1ca0488",
+      "label": "Huesio#469",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:05.199Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "59930304-2931-4661-910c-30d7e7396d4b",
+      "label": "criowol#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:06.512Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "f6b69496-1ecb-42ca-a31e-d97cee822c14",
+      "label": "VodkaBullROFL#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:07.247Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "a0e7112e-a548-407e-ae3c-7b3ab14e79fb",
+      "label": "SmallDragonIsa#Small",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:31.446Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "ee256040-621c-4562-b88a-54a8d001f3f5",
+      "label": "Buhuiwan13#1639",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:31.838Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "e31b33bc-b3ff-4b8c-93d8-9e8041e0fe5c",
+      "label": "Jmlcastillo#UWU",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:32.824Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "fe2e1e20-964e-4c1c-937c-18095671418f",
+      "label": "cakz#cakzz",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:34.410Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "ddaef53c-c305-4944-af18-4a4bcb00b318",
+      "label": "LtLora#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:35.530Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "666c2664-4cab-4666-8de8-ebcd180bd9f3",
+      "label": "schellekes#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:36.878Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "4768233f-8318-4245-b887-576bf980ed11",
+      "label": "ChoriPan#Bocat",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:38.600Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "93d836e7-fa97-40cd-b3d7-d5fd1d2a9976",
+      "label": "Crying Wardslave#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:45.855Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "58d568d7-ceef-4ffb-aa75-d2e0c5da8017",
+      "label": "Subaru Sumeragi#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:47.213Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "7dc5b85d-1772-4f06-9b19-6a1b554ab748",
+      "label": "Kaaiisen#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:47.832Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "f0a68b06-c768-4f80-9cea-b4f06d151b45",
+      "label": "Kaatch04#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:48.289Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "a52da70a-21ba-4fbe-805b-4ef73d6f80e5",
+      "label": "IMP xHaotin#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:49.067Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "3cf7a0c7-3ec0-43fe-a099-19b2d8178cab",
+      "label": "LordFeniel#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:49.503Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "7f13174c-281e-479c-9a8a-c078ba1549e1",
+      "label": "Tha ShadoWMan#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:52.679Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "698377c2-120a-4fbf-a4b7-cf77393ff1fb",
+      "label": "OnlyASpo0nfull#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:53.181Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "295e6f83-85f8-4925-a2e0-1fa2067345b4",
+      "label": "TitoμDu64#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:54.980Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "5e7829ba-6a4e-4c8f-864a-23c47bd1aeaa",
+      "label": "leaded54#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:53.629Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "d21851e9-39cf-4039-bd4c-0f9d5838cf4d",
+      "label": "sofknstnd#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:55.587Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "6cafd165-e97a-41cf-9ad6-42f95a447f86",
+      "label": "Impala67#3893",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:49.917Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "8aea27a8-aa5e-4e27-bdd7-c4fa8e25d92c",
+      "label": "Gogeta#Audi",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:51.341Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "49574c9a-e1a3-407f-a17a-f77c520592df",
+      "label": "VELKOZOVO#KAR",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:51.817Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "287915aa-6a70-4093-b688-609a02cbfe77",
+      "label": "Harpo#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:56.080Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "d5975501-e32f-4d50-b7b8-31c52b39d816",
+      "label": "flawless#7e7e",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:56.649Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "47d71c0f-1024-4753-ac88-a76c5271d8f9",
+      "label": "CuneyTFT#EUWW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:57.130Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "8eed9d8a-c165-4c74-8c99-231e97ddbaac",
+      "label": "LE SERANO DE VAA#1VS1",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:58.289Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "ff2a8522-50fa-4e6c-901e-42e64e7865cd",
+      "label": "Doppelhellix#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:01.412Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "87fa9538-30a9-4844-a57a-4048a8e5afba",
+      "label": "Elbrato1995#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:01.859Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "00d8ef26-6168-4d2a-b233-2a26b78dd25f",
+      "label": "Дмитрик#ua1",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:05.671Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 2,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "dd51bd4b-9e5c-43de-bffc-d313912ee496",
+      "label": "Reyzax#RZX",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:02.571Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "0b4ed868-9ca5-432f-98c7-9236f6035dcd",
+      "label": "Checkmate#Pepee",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:58.749Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "ff46ebce-876c-4aed-b78d-32b3bd2493b6",
+      "label": "CallMg#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:00.138Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "b55329b9-174c-4e3c-b3cb-5bbefeee02ff",
+      "label": "ØØTÅ#OTA",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:03.025Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "8a4adcd6-85e2-48ac-9e61-b9cbf0b51a39",
+      "label": "King Flamingo#0000",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:03.992Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "ef282971-7986-424d-ad94-a64eb774a3e9",
+      "label": "GrandLift#ADC",
+      "old": {
+        "rawMmr": 2645,
+        "currentLp": 45,
+        "isPlaced": true,
+        "mayhemGames": 16,
+        "lastGameDate": "2026-06-04T14:33:12.568Z",
+        "lastGameTier": "Emerald",
+        "cacheUpdatedAt": "2026-06-04T20:06:51.567Z"
+      },
+      "next": {
+        "rawMmr": 1733,
+        "currentLp": 33,
+        "isPlaced": true,
+        "mayhemGames": 16,
+        "lastGameDate": "2026-06-04T14:33:12.568Z",
+        "lastGameTier": "Gold",
+        "cacheUpdatedAt": "2026-06-04T22:07:54.712Z"
+      }
+    },
+    {
+      "id": "491e2210-41aa-45e3-9e33-dc8b502fe96c",
+      "label": "BrattDiff#qiqi",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:39.216Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "1453cb28-3f7c-4a28-8aef-541a23474e15",
+      "label": "tarnished#korn",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:39.919Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "376314a8-f8d4-40b2-8c72-d962b8651ae3",
+      "label": "dskyheimdalen#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:41.418Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "77d42921-abd2-440e-b705-4f73407a8990",
+      "label": "Ydis#00000",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:41.899Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "2e30c43d-5bce-4a7a-8183-f5668e6f3b62",
+      "label": "Sner Sn4ke#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:42.525Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "55840202-2834-4193-9a7e-42b835b92097",
+      "label": "Shoumi#3118",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:43.290Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "848a8e0e-e76c-4cd2-ac06-fa597d406616",
+      "label": "Couzou#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:44.232Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "e7e90b37-6634-4aab-8778-fe7ef5b2a0ce",
+      "label": "PhysicoPOHia#jeje",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:05.660Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "ef1e3d6b-8ea8-4f75-844a-6cf2cab1a81b",
+      "label": "DONJA LIVADICA#BOSS",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:07.883Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "d3c51b11-97f0-41a3-ae94-28905df0b69d",
+      "label": "Wateringcan#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:09.675Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "b4117451-cc52-4d9c-8255-088a363dc29d",
+      "label": "ElShorta112#SSHH",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:11.016Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "350ab3d4-9e52-48cc-ad40-a3cd03067863",
+      "label": "Timmzz#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:30.456Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "168721f6-49ac-4b42-a9e6-ac6574f510cc",
+      "label": "Raysar#4422",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:36:50.344Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "509a8952-4a04-4d8c-b0db-232d2380ab08",
+      "label": "olig10#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:01.492Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "67eacd59-a513-4620-80da-8ef2b700d810",
+      "label": "skibidisigma31#666",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:36.416Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "bc58ffec-4224-48f9-8fd9-48399005507a",
+      "label": "El Tamator#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:47.964Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "aa9eb88c-67d8-4fed-9ab4-5bb121d8cf9a",
+      "label": "XiaKaLaKa#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:38:58.388Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "98dd6975-c88b-4fac-b745-3e09290a6afc",
+      "label": "Hachi#0807",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:31.356Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "7a75c6a8-dda3-48c3-98d4-30e7eda96248",
+      "label": "EUWBen#pain",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:33.235Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "a0eaf517-2e48-425c-bec2-bf344341f6e3",
+      "label": "JohnWarwick#Salah",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:34.411Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "70051c5f-2745-4663-a725-b6cf935648e5",
+      "label": "pixi963#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:35.131Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "7d598bb8-f77c-42d4-b5ae-bdf5f08b7ccf",
+      "label": "Sin Gluten#PUF",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:36.021Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "2c794f7d-c552-44e3-8ebf-6d9dd8717203",
+      "label": "GACHIMUCHENIK#jizah",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:39.318Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "25465e06-2f54-48f5-8e1d-80ce00ed5a90",
+      "label": "Parad0xalyy#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:39.785Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "75c1d0a0-7bbf-4677-bcbe-000e9c5133b6",
+      "label": "zjoel#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:40.283Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "f2441433-6ebe-4ab6-95f6-e34746788c46",
+      "label": "JoeHoee#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:41.718Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "91fb10da-ab14-4536-a9dc-afe56c9907e4",
+      "label": "dinjaa#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:42.168Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "326513d1-7691-4140-a9cb-79bce68da3c2",
+      "label": "Tanqui990#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:43.518Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "2e82aa85-25a2-4d0e-b449-33f924b65d43",
+      "label": "trebort#noooo",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:43.986Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "49005ab2-3b3c-4d71-93f7-af40771ab902",
+      "label": "Cualex19#1919",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:44.452Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "7dd1f9c5-fd45-4c71-9b39-c4ecf444f114",
+      "label": "Kuhls#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:46.130Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "73b97deb-42c1-4e7f-8726-120c10e1014e",
+      "label": "Laronna#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:46.747Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "e7eb0dd4-ed1b-44b1-b640-19230656da88",
+      "label": "UptempoQueen#BPM",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:47.690Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "af497a50-ba5e-42bb-af6e-f4fc446e3847",
+      "label": "Kleinvadder#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:48.836Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "e5c7d6d5-e7cd-400d-92ed-044d9d395100",
+      "label": "Maxtrem#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:49.565Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "d5a9eeb3-2814-4cc8-950a-d0a286193187",
+      "label": "Ja Hy#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:50.162Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "7f27b848-c345-4818-b71b-6ed84b670730",
+      "label": "Matze#2006",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:50.636Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "6db5540d-f07f-4493-8f74-598a1bb57854",
+      "label": "Triger#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:51.807Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "27a13333-2b66-474b-8b69-72c3d36f42e5",
+      "label": "labubuowner#666",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:53.577Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "df691aba-0ad9-409d-9b96-243582409b58",
+      "label": "FoxOne#1301",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:54.839Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "26e67aa0-877e-4643-9bca-35ce59a2b66b",
+      "label": "love guan#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:55.302Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "65daa3a0-c796-40dd-9bfa-3cf986bbe277",
+      "label": "tafaxer#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:55.892Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "464fcf9e-347a-439a-a049-f55bdd22ed88",
+      "label": "welmax5#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:56.333Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "e84d4e5d-0899-499d-b59b-96261bce83a7",
+      "label": "Butchbyte#Wegg",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:58.743Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "2765f0a2-ca90-4ad3-8fac-0b921c2eda84",
+      "label": "nitegrukkel#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:59.206Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "82b7870d-4711-40f9-9aea-74b30750a0cd",
+      "label": "duKek#kekw",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:59.773Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "3707ad0d-d710-4601-b88a-de60e7a642d1",
+      "label": "Castiel#ABC",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:42:00.336Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "27ad866b-adfe-4d21-a7b6-ecf32a22863f",
+      "label": "Istredd#8789",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:42:00.782Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "ee396568-3fc5-4be8-b09a-0d31f8d3ac0e",
+      "label": "Negative Karma#NEG",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:42:01.228Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "0d7a09ea-e9a5-4875-b832-91031a6aa52b",
+      "label": "Svmmvm#1312",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:42:02.771Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "214e5fa6-c7c2-46e6-82a9-8656a68f5351",
+      "label": "Aymen Ap DZ#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:42:03.238Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "1af794e9-01c1-4682-9b12-eba5015a09c7",
+      "label": "Wasabi ZTZ#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:42:03.674Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "37310cc7-c856-468d-b53c-7200ca400658",
+      "label": "Kholo#8909",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:39:55.785Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "01a4676e-fbca-4571-9ff1-444e2ae192d2",
+      "label": "FucaLester#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:04.662Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "dfa9cc56-ab44-479b-8b93-61a308873669",
+      "label": "Le viede tiks#3496",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:40:37.852Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "eceadede-c7da-41c7-89a4-eb799f589a48",
+      "label": "Ickianey#2906",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:08.328Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "555320bf-655a-423d-ad3e-aa29c37bdf8d",
+      "label": "EINS GoVegan#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:31.936Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "74b74f76-6733-4a1e-b104-0bf06fb99531",
+      "label": "Ferderben#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:38.712Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "baae3732-fcf8-4e59-b6fb-dfe522eaa326",
+      "label": "USK VirusZ#42069",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:48.379Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "7379357d-1ceb-476c-a7c6-a41fb0986a0a",
+      "label": "Lin Compétent#Oskur",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 0,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T21:41:56.772Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    }
+  ]
+}

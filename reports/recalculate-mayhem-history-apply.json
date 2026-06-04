@@ -1,0 +1,770 @@
+{
+  "mode": "apply",
+  "generatedAt": "2026-06-04T22:53:02.627Z",
+  "matchCount": 34,
+  "playerCount": 9,
+  "changedMatches": 34,
+  "changedPlayers": 9,
+  "matchSnapshots": [
+    {
+      "id": "b452a1c8-4853-4815-8cb9-5f7db01d6d5c",
+      "matchId": "LCU_7872944075",
+      "gameDate": "2026-06-01T13:41:01.909Z",
+      "oldLobbyAvgMmr": 1450,
+      "newLobbyAvgMmr": 1900,
+      "participantChanges": []
+    },
+    {
+      "id": "916be55a-c859-43fe-834c-3544e4db1704",
+      "matchId": "LCU_7873035938",
+      "gameDate": "2026-06-01T15:20:01.683Z",
+      "oldLobbyAvgMmr": 1688.888888888889,
+      "newLobbyAvgMmr": 2266.6666666666665,
+      "participantChanges": []
+    },
+    {
+      "id": "ca311b84-ce32-4c85-b12b-764b72cc0ec8",
+      "matchId": "LCU_7873060334",
+      "gameDate": "2026-06-01T15:43:57.060Z",
+      "oldLobbyAvgMmr": 1677.777777777778,
+      "newLobbyAvgMmr": 2266.6666666666665,
+      "participantChanges": []
+    },
+    {
+      "id": "8270d482-45e3-4a45-84cf-f8d3d83aaba0",
+      "matchId": "LCU_7873080325",
+      "gameDate": "2026-06-01T16:02:24.864Z",
+      "oldLobbyAvgMmr": 1944.444444444444,
+      "newLobbyAvgMmr": 2350,
+      "participantChanges": []
+    },
+    {
+      "id": "3364d97a-1766-4d1d-b312-042e3bee8bac",
+      "matchId": "LCU_7873199616",
+      "gameDate": "2026-06-01T17:36:44.665Z",
+      "oldLobbyAvgMmr": 1710,
+      "newLobbyAvgMmr": 2300,
+      "participantChanges": []
+    },
+    {
+      "id": "7843c9eb-7913-4580-9c56-c9821362b47d",
+      "matchId": "LCU_7873222419",
+      "gameDate": "2026-06-01T17:58:54.751Z",
+      "oldLobbyAvgMmr": 1600,
+      "newLobbyAvgMmr": 2300,
+      "participantChanges": []
+    },
+    {
+      "id": "bf113822-2e3a-4307-a703-58668c7894ef",
+      "matchId": "LCU_7873268802",
+      "gameDate": "2026-06-01T18:28:56.952Z",
+      "oldLobbyAvgMmr": 1711.111111111111,
+      "newLobbyAvgMmr": 2300,
+      "participantChanges": []
+    },
+    {
+      "id": "61c34aea-a336-4e06-ba10-75da76a9b83a",
+      "matchId": "LCU_7873541528",
+      "gameDate": "2026-06-01T21:22:14.416Z",
+      "oldLobbyAvgMmr": 1390,
+      "newLobbyAvgMmr": 2100,
+      "participantChanges": []
+    },
+    {
+      "id": "e9fdec57-168d-4d66-a6f8-372aef5ddc4c",
+      "matchId": "LCU_7873625038",
+      "gameDate": "2026-06-01T22:43:38.030Z",
+      "oldLobbyAvgMmr": 1250,
+      "newLobbyAvgMmr": 1533.3333333333333,
+      "participantChanges": []
+    },
+    {
+      "id": "1f734b83-ebf8-420c-a9be-16f8e89049ec",
+      "matchId": "LCU_7873636429",
+      "gameDate": "2026-06-01T23:01:30.327Z",
+      "oldLobbyAvgMmr": 1600,
+      "newLobbyAvgMmr": 1533.3333333333333,
+      "participantChanges": []
+    },
+    {
+      "id": "e0baac76-2096-45cd-a308-b4ef9d0c20b6",
+      "matchId": "LCU_7874668822",
+      "gameDate": "2026-06-02T22:23:23.096Z",
+      "oldLobbyAvgMmr": 1370,
+      "newLobbyAvgMmr": 2250,
+      "participantChanges": []
+    },
+    {
+      "id": "c0b6ab76-62bf-4cfa-8486-d4b3a9739931",
+      "matchId": "LCU_7874688314",
+      "gameDate": "2026-06-02T22:49:44.104Z",
+      "oldLobbyAvgMmr": 1860,
+      "newLobbyAvgMmr": 2266.6666666666665,
+      "participantChanges": []
+    },
+    {
+      "id": "9ead1adf-d048-4470-9782-f5f46df297d7",
+      "matchId": "LCU_7874710811",
+      "gameDate": "2026-06-02T23:12:44.986Z",
+      "oldLobbyAvgMmr": 1766.666666666667,
+      "newLobbyAvgMmr": 2150,
+      "participantChanges": []
+    },
+    {
+      "id": "3b317b98-73bf-4f2d-9768-bbd84fc986dd",
+      "matchId": "LCU_7874727042",
+      "gameDate": "2026-06-02T23:40:00.332Z",
+      "oldLobbyAvgMmr": 1822.222222222222,
+      "newLobbyAvgMmr": 2350,
+      "participantChanges": []
+    },
+    {
+      "id": "8ee8d908-c9f0-4b63-b9c4-bc5eb8f3f86f",
+      "matchId": "LCU_7874746474",
+      "gameDate": "2026-06-03T00:07:25.836Z",
+      "oldLobbyAvgMmr": 1930,
+      "newLobbyAvgMmr": 2275,
+      "participantChanges": []
+    },
+    {
+      "id": "7640be8b-d960-4c55-9293-58c8d9b46889",
+      "matchId": "LCU_7874749978",
+      "gameDate": "2026-06-03T00:28:49.499Z",
+      "oldLobbyAvgMmr": 2311.111111111111,
+      "newLobbyAvgMmr": 2233.3333333333335,
+      "participantChanges": [
+        {
+          "participantId": "bd1ea769-3730-43a1-a1f7-5ee5dc6dc7fd",
+          "playerId": "313a3e03-a65d-4f0c-a8fc-c36087b625e9",
+          "label": "Aristo#Risto",
+          "playerRiotIdName": "Aristo",
+          "playerRiotIdTag": "Risto",
+          "rankSignalMmr": 2300,
+          "win": true,
+          "oldLpDelta": 33,
+          "newLpDelta": 24,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "902bb74e-06bd-46c8-a4e3-39ee2aa56288",
+      "matchId": "LCU_7874888966",
+      "gameDate": "2026-06-03T10:04:14.348Z",
+      "oldLobbyAvgMmr": 1587.5,
+      "newLobbyAvgMmr": 2600,
+      "participantChanges": []
+    },
+    {
+      "id": "3f35cba1-98fb-430b-85a6-75723d060378",
+      "matchId": "LCU_7874905467",
+      "gameDate": "2026-06-03T10:22:46.982Z",
+      "oldLobbyAvgMmr": 1500,
+      "newLobbyAvgMmr": 2600,
+      "participantChanges": []
+    },
+    {
+      "id": "0e591c23-c655-4bfd-b391-d124627b4780",
+      "matchId": "LCU_7874970399",
+      "gameDate": "2026-06-03T12:17:38.338Z",
+      "oldLobbyAvgMmr": 1744.444444444444,
+      "newLobbyAvgMmr": 2300,
+      "participantChanges": [
+        {
+          "participantId": "699edfb9-93bd-43f9-8d2d-b0b3e453b247",
+          "playerId": "313a3e03-a65d-4f0c-a8fc-c36087b625e9",
+          "label": "Aristo#Risto",
+          "playerRiotIdName": "Aristo",
+          "playerRiotIdTag": "Risto",
+          "rankSignalMmr": 2300,
+          "win": true,
+          "oldLpDelta": 25,
+          "newLpDelta": 26,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "565a2647-f62b-450c-8020-805d79410e57",
+      "matchId": "LCU_7875033810",
+      "gameDate": "2026-06-03T13:31:35.805Z",
+      "oldLobbyAvgMmr": 1677.777777777778,
+      "newLobbyAvgMmr": 2166.6666666666665,
+      "participantChanges": [
+        {
+          "participantId": "67dd1300-36a5-4940-8ed4-ad58b20b434c",
+          "playerId": "313a3e03-a65d-4f0c-a8fc-c36087b625e9",
+          "label": "Aristo#Risto",
+          "playerRiotIdName": "Aristo",
+          "playerRiotIdTag": "Risto",
+          "rankSignalMmr": 2300,
+          "win": true,
+          "oldLpDelta": 25,
+          "newLpDelta": 26,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "05d563fd-af07-4493-99a0-1796c157a6b0",
+      "matchId": "LCU_7875049999",
+      "gameDate": "2026-06-03T13:51:35.778Z",
+      "oldLobbyAvgMmr": 1733.333333333333,
+      "newLobbyAvgMmr": 2166.6666666666665,
+      "participantChanges": [
+        {
+          "participantId": "29cd5d89-14df-4207-a265-002f931e98ba",
+          "playerId": "ef282971-7986-424d-ad94-a64eb774a3e9",
+          "label": "GrandLift#ADC",
+          "playerRiotIdName": "GrandLift",
+          "playerRiotIdTag": "ADC",
+          "rankSignalMmr": 2400,
+          "win": false,
+          "oldLpDelta": -25,
+          "newLpDelta": -26,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "3de59934-edd7-4ba1-ad4a-75dfc66973df",
+      "matchId": "LCU_7875085801",
+      "gameDate": "2026-06-03T14:28:48.089Z",
+      "oldLobbyAvgMmr": 1780,
+      "newLobbyAvgMmr": 2100,
+      "participantChanges": [
+        {
+          "participantId": "635f3b4c-9e81-4313-ad7f-3f81a4be2e20",
+          "playerId": "282d35ea-5ec0-4ba1-a7ad-39e81d86e528",
+          "label": "Okkio#ETU",
+          "playerRiotIdName": "Okkio",
+          "playerRiotIdTag": "ETU",
+          "rankSignalMmr": 2100,
+          "win": false,
+          "oldLpDelta": -22,
+          "newLpDelta": -25,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        },
+        {
+          "participantId": "81d18c27-9af9-4eb4-aba9-b24cca71da06",
+          "playerId": "ef282971-7986-424d-ad94-a64eb774a3e9",
+          "label": "GrandLift#ADC",
+          "playerRiotIdName": "GrandLift",
+          "playerRiotIdTag": "ADC",
+          "rankSignalMmr": 2400,
+          "win": false,
+          "oldLpDelta": -25,
+          "newLpDelta": -27,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "0e18fe05-f82f-427f-b97c-bd76291dc3a9",
+      "matchId": "LCU_7875101977",
+      "gameDate": "2026-06-03T14:46:50.335Z",
+      "oldLobbyAvgMmr": 1650,
+      "newLobbyAvgMmr": 2100,
+      "participantChanges": [
+        {
+          "participantId": "09b0077e-2897-4031-bcee-89de9a22ec1e",
+          "playerId": "282d35ea-5ec0-4ba1-a7ad-39e81d86e528",
+          "label": "Okkio#ETU",
+          "playerRiotIdName": "Okkio",
+          "playerRiotIdTag": "ETU",
+          "rankSignalMmr": 2100,
+          "win": true,
+          "oldLpDelta": 28,
+          "newLpDelta": 27,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        },
+        {
+          "participantId": "76a0a685-41ec-478b-a64e-89fbbee27bdc",
+          "playerId": "ef282971-7986-424d-ad94-a64eb774a3e9",
+          "label": "GrandLift#ADC",
+          "playerRiotIdName": "GrandLift",
+          "playerRiotIdTag": "ADC",
+          "rankSignalMmr": 2400,
+          "win": true,
+          "oldLpDelta": 25,
+          "newLpDelta": 24,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "1621e27f-048a-49d5-a635-6fec5fbb18de",
+      "matchId": "LCU_7875913051",
+      "gameDate": "2026-06-04T09:08:53.834Z",
+      "oldLobbyAvgMmr": 1466.666666666667,
+      "newLobbyAvgMmr": 2600,
+      "participantChanges": []
+    },
+    {
+      "id": "f6a0cc1a-c18e-4277-99e4-bba865361c5e",
+      "matchId": "LCU_7875932457",
+      "gameDate": "2026-06-04T09:34:43.476Z",
+      "oldLobbyAvgMmr": 1777.777777777778,
+      "newLobbyAvgMmr": 2600,
+      "participantChanges": []
+    },
+    {
+      "id": "ffdbb1d4-ad64-4bbc-9035-6e975938a6f4",
+      "matchId": "LCU_7876119152",
+      "gameDate": "2026-06-04T13:43:20.999Z",
+      "oldLobbyAvgMmr": 1920,
+      "newLobbyAvgMmr": 2225,
+      "participantChanges": [
+        {
+          "participantId": "97c497e5-c927-4126-a490-0ed643f2964a",
+          "playerId": "282d35ea-5ec0-4ba1-a7ad-39e81d86e528",
+          "label": "Okkio#ETU",
+          "playerRiotIdName": "Okkio",
+          "playerRiotIdTag": "ETU",
+          "rankSignalMmr": 2100,
+          "win": true,
+          "oldLpDelta": 33,
+          "newLpDelta": 30,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        },
+        {
+          "participantId": "17a84508-5c89-4c84-930f-f7ac3a39dbdc",
+          "playerId": "ef282971-7986-424d-ad94-a64eb774a3e9",
+          "label": "GrandLift#ADC",
+          "playerRiotIdName": "GrandLift",
+          "playerRiotIdTag": "ADC",
+          "rankSignalMmr": 2400,
+          "win": true,
+          "oldLpDelta": 30,
+          "newLpDelta": 27,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "eb6024cb-0283-4a6c-8a5f-2c999b79964f",
+      "matchId": "LCU_7876146569",
+      "gameDate": "2026-06-04T14:05:56.494Z",
+      "oldLobbyAvgMmr": 1975,
+      "newLobbyAvgMmr": 2225,
+      "participantChanges": [
+        {
+          "participantId": "0414459c-1c04-423e-afe6-304b682d6a11",
+          "playerId": "ef282971-7986-424d-ad94-a64eb774a3e9",
+          "label": "GrandLift#ADC",
+          "playerRiotIdName": "GrandLift",
+          "playerRiotIdTag": "ADC",
+          "rankSignalMmr": 2400,
+          "win": true,
+          "oldLpDelta": 32,
+          "newLpDelta": 28,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        },
+        {
+          "participantId": "9c5612a4-4870-4a72-a242-e807931342d7",
+          "playerId": "282d35ea-5ec0-4ba1-a7ad-39e81d86e528",
+          "label": "Okkio#ETU",
+          "playerRiotIdName": "Okkio",
+          "playerRiotIdTag": "ETU",
+          "rankSignalMmr": 2100,
+          "win": true,
+          "oldLpDelta": 35,
+          "newLpDelta": 31,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "cb875ba6-3469-4b76-a567-7fd938ca0f27",
+      "matchId": "LCU_7876172645",
+      "gameDate": "2026-06-04T14:33:12.568Z",
+      "oldLobbyAvgMmr": 1911.111111111111,
+      "newLobbyAvgMmr": 2225,
+      "participantChanges": [
+        {
+          "participantId": "31b93895-0296-4002-b0c0-cc85c900c6e8",
+          "playerId": "ef282971-7986-424d-ad94-a64eb774a3e9",
+          "label": "GrandLift#ADC",
+          "playerRiotIdName": "GrandLift",
+          "playerRiotIdTag": "ADC",
+          "rankSignalMmr": 2400,
+          "win": false,
+          "oldLpDelta": -23,
+          "newLpDelta": -25,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        },
+        {
+          "participantId": "5b91f525-ccb9-499b-bcbd-163a6a95f980",
+          "playerId": "282d35ea-5ec0-4ba1-a7ad-39e81d86e528",
+          "label": "Okkio#ETU",
+          "playerRiotIdName": "Okkio",
+          "playerRiotIdTag": "ETU",
+          "rankSignalMmr": 2100,
+          "win": false,
+          "oldLpDelta": -21,
+          "newLpDelta": -23,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "8a9ec157-b218-43e9-8a4b-a4ac8631dc8b",
+      "matchId": "LCU_7876191167",
+      "gameDate": "2026-06-04T14:55:42.978Z",
+      "oldLobbyAvgMmr": 1577.777777777778,
+      "newLobbyAvgMmr": 2166.6666666666665,
+      "participantChanges": [
+        {
+          "participantId": "50b7ef3e-fc58-414d-938a-41eb293c6eaa",
+          "playerId": "282d35ea-5ec0-4ba1-a7ad-39e81d86e528",
+          "label": "Okkio#ETU",
+          "playerRiotIdName": "Okkio",
+          "playerRiotIdTag": "ETU",
+          "rankSignalMmr": 2100,
+          "win": false,
+          "oldLpDelta": -26,
+          "newLpDelta": -24,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        },
+        {
+          "participantId": "27e1c527-13a6-46cd-9f8f-db3421beabb9",
+          "playerId": "ed1f6b03-cfc6-4e6b-8cf1-ab6f4c317408",
+          "label": "AIS Exile#EUW",
+          "playerRiotIdName": "AIS Exile",
+          "playerRiotIdTag": "EUW",
+          "rankSignalMmr": 2600,
+          "win": false,
+          "oldLpDelta": -29,
+          "newLpDelta": -28,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "9d024c68-2354-461a-9c1c-386824bf8c5d",
+      "matchId": "LCU_7876218885",
+      "gameDate": "2026-06-04T15:17:47.478Z",
+      "oldLobbyAvgMmr": 1550,
+      "newLobbyAvgMmr": 2600,
+      "participantChanges": [
+        {
+          "participantId": "afb996c9-007e-4ce8-ad45-e9a4bfbc2de3",
+          "playerId": "ed1f6b03-cfc6-4e6b-8cf1-ab6f4c317408",
+          "label": "AIS Exile#EUW",
+          "playerRiotIdName": "AIS Exile",
+          "playerRiotIdTag": "EUW",
+          "rankSignalMmr": 2600,
+          "win": true,
+          "oldLpDelta": 23,
+          "newLpDelta": 29,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "bfc78b39-4693-4f97-a210-3cada9e7d253",
+      "matchId": "LCU_7876241034",
+      "gameDate": "2026-06-04T15:39:24.645Z",
+      "oldLobbyAvgMmr": 1620,
+      "newLobbyAvgMmr": 2600,
+      "participantChanges": [
+        {
+          "participantId": "423415dd-f66e-4db3-892f-100024696033",
+          "playerId": "ed1f6b03-cfc6-4e6b-8cf1-ab6f4c317408",
+          "label": "AIS Exile#EUW",
+          "playerRiotIdName": "AIS Exile",
+          "playerRiotIdTag": "EUW",
+          "rankSignalMmr": 2600,
+          "win": false,
+          "oldLpDelta": -27,
+          "newLpDelta": -22,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "ab720380-e97e-4362-a8fa-bf94a820c69a",
+      "matchId": "LCU_7876254363",
+      "gameDate": "2026-06-04T15:53:28.698Z",
+      "oldLobbyAvgMmr": 1560,
+      "newLobbyAvgMmr": 2600,
+      "participantChanges": [
+        {
+          "participantId": "a22002b2-ba76-4665-b964-853b2609188a",
+          "playerId": "ed1f6b03-cfc6-4e6b-8cf1-ab6f4c317408",
+          "label": "AIS Exile#EUW",
+          "playerRiotIdName": "AIS Exile",
+          "playerRiotIdTag": "EUW",
+          "rankSignalMmr": 2600,
+          "win": true,
+          "oldLpDelta": 23,
+          "newLpDelta": 29,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "8722c403-009e-46ef-918f-c98f1982b24f",
+      "matchId": "LCU_7876288831",
+      "gameDate": "2026-06-04T16:17:37.989Z",
+      "oldLobbyAvgMmr": 1537.5,
+      "newLobbyAvgMmr": 2600,
+      "participantChanges": [
+        {
+          "participantId": "49a68e6c-fa54-41e9-8fbd-f9af3d8b7dee",
+          "playerId": "ed1f6b03-cfc6-4e6b-8cf1-ab6f4c317408",
+          "label": "AIS Exile#EUW",
+          "playerRiotIdName": "AIS Exile",
+          "playerRiotIdTag": "EUW",
+          "rankSignalMmr": 2600,
+          "win": false,
+          "oldLpDelta": -28,
+          "newLpDelta": -22,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    },
+    {
+      "id": "391c3945-2f4c-4b6e-9768-828d5217901f",
+      "matchId": "LCU_7876302546",
+      "gameDate": "2026-06-04T16:26:13.637Z",
+      "oldLobbyAvgMmr": 1666.666666666667,
+      "newLobbyAvgMmr": 2600,
+      "participantChanges": [
+        {
+          "participantId": "84f15028-9097-4270-933b-b65760607a0a",
+          "playerId": "ed1f6b03-cfc6-4e6b-8cf1-ab6f4c317408",
+          "label": "AIS Exile#EUW",
+          "playerRiotIdName": "AIS Exile",
+          "playerRiotIdTag": "EUW",
+          "rankSignalMmr": 2600,
+          "win": true,
+          "oldLpDelta": 25,
+          "newLpDelta": 29,
+          "oldIsPlacement": false,
+          "newIsPlacement": false
+        }
+      ]
+    }
+  ],
+  "playerSnapshots": [
+    {
+      "id": "ed1f6b03-cfc6-4e6b-8cf1-ab6f4c317408",
+      "label": "AIS Exile#EUW",
+      "old": {
+        "rawMmr": 1719,
+        "currentLp": 19,
+        "isPlaced": true,
+        "mayhemGames": 16,
+        "lastGameDate": "2026-06-04T16:26:13.637Z",
+        "lastGameTier": "Gold",
+        "cacheUpdatedAt": "2026-06-04T22:30:02.511Z"
+      },
+      "next": {
+        "rawMmr": 2308,
+        "currentLp": 8,
+        "isPlaced": true,
+        "mayhemGames": 16,
+        "lastGameDate": "2026-06-04T16:26:13.637Z",
+        "lastGameTier": "Platinum",
+        "cacheUpdatedAt": "2026-06-04T22:53:02.627Z"
+      }
+    },
+    {
+      "id": "dd3d17cb-71c7-497c-ac74-3147544d3dd4",
+      "label": "fakeryasuoo#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T22:30:02.117Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "313a3e03-a65d-4f0c-a8fc-c36087b625e9",
+      "label": "Aristo#Risto",
+      "old": {
+        "rawMmr": 1827,
+        "currentLp": 27,
+        "isPlaced": true,
+        "mayhemGames": 14,
+        "lastGameDate": "2026-06-03T13:51:35.778Z",
+        "lastGameTier": "Gold",
+        "cacheUpdatedAt": "2026-06-04T22:30:02.510Z"
+      },
+      "next": {
+        "rawMmr": 2332,
+        "currentLp": 32,
+        "isPlaced": true,
+        "mayhemGames": 14,
+        "lastGameDate": "2026-06-03T13:51:35.778Z",
+        "lastGameTier": "Platinum",
+        "cacheUpdatedAt": "2026-06-04T22:53:02.627Z"
+      }
+    },
+    {
+      "id": "32109037-cb13-4d15-8a32-93d67e547501",
+      "label": "Hasta La Vaynsta#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 2,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T22:30:02.117Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 2,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "8669f1eb-0ae5-49a3-bf96-9f7d4d40f1d3",
+      "label": "Snitchblasta56#9380",
+      "old": {
+        "rawMmr": 1847,
+        "currentLp": 47,
+        "isPlaced": true,
+        "mayhemGames": 10,
+        "lastGameDate": null,
+        "lastGameTier": "Gold",
+        "cacheUpdatedAt": "2026-06-04T22:30:02.510Z"
+      },
+      "next": {
+        "rawMmr": 2188,
+        "currentLp": 88,
+        "isPlaced": true,
+        "mayhemGames": 10,
+        "lastGameDate": null,
+        "lastGameTier": "Platinum",
+        "cacheUpdatedAt": "2026-06-04T22:53:02.627Z"
+      }
+    },
+    {
+      "id": "fd785e6b-ddd5-48c0-a52e-f42ba84d2d7b",
+      "label": "Cheesus123#EUW",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 2,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T22:30:02.117Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 2,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "ef282971-7986-424d-ad94-a64eb774a3e9",
+      "label": "GrandLift#ADC",
+      "old": {
+        "rawMmr": 1733,
+        "currentLp": 33,
+        "isPlaced": true,
+        "mayhemGames": 16,
+        "lastGameDate": "2026-06-04T14:33:12.568Z",
+        "lastGameTier": "Gold",
+        "cacheUpdatedAt": "2026-06-04T22:30:02.510Z"
+      },
+      "next": {
+        "rawMmr": 2225,
+        "currentLp": 25,
+        "isPlaced": true,
+        "mayhemGames": 16,
+        "lastGameDate": "2026-06-04T14:33:12.568Z",
+        "lastGameTier": "Platinum",
+        "cacheUpdatedAt": "2026-06-04T22:53:02.627Z"
+      }
+    },
+    {
+      "id": "67eacd59-a513-4620-80da-8ef2b700d810",
+      "label": "skibidisigma31#666",
+      "old": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": "2026-06-04T22:30:02.117Z"
+      },
+      "next": {
+        "rawMmr": 0,
+        "currentLp": 0,
+        "isPlaced": false,
+        "mayhemGames": 1,
+        "lastGameDate": null,
+        "lastGameTier": null,
+        "cacheUpdatedAt": null
+      }
+    },
+    {
+      "id": "282d35ea-5ec0-4ba1-a7ad-39e81d86e528",
+      "label": "Okkio#ETU",
+      "old": {
+        "rawMmr": 1527,
+        "currentLp": 27,
+        "isPlaced": true,
+        "mayhemGames": 16,
+        "lastGameDate": "2026-06-04T14:55:42.978Z",
+        "lastGameTier": "Gold",
+        "cacheUpdatedAt": "2026-06-04T22:30:02.510Z"
+      },
+      "next": {
+        "rawMmr": 1978,
+        "currentLp": 78,
+        "isPlaced": true,
+        "mayhemGames": 16,
+        "lastGameDate": "2026-06-04T14:55:42.978Z",
+        "lastGameTier": "Gold",
+        "cacheUpdatedAt": "2026-06-04T22:53:02.627Z"
+      }
+    }
+  ]
+}

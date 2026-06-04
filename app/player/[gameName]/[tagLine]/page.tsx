@@ -62,7 +62,7 @@ export default async function PlayerPage({ params }: PageProps) {
               match: {
                   gameDate: m.match.gameDate.toISOString(),
                   durationSeconds: m.match.durationSeconds,
-                  participants: m.match.participants.map(part => ({
+              participants: m.match.participants.map(part => ({
                       id: part.id,
                       championId: part.championId,
                       championName: part.championName,
@@ -74,10 +74,14 @@ export default async function PlayerPage({ params }: PageProps) {
                       healingDone: part.healingDone,
                       win: part.win,
                       team: part.team,
-                      player: {
+                      player: part.player ? {
                           riotIdName: part.player.riotIdName,
                           riotIdTag: part.player.riotIdTag
-                      }
+                      } : null,
+                      playerRiotIdName: part.playerRiotIdName,
+                      playerRiotIdTag: part.playerRiotIdTag,
+                      rankSignalMmr: part.rankSignalMmr,
+                      rankLabelAtMatch: part.rankLabelAtMatch
                   }))
               }
           })),

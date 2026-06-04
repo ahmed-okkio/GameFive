@@ -188,7 +188,7 @@ export type PlayerProfile =
         match: {
           gameDate: Date;
           durationSeconds: number;
-          participants: Array<{
+        participants: Array<{
             id: string;
             championId: number;
             championName: string | null;
@@ -200,7 +200,11 @@ export type PlayerProfile =
             healingDone: number;
             win: boolean;
             team: number;
-            player: { riotIdName: string; riotIdTag: string; };
+            player: { riotIdName: string; riotIdTag: string; } | null;
+            playerRiotIdName: string | null;
+            playerRiotIdTag: string | null;
+            rankSignalMmr: number | null;
+            rankLabelAtMatch: string;
           }>
         };
       }>;
@@ -284,10 +288,16 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
                 healingDone: part.healingDone,
                 win: part.win,
                 team: part.team,
-                player: {
-                    riotIdName: part.player?.riotIdName ?? "Unknown",
-                    riotIdTag: part.player?.riotIdTag ?? "EUW"
-                }
+                player: part.player ? {
+                    riotIdName: part.player.riotIdName,
+                    riotIdTag: part.player.riotIdTag
+                } : null,
+                playerRiotIdName: part.playerRiotIdName ?? part.player?.riotIdName ?? null,
+                playerRiotIdTag: part.playerRiotIdTag ?? part.player?.riotIdTag ?? null,
+                rankSignalMmr: part.rankSignalMmr ?? null,
+                rankLabelAtMatch: part.rankSignalMmr !== null
+                  ? getTierLabel(part.rankSignalMmr).label
+                  : (part.playerId ? "Unranked" : "Unknown rank")
             }))
         }
     })),

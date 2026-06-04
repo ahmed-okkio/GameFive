@@ -77,6 +77,7 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
   }
 
   const playerRows = new Map<string, Player>();
+  const playerRankSignals = new Map<string, number | null>();
   const CHAMPION_MAP = await getChampionMap();
 
   // 1. Resolve only players that already exist in the database
@@ -84,38 +85,27 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
     const player = await getPlayerByPuuid(participant.puuid);
     if (player) {
       playerRows.set(participant.puuid, player);
-    }
-  }
-
-  // 2. Calculate Lobby Average MMR
-  const uploader = playerRows.get(payload.uploaderPuuid);
-  const participants = [...playerRows.values()];
-  
-  // Filter for players with real rank data (Solo/Duo OR Flex)
-  const rankedParticipants = participants.filter((player) =>
-    bestRankedMmrWithHistoricalFallback({
-      soloDuoTier: player.soloDuoTier,
-      soloDuoDivision: player.soloDuoDivision,
-      flexTier: player.flexTier,
-      flexDivision: player.flexDivision,
-      historicalTier: player.historicalTier,
-      historicalDivision: player.historicalDivision
-    }) !== null
-  );
-
-  let lobbyAvgMmr: number | null = null;
-  if (rankedParticipants.length > 0) {
-      lobbyAvgMmr = rankedParticipants.reduce((sum, player) => {
-        const pMmr = bestRankedMmrWithHistoricalFallback({
+      playerRankSignals.set(
+        participant.puuid,
+        bestRankedMmrWithHistoricalFallback({
           soloDuoTier: player.soloDuoTier,
           soloDuoDivision: player.soloDuoDivision,
           flexTier: player.flexTier,
           flexDivision: player.flexDivision,
           historicalTier: player.historicalTier,
           historicalDivision: player.historicalDivision
-        });
-        return sum + (pMmr ?? 0);
-      }, 0) / rankedParticipants.length;
+        })
+      );
+    }
+  }
+
+  // 2. Calculate Lobby Average MMR
+  const uploader = playerRows.get(payload.uploaderPuuid);
+  const rankedParticipants = [...playerRankSignals.values()].filter((value): value is number => value !== null);
+
+  let lobbyAvgMmr: number | null = null;
+  if (rankedParticipants.length > 0) {
+      lobbyAvgMmr = rankedParticipants.reduce((sum, pMmr) => sum + pMmr, 0) / rankedParticipants.length;
   }
 
   // 3. Create the match
@@ -169,6 +159,9 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
   // 5. Create match participants and update known players
   for (const participant of payload.participants) {
     const player = playerRows.get(participant.puuid) ?? null;
+    const rankSignalMmr = player ? playerRankSignals.get(participant.puuid) ?? null : null;
+    const playerRiotIdName = participant.gameName ?? player?.riotIdName ?? participant.summonerName ?? null;
+    const playerRiotIdTag = participant.tagLine ?? player?.riotIdTag ?? null;
 
     // 1. Calculate stats for the match participant
     const championName = CHAMPION_MAP[participant.championId] ?? `Champion ${participant.championId}`;
@@ -215,11 +208,14 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
     }
 
     await prisma.matchParticipant.create({
-      data: {
+        data: {
         matchId: storedMatch.id,
         playerId: player?.id,
-        team: participant.teamId,
-        win: participant.win,
+        playerRiotIdName,
+        playerRiotIdTag,
+        rankSignalMmr,
+          team: participant.teamId,
+          win: participant.win,
         championId: participant.championId,
         championName,
         kills: participant.kills,
