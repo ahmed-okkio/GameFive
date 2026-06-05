@@ -62,7 +62,23 @@ export async function upsertPlayer(
     },
   });
 
+  // Self-heal: Link unlinked participants to this player
+  await linkUnlinkedParticipants(player.id, riotIdName, riotIdTag);
+
   return hydrateRankedSignals(player);
+}
+
+export async function linkUnlinkedParticipants(playerId: string, name: string, tag: string) {
+    await prisma.matchParticipant.updateMany({
+        where: {
+            playerId: null,
+            playerRiotIdName: { equals: name, mode: 'insensitive' },
+            playerRiotIdTag: { equals: tag, mode: 'insensitive' }
+        },
+        data: {
+            playerId: playerId
+        }
+    });
 }
 
 export async function hydrateRankedSignals(player: Player): Promise<Player> {
