@@ -20,13 +20,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 GameFive
               </Link>
               <nav className="flex min-w-0 items-center justify-end gap-2 text-sm sm:gap-3 lg:hidden">
-                <Link
-                  href="/companion"
-                  className="inline-flex shrink-0 items-center gap-1.5 rounded bg-gold px-2.5 py-1.5 text-xs font-semibold text-black hover:bg-gold/90 sm:text-sm"
-                >
-                  <Download size={14} />
-                  Companion
-                </Link>
                 <Link href="/leaderboard" className="text-stone-300 hover:text-white">
                   Board
                 </Link>
@@ -38,7 +31,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <nav className="hidden shrink-0 items-center gap-3 text-sm lg:flex">
               <Link
                 href="/companion"
-                className="inline-flex items-center gap-2 rounded bg-gold px-3 py-1.5 font-semibold text-black hover:bg-gold/90"
+                className="hidden items-center gap-2 rounded bg-gold px-3 py-1.5 font-semibold text-black hover:bg-gold/90 lg:inline-flex"
               >
                 <Download size={14} />
                 Download Companion

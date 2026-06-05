@@ -161,8 +161,10 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
   for (const participant of payload.participants) {
     const player = playerRows.get(participant.puuid) ?? null;
     const rankSignalMmr = player ? playerRankSignals.get(participant.puuid) ?? null : null;
-    const playerRiotIdName = participant.gameName ?? player?.riotIdName ?? participant.summonerName ?? null;
-    const playerRiotIdTag = participant.tagLine ?? player?.riotIdTag ?? null;
+    const playerRiotIdName = player
+      ? null
+      : participant.gameName ?? participant.summonerName ?? null;
+    const playerRiotIdTag = player ? null : participant.tagLine ?? null;
 
     // 1. Calculate stats for the match participant
     const championName = CHAMPION_MAP[participant.championId] ?? `Champion ${participant.championId}`;

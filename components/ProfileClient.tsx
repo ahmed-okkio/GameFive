@@ -1,6 +1,6 @@
 "use client";
 
-import { RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
+import { ExternalLink, RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
 import Image from "next/image";
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
@@ -308,6 +308,19 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
                                     <div key={i} className={`h-2 flex-1 rounded-sm ${i < status.mmr.mayhemGames ? "bg-gold" : "bg-stone-700"}`} />
                                 ))}
                             </div>
+                        </div>
+                        <div className="mt-3 w-full rounded border border-gold/30 bg-gold/10 p-3 text-left">
+                            <p className="text-sm font-semibold text-gold">Finish placements faster</p>
+                            <p className="mt-1 text-xs leading-5 text-stone-300">
+                                Download the Companion to upload games automatically while you play and get placed sooner.
+                            </p>
+                            <Link
+                                href="/companion"
+                                className="mt-3 hidden items-center gap-2 text-xs font-bold text-gold hover:underline md:inline-flex"
+                            >
+                                Download the Companion
+                                <ExternalLink size={13} />
+                            </Link>
                         </div>
                     </div>
                 )}

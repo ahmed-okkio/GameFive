@@ -15,7 +15,7 @@ export default function HomePage() {
           <SearchForm />
         </div>
         <div className="mt-5 flex flex-col gap-3 text-sm text-stone-300 sm:flex-row sm:flex-wrap">
-          <Link href="/companion" className="inline-flex items-center gap-2 rounded border border-line bg-black/20 px-3 py-2 font-semibold text-gold hover:border-gold">
+          <Link href="/companion" className="hidden items-center gap-2 rounded border border-line bg-black/20 px-3 py-2 font-semibold text-gold hover:border-gold sm:inline-flex">
             <Download size={16} />
             Download Companion
           </Link>

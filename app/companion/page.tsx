@@ -59,7 +59,7 @@ export default function CompanionPage() {
               {downloadUrl ? (
                 <a
                   href={downloadUrl}
-                  className="inline-flex items-center justify-center gap-2 rounded bg-gold px-5 py-3 text-sm font-black text-black hover:bg-gold/90"
+                  className="hidden items-center justify-center gap-2 rounded bg-gold px-5 py-3 text-sm font-black text-black hover:bg-gold/90 md:inline-flex"
                 >
                   <Download size={18} />
                   Download for Windows
