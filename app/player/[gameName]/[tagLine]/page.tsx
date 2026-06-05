@@ -1,5 +1,6 @@
 import { ProfileClient } from "@/components/ProfileClient";
 import { getPlayerProfile } from "@/lib/players";
+import { appConfig } from "@/lib/config";
 import type { Metadata } from "next";
 
 type PageProps = {
@@ -106,5 +107,5 @@ export default async function PlayerPage({ params }: PageProps) {
           }))
         };
 
-  return <ProfileClient gameName={decodedGameName} tagLine={decodedTagLine} initialStatus={initialStatus} />;
+  return <ProfileClient gameName={decodedGameName} tagLine={decodedTagLine} initialStatus={initialStatus} maintenanceMode={appConfig.maintenanceMode} />;
 }

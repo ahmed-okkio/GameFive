@@ -8,7 +8,8 @@ export const appConfig = {
   adminPasswordHash: process.env.ADMIN_PASSWORD_HASH ?? "",
   nextAuthSecret: process.env.NEXTAUTH_SECRET ?? "",
   companionIngestToken: process.env.COMPANION_INGEST_TOKEN ?? "dev-local-token",
-  companionDownloadUrl: process.env.COMPANION_DL ?? ""
+  companionDownloadUrl: process.env.COMPANION_DL ?? "",
+  maintenanceMode: process.env.MAINTENANCE_MODE === "true"
 };
 
 export function requireEnv(name: keyof typeof appConfig) {

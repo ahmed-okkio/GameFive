@@ -98,6 +98,7 @@ type ProfileClientProps = {
   gameName: string;
   tagLine: string;
   initialStatus?: StatusResponse;
+  maintenanceMode: boolean;
 };
 
 type ReadyStatus = Extract<StatusResponse, { state: "ready" }>;
@@ -164,7 +165,7 @@ function ChampionAvatar({ image, name, size = "md" }: { image: string | null; na
   );
 }
 
-export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClientProps) {
+export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMode }: ProfileClientProps) {
   const [status, setStatus] = useState<StatusResponse | null>(initialStatus ?? null);
   const [tab, setTab] = useState("matches");
   const [expandedMatchId, setExpandedMatchId] = useState<string | null>(null);
@@ -258,9 +259,11 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
     status.player.promoFromTier && status.player.promoToTier
       ? `${status.player.promoFromTier} I PROMO (${status.player.promoWins}W ${status.player.promoLosses}L)`
       : null;
-  const rankLabel = status.player.isPlaced ? (promoLabel ?? status.tier.label) : "Unranked";
+  
+  const rankLabel = maintenanceMode ? "Under Maintenance" : (status.player.isPlaced ? (promoLabel ?? status.tier.label) : "Unranked");
     
   const getTierIcon = (tierName: string) => {
+    if (maintenanceMode) return null;
     const formattedTier = tierName.charAt(0).toUpperCase() + tierName.slice(1).toLowerCase();
     return `/tiers/Season_2023_-_${formattedTier}.png`;
   };
@@ -288,40 +291,44 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
             </div>
 
             <div className="mt-6 border-t border-line pt-6">
-                {status.player.isPlaced ? (
+                {status.player.isPlaced && !maintenanceMode ? (
                     <div className="flex flex-col items-center gap-2">
-                        <img src={getTierIcon(status.tier.tier)} alt={status.tier.tier} className="h-24 w-24 object-contain" />
+                        <img src={getTierIcon(status.tier.tier)!} alt={status.tier.tier} className="h-24 w-24 object-contain" />
                         <span className="text-lg font-bold text-gold">{rankLabel}</span>
                         {promoLabel ? <span className="text-xs text-stone-400">{status.tier.label}</span> : null}
                         <span className="text-sm text-stone-300">{status.mmr.currentLp} LP</span>
                     </div>
                 ) : (
                     <div className="flex flex-col items-center gap-2">
-                        <span className="text-lg font-bold text-stone-300">Unranked</span>
-                        <div className="w-full mt-2">
-                            <div className="flex justify-between text-xs text-stone-400 mb-1">
-                                <span>Placement Progress</span>
-                                <span>{status.mmr.mayhemGames} / 10</span>
-                            </div>
-                            <div className="flex gap-1">
-                                {[...Array(10)].map((_, i) => (
-                                    <div key={i} className={`h-2 flex-1 rounded-sm ${i < status.mmr.mayhemGames ? "bg-gold" : "bg-stone-700"}`} />
-                                ))}
-                            </div>
-                        </div>
-                        <div className="mt-3 w-full rounded border border-gold/30 bg-gold/10 p-3 text-left">
-                            <p className="text-sm font-semibold text-gold">Finish placements faster</p>
-                            <p className="mt-1 text-xs leading-5 text-stone-300">
-                                Download the Companion to upload games automatically while you play and get placed sooner.
-                            </p>
-                            <Link
-                                href="/companion"
-                                className="mt-3 hidden items-center gap-2 text-xs font-bold text-gold hover:underline md:inline-flex"
-                            >
-                                Download the Companion
-                                <ExternalLink size={13} />
-                            </Link>
-                        </div>
+                        <span className="text-lg font-bold text-stone-300">{rankLabel}</span>
+                        {!maintenanceMode && !status.player.isPlaced ? (
+                          <div className="w-full mt-2">
+                              <div className="flex justify-between text-xs text-stone-400 mb-1">
+                                  <span>Placement Progress</span>
+                                  <span>{status.mmr.mayhemGames} / 10</span>
+                              </div>
+                              <div className="flex gap-1">
+                                  {[...Array(10)].map((_, i) => (
+                                      <div key={i} className={`h-2 flex-1 rounded-sm ${i < status.mmr.mayhemGames ? "bg-gold" : "bg-stone-700"}`} />
+                                  ))}
+                              </div>
+                          </div>
+                        ) : null}
+                        {!maintenanceMode && (
+                          <div className="mt-3 w-full rounded border border-gold/30 bg-gold/10 p-3 text-left">
+                              <p className="text-sm font-semibold text-gold">Finish placements faster</p>
+                              <p className="mt-1 text-xs leading-5 text-stone-300">
+                                  Download the Companion to upload games automatically while you play and get placed sooner.
+                              </p>
+                              <Link
+                                  href="/companion"
+                                  className="mt-3 hidden items-center gap-2 text-xs font-bold text-gold hover:underline md:inline-flex"
+                              >
+                                  Download the Companion
+                                  <ExternalLink size={13} />
+                              </Link>
+                          </div>
+                        )}
                     </div>
                 )}
             </div>
@@ -484,7 +491,7 @@ export function ProfileClient({ gameName, tagLine, initialStatus }: ProfileClien
                                                   const playerName = p.player?.riotIdName ?? p.playerRiotIdName;
                                                   const playerTag = p.player?.riotIdTag ?? p.playerRiotIdTag;
                                                   const displayName = playerName ? `${playerName}${playerTag ? `#${playerTag}` : ""}` : "Unknown name";
-                                                  const rankAtMatch = p.rankLabelAtMatch ?? "Unknown rank";
+                                                  const rankAtMatch = maintenanceMode ? "Under Maintenance" : (p.rankLabelAtMatch ?? "Unknown rank");
                                                   const isLinked = Boolean(p.player && playerName && playerTag);
 
                                                   return isLinked ? (

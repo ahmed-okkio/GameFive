@@ -6,7 +6,7 @@ import type { RiotAccount, RiotLeagueEntry, RiotMatch, RiotSummoner } from "@/li
 type Routing = "platform" | "region";
 
 async function riotFetch<T>(routing: Routing, path: string, attempt = 0): Promise<T> {
-  const apiKey = requireEnv("riotApiKey");
+  const apiKey = requireEnv("riotApiKey") as string;
   const baseUrl = routing === "platform" ? RIOT_PLATFORM_URL : RIOT_REGION_URL;
 
   await acquireRiotSlot();

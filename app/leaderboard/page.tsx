@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getTierLabel } from "@/lib/mmr/tier";
+import { appConfig } from "@/lib/config";
 
 export const dynamic = "force-dynamic";
 
@@ -39,7 +40,7 @@ export default async function LeaderboardPage() {
                   player.promoFromTier && player.promoToTier
                     ? `${player.promoFromTier} I PROMO (${player.promoWins}W ${player.promoLosses}L)`
                     : null;
-                const tier = player.isPlaced ? (promoLabel ?? getTierLabel(player.rawMmr).label) : "Unranked";
+                const tier = appConfig.maintenanceMode ? "Under Maintenance" : (player.isPlaced ? (promoLabel ?? getTierLabel(player.rawMmr).label) : "Unranked");
 
                 return (
                   <tr key={player.id} className="border-t border-line">
@@ -53,7 +54,7 @@ export default async function LeaderboardPage() {
                       </Link>
                     </td>
                     <td className="p-3 text-gold">{tier}</td>
-                    <td className="p-3 text-right font-bold">{player.isPlaced ? player.currentLp.toLocaleString() : "-"}</td>
+                    <td className="p-3 text-right font-bold">{!appConfig.maintenanceMode && player.isPlaced ? player.currentLp.toLocaleString() : "-"}</td>
                   </tr>
                 );
               })}
