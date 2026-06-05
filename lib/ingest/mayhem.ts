@@ -1,12 +1,16 @@
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import type { Player } from "@prisma/client";
-import { bestRankedMmrWithHistoricalFallback } from "@/lib/mmr/ranked";
+import { bestRankedMmrWithHistoricalFallback, rankedToMmr } from "@/lib/mmr/ranked";
 import { applyPromoUpdate, getPromoRankLabel } from "@/lib/mmr/promos";
 import { calculateLpDelta } from "@/lib/mmr/calculate";
 import { getTierLabel } from "@/lib/mmr/tier";
-import { getChampionMap } from "@/lib/riot/champions";
-import { getPlayerByPuuid } from "@/lib/players";
+import { getChampionMap, refreshChampionMap } from "@/lib/riot/champions";
+import { getPlayerByPuuid, upsertPlayer, hydrateRankedSignals } from "@/lib/players";
+import { riotClient } from "@/lib/riot/client";
+import { fetchOpggHistoricalRank } from "@/lib/riot/opgg";
+
+let championMapCache: Record<number, string> | null = null;
 
 export const companionMatchPayloadSchema = z.object({
   source: z.literal("lcu"),
@@ -55,59 +59,72 @@ function isMayhemPayload(payload: CompanionMatchPayload) {
   return payload.queueId === 2400 || payload.gameMode?.toUpperCase() === "KIWI";
 }
 
+async function resolveRank(puuid: string, name: string, tag: string): Promise<number | null> {
+    try {
+        const summoner = await riotClient.getSummonerByPuuid(puuid);
+        const leagues = await riotClient.getLeagueEntries(summoner.id);
+        const solo = leagues.find(l => l.queueType === "RANKED_SOLO_5x5");
+        const flex = leagues.find(l => l.queueType === "RANKED_FLEX_SR");
+        const mmr = Math.max(rankedToMmr(solo?.tier, solo?.rank) || 0, rankedToMmr(flex?.tier, flex?.rank) || 0);
+        if (mmr > 0) return mmr;
+
+        const hist = await fetchOpggHistoricalRank("euw", name, tag);
+        if (hist) return rankedToMmr(hist.tier, hist.division) ?? null;
+    } catch (e) {
+        console.warn(`Failed to resolve rank for ${name}#${tag}`, e);
+    }
+    return null;
+}
+
 export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload) {
   if (!isMayhemPayload(payload)) {
-    return {
-      accepted: false,
-      duplicate: false,
-      reason: "not_mayhem"
-    };
+    return { accepted: false, duplicate: false, reason: "not_mayhem" };
   }
 
   const matchId = `LCU_${payload.gameId}`;
-  const existingMatch = await prisma.match.findUnique({
-    where: { matchId }
-  });
+  console.log(`[Ingest] Starting match ${matchId}`);
 
+  const existingMatch = await prisma.match.findUnique({ where: { matchId } });
   if (existingMatch) {
-    return {
-      accepted: true,
-      duplicate: true,
-      matchId
-    };
+    console.log(`[Ingest] Match ${matchId} already exists, skipping.`);
+    return { accepted: true, duplicate: true, matchId };
   }
 
   const playerRows = new Map<string, Player>();
   const playerRankSignals = new Map<string, number | null>();
-  const CHAMPION_MAP = await getChampionMap();
-
-  // 1. Resolve only players that already exist in the database
-  for (const participant of payload.participants) {
-    const player = await getPlayerByPuuid(participant.puuid);
-    if (player) {
-      playerRows.set(participant.puuid, player);
-      playerRankSignals.set(
-        participant.puuid,
-        bestRankedMmrWithHistoricalFallback({
-          soloDuoTier: player.soloDuoTier,
-          soloDuoDivision: player.soloDuoDivision,
-          flexTier: player.flexTier,
-          flexDivision: player.flexDivision,
-          historicalTier: player.historicalTier,
-          historicalDivision: player.historicalDivision
-        })
-      );
-    }
+  
+  if (!championMapCache) {
+      championMapCache = await getChampionMap();
   }
+
+  // 1. Resolve ALL players in parallel
+  console.log(`[Ingest] Resolving ${payload.participants.length} players...`);
+  await Promise.all(payload.participants.map(async (participant) => {
+      const name = participant.gameName ?? participant.summonerName ?? "Unknown";
+      const tag = participant.tagLine ?? "EUW";
+
+      const existingPlayer = await getPlayerByPuuid(participant.puuid);
+      if (existingPlayer) {
+          const player = await hydrateRankedSignals(existingPlayer);
+          playerRows.set(participant.puuid, player);
+          playerRankSignals.set(participant.puuid, bestRankedMmrWithHistoricalFallback(player));
+      } else if (participant.puuid === payload.uploaderPuuid) {
+          const player = await upsertPlayer(name, tag, participant.puuid);
+          playerRows.set(participant.puuid, player);
+          playerRankSignals.set(participant.puuid, bestRankedMmrWithHistoricalFallback(player));
+      } else {
+          // Non-uploader, not in DB - resolve without persisting
+          const rankMmr = await resolveRank(participant.puuid, name, tag);
+          playerRankSignals.set(participant.puuid, rankMmr);
+      }
+  }));
+  console.log(`[Ingest] Players resolved.`);
 
   // 2. Calculate Lobby Average MMR
-  const uploader = playerRows.get(payload.uploaderPuuid);
   const rankedParticipants = [...playerRankSignals.values()].filter((value): value is number => value !== null);
-
-  let lobbyAvgMmr: number | null = null;
-  if (rankedParticipants.length > 0) {
-      lobbyAvgMmr = rankedParticipants.reduce((sum, pMmr) => sum + pMmr, 0) / rankedParticipants.length;
-  }
+  const lobbyAvgMmr = rankedParticipants.length > 0
+      ? rankedParticipants.reduce((sum, pMmr) => sum + pMmr, 0) / rankedParticipants.length
+      : null;
 
   // 3. Create the match
   const storedMatch = await prisma.match.create({
@@ -122,52 +139,18 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
     }
   });
 
-  // 4. Calculate LP delta
-  let calculatedLpDelta = 0;
-  if (uploader) {
-    const isWin = payload.participants.find(p => p.puuid === payload.uploaderPuuid)?.win ?? false;
-    console.log(`Debug LP: uploader=${uploader.riotIdName}, isPlaced=${uploader.isPlaced}, isWin=${isWin}`);
-    
-    if (uploader.isPlaced) {
-        const last5Games = await prisma.matchParticipant.findMany({
-            where: { playerId: uploader.id, match: { gameMode: "MAYHEM" } },
-            include: { match: true },
-            orderBy: { match: { gameDate: "desc" } },
-            take: 5
-        });
-        
-        let consecutiveStreak = 0;
-        for (const g of last5Games) {
-            if (g.win === isWin) consecutiveStreak++;
-            else break;
-        }
-        
-        const delta = calculateLpDelta({
-            playerCurrentMmr: uploader.rawMmr,
-            lobbyAvgMmr: lobbyAvgMmr,
-            consecutiveStreak: consecutiveStreak,
-            win: isWin
-        });
-        calculatedLpDelta = Math.round(isWin ? delta : -delta);
-        console.log(`Debug LP: Calculated delta=${calculatedLpDelta}`);
-    } else {
-        console.log("Debug LP: Uploader not placed, skipping delta calculation.");
-    }
-  } else {
-      console.log("Debug LP: Uploader not found, skipping delta calculation.");
-  }
-
-  // 5. Create match participants and update known players
+  // 4. Create match participants and update known players
   for (const participant of payload.participants) {
     const player = playerRows.get(participant.puuid) ?? null;
-    const rankSignalMmr = player ? playerRankSignals.get(participant.puuid) ?? null : null;
-    const playerRiotIdName = player
-      ? null
-      : participant.gameName ?? participant.summonerName ?? null;
+    const rankSignalMmr = playerRankSignals.get(participant.puuid) ?? null;
+    const playerRiotIdName = player ? null : participant.gameName ?? participant.summonerName ?? null;
     const playerRiotIdTag = player ? null : participant.tagLine ?? null;
 
     // 1. Calculate stats for the match participant
-    const championName = CHAMPION_MAP[participant.championId] ?? `Champion ${participant.championId}`;
+    if (!championMapCache[participant.championId]) {
+        championMapCache = await refreshChampionMap();
+    }
+    const championName = championMapCache[participant.championId] ?? `Champion ${participant.championId}`;
 
     // 2. Calculate LP delta only if player exists and is placed
     let participantLpDelta = 0;
@@ -193,18 +176,10 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
         });
         participantLpDelta = Math.round(participant.win ? delta : -delta);
 
-        // 3. Update player MMR/LP
         const newMmr = player.rawMmr + participantLpDelta;
         const promoState = applyPromoUpdate({
-          previousMmr: player.rawMmr,
-          updatedMmr: newMmr,
-          win: participant.win,
-          promo: {
-            promoFromTier: player.promoFromTier,
-            promoToTier: player.promoToTier,
-            promoWins: player.promoWins,
-            promoLosses: player.promoLosses
-          }
+          previousMmr: player.rawMmr, updatedMmr: newMmr, win: participant.win,
+          promo: { promoFromTier: player.promoFromTier, promoToTier: player.promoToTier, promoWins: player.promoWins, promoLosses: player.promoLosses }
         });
         const resolvedMmr = promoState.rawMmr;
         const tier = getTierLabel(resolvedMmr);
@@ -216,13 +191,7 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
                 currentLp: Math.round(resolvedMmr % 100),
                 mayhemGames: { increment: 1 },
                 lastGameDate: new Date(payload.gameCreation),
-                lastGameTier: promoState.promoFromTier && promoState.promoToTier ? getPromoRankLabel({
-                  promoFromTier: promoState.promoFromTier,
-                  promoToTier: promoState.promoToTier,
-                  promoWins: promoState.promoWins,
-                  promoLosses: promoState.promoLosses,
-                  rawMmr: resolvedMmr
-                }) : tier.label,
+                lastGameTier: promoState.promoFromTier && promoState.promoToTier ? getPromoRankLabel(promoState) : tier.label,
                 promoFromTier: promoState.promoFromTier,
                 promoToTier: promoState.promoToTier,
                 promoWins: promoState.promoWins,
@@ -239,8 +208,8 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
         playerRiotIdName,
         playerRiotIdTag,
         rankSignalMmr,
-          team: participant.teamId,
-          win: participant.win,
+        team: participant.teamId,
+        win: participant.win,
         championId: participant.championId,
         championName,
         kills: participant.kills,
@@ -268,10 +237,5 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
     });
   }
 
-  return {
-    accepted: true,
-    duplicate: false,
-    matchId,
-    participants: payload.participants.length
-  };
+  return { accepted: true, duplicate: false, matchId, participants: payload.participants.length };
 }

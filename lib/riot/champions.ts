@@ -2,6 +2,8 @@ import { getChampionIconUrl, getLatestDDragonVersion } from "@/lib/riot/ddragon"
 
 let championJson: Record<string, { key: string; name: string; image: { full: string } }> = {};
 let championVersion: string | null = null;
+let cachedMap: Record<number, string> | null = null;
+let cachedAssetMap: Record<number, { name: string; imageUrl: string }> | null = null;
 
 async function getLatestDDragon() {
    if (Object.keys(championJson).length > 0) { return championJson; }
@@ -14,7 +16,16 @@ async function getLatestDDragon() {
    return championJson;
 }
 
+export async function refreshChampionMap() {
+    championJson = {};
+    cachedMap = null;
+    cachedAssetMap = null;
+    return await getChampionMap();
+}
+
 export async function getChampionMap(): Promise<Record<number, string>> {
+   if (cachedMap) return cachedMap;
+
    const champions = await getLatestDDragon();
    const map: Record<number, string> = {};
 
@@ -24,10 +35,13 @@ export async function getChampionMap(): Promise<Record<number, string>> {
       map[parseInt(champion.key)] = champion.name;
    }
 
-   return map;
+   cachedMap = map;
+   return cachedMap;
 }
 
 export async function getChampionAssetMap(): Promise<Record<number, { name: string; imageUrl: string }>> {
+   if (cachedAssetMap) return cachedAssetMap;
+
    const champions = await getLatestDDragon();
    const version = championVersion ?? await getLatestDDragonVersion();
    const map: Record<number, { name: string; imageUrl: string }> = {};
@@ -41,7 +55,8 @@ export async function getChampionAssetMap(): Promise<Record<number, { name: stri
       };
    }
 
-   return map;
+   cachedAssetMap = map;
+   return cachedAssetMap;
 }
 
 export async function getChampionNameByKey(key: number | string): Promise<string> {

@@ -44,7 +44,7 @@ export function SearchForm({ compact = false }: SearchFormProps) {
         />
         {error ? <p className="mt-2 text-sm text-ember">{error}</p> : null}
       </div>
-      <button className={`${compact ? "py-2.5" : "py-3"} inline-flex items-center justify-center gap-2 rounded bg-gold px-5 font-bold text-black hover:bg-[#7db7ff]`}>
+      <button className={`${compact ? "py-2.5" : "min-w-[140px] py-3"} interactive inline-flex items-center justify-center gap-2 rounded border border-sky-400/35 bg-sky-500/15 px-5 font-bold text-sky-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] hover:border-sky-300/50 hover:bg-sky-400/20 hover:text-white`}>
         <Search size={18} />
         Search
       </button>

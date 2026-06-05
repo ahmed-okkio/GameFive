@@ -66,9 +66,7 @@ export async function upsertPlayer(
 }
 
 export async function hydrateRankedSignals(player: Player): Promise<Player> {
-  if (!player.puuid) {
-    return player;
-  }
+  if (!player.puuid) return player;
 
   const cacheAgeMs = player.cacheUpdatedAt ? Date.now() - player.cacheUpdatedAt.getTime() : Number.POSITIVE_INFINITY;
   const rankCacheTtlMs = 7 * 24 * 60 * 60 * 1000;
@@ -77,57 +75,49 @@ export async function hydrateRankedSignals(player: Player): Promise<Player> {
     return player;
   }
 
+  let riotData: Awaited<ReturnType<typeof extractRankedSnapshot>> | null = null;
+  let opggData: { tier: string, division: string } | null = null;
+
+  // 1. Try Riot API (Current)
   try {
     const entries = await riotClient.getLeagueEntriesByPuuid(player.puuid);
-
     if (entries.length > 0) {
-      const rankedSnapshot = extractRankedSnapshot(entries);
-
-      return await prisma.player.update({
-        where: { id: player.id },
-        data: {
-          soloDuoTier: rankedSnapshot.soloDuoTier ?? undefined,
-          soloDuoDivision: rankedSnapshot.soloDuoDivision ?? undefined,
-          flexTier: rankedSnapshot.flexTier ?? undefined,
-          flexDivision: rankedSnapshot.flexDivision ?? undefined,
-          cacheUpdatedAt: new Date()
-        }
-      });
+      riotData = extractRankedSnapshot(entries);
     }
   } catch (error) {
-    console.warn(`Failed to fetch Riot ranked entries for ${player.riotIdName}#${player.riotIdTag}`, error);
+    console.warn(`Failed to fetch Riot ranked entries for ${player.riotIdName}`, error);
   }
 
-  try {
-    const historicalRank = await fetchOpggHistoricalRank(
-      player.region,
-      player.riotIdName,
-      player.riotIdTag
-    );
-
-    if (historicalRank) {
-      return await prisma.player.update({
-        where: { id: player.id },
-        data: {
-          historicalTier: historicalRank.tier,
-          historicalDivision: historicalRank.division ?? undefined,
-          cacheUpdatedAt: new Date()
-        }
-      });
+  // 2. Fallback to OP.GG (Historical) if NO current ranked data found
+  if (!riotData || (!riotData.soloDuoTier && !riotData.flexTier)) {
+    try {
+      const historicalRank = await fetchOpggHistoricalRank(player.region, player.riotIdName, player.riotIdTag);
+      if (historicalRank) {
+        opggData = {
+            tier: historicalRank.tier,
+            division: historicalRank.division ?? "I" // Ensure division is a string
+        };
+      }
+    } catch (error) {
+      console.warn(`Failed to fetch OP.GG historical rank for ${player.riotIdName}`, error);
     }
-  } catch (error) {
-    console.warn(`Failed to fetch OP.GG historical rank for ${player.riotIdName}#${player.riotIdTag}`, error);
   }
 
+  // 3. Persist and return
   return await prisma.player.update({
     where: { id: player.id },
     data: {
-      historicalTier: "UNRANKED",
-      historicalDivision: null,
+      soloDuoTier: riotData?.soloDuoTier ?? undefined,
+      soloDuoDivision: riotData?.soloDuoDivision ?? undefined,
+      flexTier: riotData?.flexTier ?? undefined,
+      flexDivision: riotData?.flexDivision ?? undefined,
+      historicalTier: opggData?.tier ?? (riotData ? undefined : "UNRANKED"),
+      historicalDivision: opggData?.division ?? (riotData ? undefined : null),
       cacheUpdatedAt: new Date()
     }
   });
 }
+
 
 export async function ensurePlayerExists(gameName: string, tagLine: string): Promise<Player | null> {
     try {
