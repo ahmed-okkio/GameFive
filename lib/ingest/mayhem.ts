@@ -59,15 +59,21 @@ function isMayhemPayload(payload: CompanionMatchPayload) {
   return payload.queueId === 2400 || payload.gameMode?.toUpperCase() === "KIWI";
 }
 
-async function resolveRank(puuid: string, name: string, tag: string): Promise<number | null> {
+async function resolveRank(name: string, tag: string): Promise<number | null> {
     try {
-        const summoner = await riotClient.getSummonerByPuuid(puuid);
-        const leagues = await riotClient.getLeagueEntries(summoner.id);
-        const solo = leagues.find(l => l.queueType === "RANKED_SOLO_5x5");
-        const flex = leagues.find(l => l.queueType === "RANKED_FLEX_SR");
-        const mmr = Math.max(rankedToMmr(solo?.tier, solo?.rank) || 0, rankedToMmr(flex?.tier, flex?.rank) || 0);
-        if (mmr > 0) return mmr;
+        // A: Resolve to public PUUID first
+        const account = await riotClient.getAccountByRiotId(name, tag);
 
+        // B: If account found, try to fetch ranked entries
+        if (account) {
+            const leagues = await riotClient.getLeagueEntriesByPuuid(account.puuid);
+            const solo = leagues.find(l => l.queueType === "RANKED_SOLO_5x5");
+            const flex = leagues.find(l => l.queueType === "RANKED_FLEX_SR");
+            const mmr = Math.max(rankedToMmr(solo?.tier, solo?.rank) || 0, rankedToMmr(flex?.tier, flex?.rank) || 0);
+            if (mmr > 0) return mmr;
+        }
+
+        // C: Fallback to OP.GG
         const hist = await fetchOpggHistoricalRank("euw", name, tag);
         if (hist) return rankedToMmr(hist.tier, hist.division) ?? null;
     } catch (e) {
@@ -114,7 +120,7 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
           playerRankSignals.set(participant.puuid, bestRankedMmrWithHistoricalFallback(player));
       } else {
           // Non-uploader, not in DB - resolve without persisting
-          const rankMmr = await resolveRank(participant.puuid, name, tag);
+          const rankMmr = await resolveRank(name, tag);
           playerRankSignals.set(participant.puuid, rankMmr);
       }
   }));
