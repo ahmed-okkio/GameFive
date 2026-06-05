@@ -31,7 +31,7 @@ describe("calculateLpDelta", () => {
       consecutiveStreak: 0,
       win: true
     });
-    expect(delta).toBe(25); // base 25 * 1.0 * 1.0
+    expect(delta).toBe(20); // base 20 * 1.0 * 1.0
   });
 
   it("applies streak multiplier", () => {
@@ -41,7 +41,7 @@ describe("calculateLpDelta", () => {
       consecutiveStreak: 5,
       win: true
     });
-    expect(delta).toBe(31.25); // 25 * 1.0 * 1.25
+    expect(delta).toBe(25); // 20 * 1.0 * 1.25
   });
 });
 

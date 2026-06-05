@@ -1,0 +1,107 @@
+[
+  {
+    "playerId": "ed1f6b03-cfc6-4e6b-8cf1-ab6f4c317408",
+    "playerName": "AIS Exile#EUW",
+    "matchId": "LCU_7876241034",
+    "oldDelta": -27,
+    "newDelta": -26
+  },
+  {
+    "playerId": "ed1f6b03-cfc6-4e6b-8cf1-ab6f4c317408",
+    "playerName": "AIS Exile#EUW",
+    "matchId": "LCU_7876302546",
+    "oldDelta": 29,
+    "newDelta": 25
+  },
+  {
+    "playerId": "ed1f6b03-cfc6-4e6b-8cf1-ab6f4c317408",
+    "playerName": "AIS Exile#EUW",
+    "matchId": "LCU_7876951900",
+    "oldDelta": 21,
+    "newDelta": 29
+  },
+  {
+    "playerId": "ed1f6b03-cfc6-4e6b-8cf1-ab6f4c317408",
+    "playerName": "AIS Exile#EUW",
+    "matchId": "LCU_7876950424",
+    "oldDelta": -31,
+    "newDelta": -23
+  },
+  {
+    "playerId": "ed1f6b03-cfc6-4e6b-8cf1-ab6f4c317408",
+    "playerName": "AIS Exile#EUW",
+    "matchId": "LCU_7876973330",
+    "oldDelta": 19,
+    "newDelta": 25
+  },
+  {
+    "playerId": "313a3e03-a65d-4f0c-a8fc-c36087b625e9",
+    "playerName": "Aristo#Risto",
+    "matchId": "LCU_7874749978",
+    "oldDelta": 33,
+    "newDelta": 32
+  },
+  {
+    "playerId": "313a3e03-a65d-4f0c-a8fc-c36087b625e9",
+    "playerName": "Aristo#Risto",
+    "matchId": "LCU_7875033810",
+    "oldDelta": 25,
+    "newDelta": 24
+  },
+  {
+    "playerId": "313a3e03-a65d-4f0c-a8fc-c36087b625e9",
+    "playerName": "Aristo#Risto",
+    "matchId": "LCU_7875049999",
+    "oldDelta": -27,
+    "newDelta": -28
+  },
+  {
+    "playerId": "313a3e03-a65d-4f0c-a8fc-c36087b625e9",
+    "playerName": "Aristo#Risto",
+    "matchId": "LCU_7876913461",
+    "oldDelta": 19,
+    "newDelta": 21
+  },
+  {
+    "playerId": "ef282971-7986-424d-ad94-a64eb774a3e9",
+    "playerName": "GrandLift#ADC",
+    "matchId": "LCU_7876146569",
+    "oldDelta": 32,
+    "newDelta": 31
+  },
+  {
+    "playerId": "ef282971-7986-424d-ad94-a64eb774a3e9",
+    "playerName": "GrandLift#ADC",
+    "matchId": "LCU_7876172645",
+    "oldDelta": -25,
+    "newDelta": -23
+  },
+  {
+    "playerId": "282d35ea-5ec0-4ba1-a7ad-39e81d86e528",
+    "playerName": "Okkio#ETU",
+    "matchId": "LCU_7875085801",
+    "oldDelta": -22,
+    "newDelta": -23
+  },
+  {
+    "playerId": "282d35ea-5ec0-4ba1-a7ad-39e81d86e528",
+    "playerName": "Okkio#ETU",
+    "matchId": "LCU_7875101977",
+    "oldDelta": 28,
+    "newDelta": 27
+  },
+  {
+    "playerId": "282d35ea-5ec0-4ba1-a7ad-39e81d86e528",
+    "playerName": "Okkio#ETU",
+    "matchId": "LCU_7876119152",
+    "oldDelta": 30,
+    "newDelta": 33
+  },
+  {
+    "playerId": "282d35ea-5ec0-4ba1-a7ad-39e81d86e528",
+    "playerName": "Okkio#ETU",
+    "matchId": "LCU_7876172645",
+    "oldDelta": -23,
+    "newDelta": -21
+  }
+]
