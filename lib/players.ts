@@ -177,7 +177,6 @@ export type PlayerProfile =
         rawMmr: number;
         displayedMmr: number;
         currentLp: number;
-        decayAmount: number;
         mayhemGames: number;
         aramGames: number;
       };
@@ -250,11 +249,7 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
     .filter((p) => p.match.gameMode === "MAYHEM")
     .sort((a, b) => b.match.gameDate.getTime() - a.match.gameDate.getTime())[0];
   
-  const now = new Date();
-  const daysInactive = lastMayhemGame ? Math.max(0, (now.getTime() - lastMayhemGame.match.gameDate.getTime()) / 86_400_000) : 0;
-  const decayAmount = player.isPlaced ? player.rawMmr * (0.005 * daysInactive) : 0;
-  
-  const displayedMmr = Math.round(Math.max(0, player.rawMmr - decayAmount));
+  const displayedMmr = Math.round(player.rawMmr);
   const tier = getTierLabel(displayedMmr);
   const championAssets = await getChampionAssetMap();
 
@@ -272,7 +267,6 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
         rawMmr: Math.round(player.rawMmr),
         displayedMmr,
         currentLp: player.currentLp,
-        decayAmount: Math.round(decayAmount),
         mayhemGames: player.mayhemGames,
         aramGames: player.aramGames
     },
@@ -314,7 +308,11 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
                 rankSignalMmr: part.rankSignalMmr ?? null,
                 rankLabelAtMatch: part.rankSignalMmr !== null
                   ? getTierLabel(part.rankSignalMmr).label
-                  : (part.playerId ? "Unranked" : "Unknown rank")
+                  : (part.player 
+                      ? (part.player.soloDuoTier 
+                          ? `${part.player.soloDuoTier.charAt(0).toUpperCase() + part.player.soloDuoTier.slice(1).toLowerCase()} ${part.player.soloDuoDivision ?? ""}` 
+                          : "Unranked")
+                      : "Unknown rank")
             }))
         }
     })),

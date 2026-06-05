@@ -87,6 +87,11 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
     return { accepted: false, duplicate: false, reason: "not_mayhem" };
   }
 
+  if (payload.gameDuration < 180) {
+      console.log(`[Ingest] Skipping match ${payload.gameId} because it is a remake (duration: ${payload.gameDuration}s)`);
+      return { accepted: false, duplicate: false, reason: "remake" };
+  }
+
   const matchId = `LCU_${payload.gameId}`;
   console.log(`[Ingest] Starting match ${matchId}`);
 
@@ -158,7 +163,15 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
     }
     const championName = championMapCache[participant.championId] ?? `Champion ${participant.championId}`;
 
-    // 2. Calculate LP delta only if player exists and is placed
+    // 2. Update lastGameDate for all participants in DB
+    if (player) {
+        await prisma.player.update({
+            where: { id: player.id },
+            data: { lastGameDate: new Date(payload.gameCreation), cacheUpdatedAt: new Date() }
+        });
+    }
+
+    // 3. Calculate LP delta only if player exists and is placed
     let participantLpDelta = 0;
     if (player && player.isPlaced) {
         const last5Games = await prisma.matchParticipant.findMany({

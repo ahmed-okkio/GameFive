@@ -41,15 +41,3 @@ export function calculateLpDelta(input: LpDeltaInput): number {
   
   return BASE_LP * opponentFactor * streakMultiplier;
 }
-
-// Kept for backward compatibility during transition if needed, but will be removed
-export function calculateMmr() {
-    return {
-        rawMmr: 0,
-        displayedMmr: 0,
-        uncertainty: 0,
-        decayAmount: 0,
-        mayhemGames: 0,
-        aramGames: 0
-    };
-}

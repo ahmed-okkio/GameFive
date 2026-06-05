@@ -68,19 +68,19 @@ on win:  newMmr = currentMmr + lpDelta
 on loss: newMmr = currentMmr - lpDelta
 ```
 
+## 3. Rank Resolution Hierarchy (A-B-C Method)
+
+When the system needs to determine the skill level (MMR) for any match participant, it follows a strict hierarchical resolution chain to ensure maximum accuracy:
+
+| Priority | Source | Description |
+| :--- | :--- | :--- |
+| **A** | **Riot API (Current)** | Queries the official Riot `league-v4` endpoint using the player's public PUUID to fetch current active seasonal rank (Solo/Duo or Flex). |
+| **B** | **OP.GG (Historical)** | If Riot returns no active ranked data, the system scrapes OP.GG's RSC payload for previous seasons' peak ranks to establish a historical skill anchor. |
+| **C** | **Unranked Fallback** | If both A and B yield no data, the player is treated as "Unranked" (MMR = 0 or 1400 fallback for placements), ensuring no artificial data is hallucinated. |
+
+*This hierarchy ensures that active, current-season ranked data always takes precedence, with scraping acting as a safety net for unplaced or returning players.*
+
 ---
-
-## 3. Lobby Average MMR (`lobbyAvgMmr`)
-
-Calculated during match ingestion. GameFive's own calculated MMR is never used as an input — it is a display value only. For each opponent resolve their MMR using this priority:
-
-1. Their Solo/Duo rank converted to MMR via `rankedToMmr`
-2. Their Flex rank converted to MMR via `rankedToMmr`
-3. If neither returns a value — exclude them from the average entirely
-
-`lobbyAvgMmr` is the average MMR of only the opponents for whom data was available. If zero opponents have any data, `lobbyAvgMmr` is stored as `null`.
-
-There is no hardcoded fallback value. Null means uncalculable and propagates cleanly into both the LP delta formula (neutral factor) and the placement anchor (game excluded from average).
 
 ---
 

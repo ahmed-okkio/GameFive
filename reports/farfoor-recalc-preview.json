@@ -1,0 +1,77 @@
+[
+  {
+    "matchId": "LCU_7876990932",
+    "oldAvg": 1300,
+    "newAvg": 1250
+  },
+  {
+    "matchId": "LCU_7876985554",
+    "oldAvg": 900,
+    "newAvg": 1216.6666666666667
+  },
+  {
+    "matchId": "LCU_7876974923",
+    "oldAvg": 1500,
+    "newAvg": 1288.888888888889
+  },
+  {
+    "matchId": "LCU_7871621736",
+    "oldAvg": 1000,
+    "newAvg": 1350
+  },
+  {
+    "matchId": "LCU_7877209526",
+    "oldAvg": 2200,
+    "newAvg": 1537.5
+  },
+  {
+    "matchId": "LCU_7877041488",
+    "oldAvg": 1600,
+    "newAvg": 1590
+  },
+  {
+    "matchId": "LCU_7877232433",
+    "oldAvg": 1900,
+    "newAvg": 1522.2222222222222
+  },
+  {
+    "matchId": "LCU_7877004996",
+    "oldAvg": 1500,
+    "newAvg": 1450
+  },
+  {
+    "matchId": "LCU_7877064939",
+    "oldAvg": 800,
+    "newAvg": 1275
+  },
+  {
+    "matchId": "LCU_7877011288",
+    "oldAvg": 300,
+    "newAvg": 1577.7777777777778
+  },
+  {
+    "matchId": "LCU_7877048181",
+    "oldAvg": 1500,
+    "newAvg": 1477.7777777777778
+  },
+  {
+    "matchId": "LCU_7877027768",
+    "oldAvg": 1500,
+    "newAvg": 1820
+  },
+  {
+    "matchId": "LCU_7871677406",
+    "oldAvg": 1500,
+    "newAvg": 1610
+  },
+  {
+    "matchId": "LCU_7871707602",
+    "oldAvg": 1500,
+    "newAvg": 1530
+  },
+  {
+    "matchId": "LCU_7871721318",
+    "oldAvg": 1500,
+    "newAvg": 1300
+  }
+]
