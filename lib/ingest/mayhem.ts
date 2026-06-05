@@ -153,6 +153,9 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
   // 4. Create match participants and update known players
   for (const participant of payload.participants) {
     const player = playerRows.get(participant.puuid) ?? null;
+    console.log(`[Ingest] Processing participant ${participant.puuid}. Found in playerRows: ${!!player}`);
+    if (player) console.log(`[Ingest] Player ${player.riotIdName} isPlaced: ${player.isPlaced}`);
+
     const rankSignalMmr = playerRankSignals.get(participant.puuid) ?? null;
     const playerRiotIdName = player ? null : participant.gameName ?? participant.summonerName ?? null;
     const playerRiotIdTag = player ? null : participant.tagLine ?? null;
