@@ -54,7 +54,7 @@ export function applyPromoUpdate(input: {
     }
 
     return {
-      rawMmr: input.updatedMmr,
+      rawMmr: Math.round(input.updatedMmr),
       ...promo
     };
   }
@@ -67,7 +67,7 @@ export function applyPromoUpdate(input: {
 
   if (promo.promoWins >= 3) {
     return {
-      rawMmr: input.updatedMmr,
+      rawMmr: Math.round(input.updatedMmr),
       promoFromTier: null,
       promoToTier: null,
       promoWins: 0,
@@ -78,7 +78,7 @@ export function applyPromoUpdate(input: {
   if (promo.promoLosses >= 3) {
     const targetMin = nextTierBoundaryMin(promo.promoToTier);
     return {
-      rawMmr: targetMin !== null ? Math.min(input.updatedMmr, targetMin - 1) : input.updatedMmr,
+      rawMmr: targetMin !== null ? Math.round(Math.min(input.updatedMmr, targetMin - 1)) : Math.round(input.updatedMmr),
       promoFromTier: null,
       promoToTier: null,
       promoWins: 0,
@@ -87,7 +87,7 @@ export function applyPromoUpdate(input: {
   }
 
   return {
-    rawMmr: input.updatedMmr,
+    rawMmr: Math.round(input.updatedMmr),
     ...promo
   };
 }

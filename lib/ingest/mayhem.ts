@@ -221,7 +221,7 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
           previousMmr: player.rawMmr, updatedMmr: newMmr, win: participant.win,
           promo: { promoFromTier: player.promoFromTier, promoToTier: player.promoToTier, promoWins: player.promoWins, promoLosses: player.promoLosses }
         });
-        const resolvedMmr = promoState.rawMmr;
+        const resolvedMmr = Math.round(promoState.rawMmr);
         const tier = getTierLabel(resolvedMmr);
 
         await prisma.player.update({

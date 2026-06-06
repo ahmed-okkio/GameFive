@@ -20,7 +20,7 @@ model Player {
   soloDuoDivision       String?            @map("solo_duo_division")
   flexTier              String?            @map("flex_tier")
   flexDivision          String?            @map("flex_division")
-  rawMmr                Float              @default(0) @map("raw_mmr")
+  rawMmr                Int                @default(0) @map("raw_mmr")
   baselineMmr           Float?             @map("baseline_mmr")
   currentLp             Int                @default(0) @map("current_lp")
   isPlaced              Boolean            @default(false) @map("is_placed")

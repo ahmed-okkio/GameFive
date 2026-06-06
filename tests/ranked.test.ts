@@ -3,6 +3,22 @@ import { calculatePlacementMmr, calculateLpDelta } from "@/lib/mmr/calculate";
 import { bestRankedMmrWithHistoricalFallback, rankedToMmr } from "@/lib/mmr/ranked";
 import { extractBestHistoricalRankFromOpggRsc } from "@/lib/riot/opgg";
 
+describe("MMR/LP Integer Integrity", () => {
+  it("ensures LP delta results in a roundable value that behaves as an integer", () => {
+    const delta = calculateLpDelta({
+      playerCurrentMmr: 1600,
+      lobbyAvgMmr: 1700,
+      consecutiveStreak: 3,
+      win: true
+    });
+    // 20 * (1700/1600=1.0625) * (1 + 0.15 = 1.15) = 24.4375
+    // After Math.round() it should be 24
+    const roundedDelta = Math.round(delta);
+    expect(Number.isInteger(roundedDelta)).toBe(true);
+    expect(roundedDelta).toBe(24);
+  });
+});
+
 describe("calculatePlacementMmr", () => {
   it("uses fallback when no lobby MMR exists", () => {
     const mmr = calculatePlacementMmr({
