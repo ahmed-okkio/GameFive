@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { AlertCircle, CheckCircle2, Download, ExternalLink, MonitorDown, Play, Search } from "lucide-react";
 import { appConfig } from "@/lib/config";
 
@@ -102,7 +103,7 @@ export default function CompanionPage() {
           <div className="rounded-lg border border-line bg-panel p-4 sm:p-5">
             <h2 className="text-lg font-black text-white">What to look for</h2>
             <div className="mt-4 flex items-center gap-4 rounded border border-line bg-black/20 p-4">
-              <img src="/companion-icon.ico" alt="GameFive Companion tray icon" className="h-14 w-14" />
+              <Image src="/companion-icon.ico" alt="GameFive Companion tray icon" width={56} height={56} className="h-14 w-14" />
               <div>
                 <div className="font-bold text-white">Task tray icon</div>
                 <p className="mt-1 text-sm text-stone-400">

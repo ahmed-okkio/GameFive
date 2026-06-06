@@ -262,7 +262,7 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
             <div className="mt-6 border-t border-line pt-6">
                 {status.player.isPlaced && !maintenanceMode ? (
                     <div className="flex flex-col items-center gap-2">
-                        <img src={getTierIcon(status.tier.tier)!} alt={status.tier.tier} className="h-24 w-24 object-contain" />
+                        <Image src={getTierIcon(status.tier.tier)!} alt={status.tier.tier} width={96} height={96} className="h-24 w-24 object-contain" />
                         <span className="text-lg font-bold text-gold">{rankLabel}</span>
                         {promoLabel ? (
                             <span className="text-sm text-stone-300">{status.mmr.currentLp} LP</span>

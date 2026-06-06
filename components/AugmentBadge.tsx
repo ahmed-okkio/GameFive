@@ -1,5 +1,6 @@
 "use client";
 import { useState } from 'react';
+import Image from 'next/image';
 import augmentMap from "@/lib/riot/augment-map.json";
 
 type AugmentBadgeProps = {
@@ -32,9 +33,11 @@ export function AugmentBadge({ augmentId, augmentName }: AugmentBadgeProps) {
   }
 
   return (
-    <img 
+    <Image 
       src={iconPath} 
       alt={augmentName} 
+      width={32}
+      height={32}
       className="h-full w-full rounded-full border border-gold/30 bg-black/40"
       onError={() => setHasError(true)}
       title={augmentName}

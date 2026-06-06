@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 import { getItemIconUrl, getSpellIconUrl, DEFAULT_DDRAGON_VERSION } from "@/lib/riot/ddragon";
 import { AugmentBadge } from "@/components/AugmentBadge";
 import { SPELL_MAP, SPELL_DISPLAY_NAME } from "@/lib/riot/spells";
@@ -66,9 +67,11 @@ function SpellIcon({ id, version, className }: { id: number | null, version: str
     if (hasError) return <div className={`${className} bg-stone-800 rounded-sm border border-white/5`} title={displayName} />;
 
     return (
-        <img 
+        <Image 
             src={url} 
             alt="Spell" 
+            width={128}
+            height={128}
             className={`${className} rounded-sm border border-white/5`} 
             onError={() => setHasError(true)}
             title={displayName}
@@ -85,9 +88,11 @@ function ItemIcon({ id, version, className }: { id: number, version: string, cla
 
     if (!hasError) {
         return (
-            <img 
+            <Image 
                 src={getItemIconUrl(id, version)} 
                 alt="Item" 
+                width={128}
+                height={128}
                 className={`${className} rounded-sm border border-white/10 bg-black/20`}
                 onError={() => setHasError(true)}
                 title={itemName}

@@ -12,7 +12,7 @@ export function ChampionAvatar({ image, name, size = "md" }: ChampionAvatarProps
   return (
     <div className={`${sizeClass} shrink-0 overflow-hidden rounded-full bg-black/40 ring-1 ring-white/10`}>
       {image ? (
-        <Image src={image} alt={name} width={44} height={44} className="h-full w-full object-cover" />
+        <Image src={image} alt={name} width={128} height={128} className="h-full w-full object-cover" />
       ) : (
         <div className="flex h-full w-full items-center justify-center text-xs font-black text-stone-500">?</div>
       )}
