@@ -449,49 +449,50 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
                                                 {teamId === 100 ? "Blue Team" : "Red Team"}
                                             </h4>
                                             <div className="grid grid-cols-[160px_70px_60px_1fr_80px] items-center gap-2 px-3 pb-1 text-[10px] uppercase tracking-widest text-stone-500">
-                                                <span>Player</span><span>KDA</span><span>KP (%)</span><span>Loadout</span><span>Stats</span>
+                                                <span>Player</span><span className="text-center">KDA</span><span className="text-center">KP %</span><span className="text-left">Loadout</span><span className="text-right">Stats</span>
                                             </div>
                                             {match.match.participants
                                                 .filter(p => p.team === teamId)
                                                 .map(p => (
                                                 <div key={p.id} className="grid grid-cols-[160px_70px_60px_1fr_80px] items-center gap-2 rounded px-3 py-1.5 text-xs bg-black/20">
 
-                                                    <div className="font-bold text-white truncate text-[11px] flex items-center gap-2">
-                                                        {(() => {
-                                                            const playerName = p.player?.riotIdName ?? p.playerRiotIdName;
-                                                            const playerTag = p.player?.riotIdTag ?? p.playerRiotIdTag;
-                                                            const displayName = playerName ? `${playerName}${playerTag ? `#${playerTag}` : ""}` : "Unknown name";
-                                                            const rankAtMatch = maintenanceMode ? "Under Maintenance" : (p.rankLabelAtMatch ?? "Unknown rank");
-                                                            const isLinked = Boolean(p.player && playerName && playerTag);
+                                                        <div className="font-bold text-white truncate text-[11px] flex items-center gap-2 min-w-0">
+                                                            {(() => {
+                                                                const playerName = p.player?.riotIdName ?? p.playerRiotIdName;
+                                                                const playerTag = p.player?.riotIdTag ?? p.playerRiotIdTag;
+                                                                const displayName = playerName ? `${playerName}${playerTag ? `#${playerTag}` : ""}` : "Unknown name";
+                                                                const rankAtMatch = maintenanceMode ? "Under Maintenance" : (p.rankLabelAtMatch ?? "Unknown rank");
+                                                                const isLinked = Boolean(p.player && playerName && playerTag);
 
-                                                            return isLinked ? (
-                                                                <Link href={`/player/${encodeURIComponent(playerName!)}/${encodeURIComponent(playerTag!)}`} className="flex min-w-0 items-center gap-2 font-semibold text-white hover:text-gold">
-                                                                    <ChampionAvatar image={p.championImage} name={p.championName ?? "Unknown"} size="sm" />
-                                                                    <span className="min-w-0">
-                                                                        <span className="block truncate">{displayName}</span>
-                                                                        <span className={`block truncate text-[11px] font-normal ${rankAtMatch === "Unknown rank" ? "text-stone-500" : "text-gold/80"}`}>{rankAtMatch}</span>
-                                                                    </span>
-                                                                </Link>
-                                                            ) : (
-                                                                <div className="flex min-w-0 items-center gap-2 font-semibold text-stone-400">
-                                                                    <ChampionAvatar image={p.championImage} name={p.championName ?? "Unknown"} size="sm" />
-                                                                    <span className="min-w-0">
-                                                                        <span className="block truncate">{displayName}</span>
-                                                                        <span className={`block truncate text-[11px] font-normal ${rankAtMatch === "Unknown rank" ? "text-stone-500" : "text-gold/80"}`}>{rankAtMatch}</span>
-                                                                    </span>
-                                                                </div>
-                                                            );
-                                                        })()}
-                                                    </div>
-                                                    <span className="text-right font-mono text-stone-300">{p.kills}/{p.deaths}/{p.assists}</span>
-                                                    <span className="text-right font-mono text-stone-300">{getKillParticipation(p, match.match.participants)}% KP</span>
-                                                    <div className="flex justify-start min-w-0"><LoadoutRow items={Array.isArray(p.itemsJson) ? p.itemsJson as number[] : []} spell1Id={p.spell1Id} spell2Id={p.spell2Id} augments={Array.isArray(p.augmentsJson) ? p.augmentsJson as number[] : []} version={ddragonVersion} size="sm" /></div>
-                                                    <div className="flex flex-col gap-0.5 items-end">
-                                                        <StatBar value={p.damageToChampions} max={maxDamage} color="damage" />
-                                                        <StatBar value={p.healingDone} max={maxHealing} color="healing" />
+                                                                return isLinked ? (
+                                                                    <Link href={`/player/${encodeURIComponent(playerName!)}/${encodeURIComponent(playerTag!)}`} className="flex min-w-0 items-center gap-2 font-semibold text-white hover:text-gold">
+                                                                        <ChampionAvatar image={p.championImage} name={p.championName ?? "Unknown"} size="sm" />
+                                                                        <span className="min-w-0">
+                                                                            <span className="block truncate">{displayName}</span>
+                                                                            <span className={`block truncate text-[11px] font-normal ${rankAtMatch === "Unknown rank" ? "text-stone-500" : "text-gold/80"}`}>{rankAtMatch}</span>
+                                                                        </span>
+                                                                    </Link>
+                                                                ) : (
+                                                                    <div className="flex min-w-0 items-center gap-2 font-semibold text-stone-400">
+                                                                        <ChampionAvatar image={p.championImage} name={p.championName ?? "Unknown"} size="sm" />
+                                                                        <span className="min-w-0">
+                                                                            <span className="block truncate">{displayName}</span>
+                                                                            <span className={`block truncate text-[11px] font-normal ${rankAtMatch === "Unknown rank" ? "text-stone-500" : "text-gold/80"}`}>{rankAtMatch}</span>
+                                                                        </span>
+                                                                    </div>
+                                                                );
+                                                            })()}
+                                                        </div>
+                                                        <span className="text-right font-mono text-stone-300 w-12">{p.kills}/{p.deaths}/{p.assists}</span>
+                                                        <span className="text-right font-mono text-stone-300 w-12">{getKillParticipation(p, match.match.participants)}% KP</span>
+                                                        <div className="flex justify-start min-w-0"><LoadoutRow items={Array.isArray(p.itemsJson) ? p.itemsJson as number[] : []} spell1Id={p.spell1Id} spell2Id={p.spell2Id} augments={Array.isArray(p.augmentsJson) ? p.augmentsJson as number[] : []} version={ddragonVersion} size="sm" /></div>
+                                                        <div className="flex flex-col gap-0.5 items-end">
+                                                            <StatBar value={p.damageToChampions} max={maxDamage} color="damage" />
+                                                            <StatBar value={p.healingDone} max={maxHealing} color="healing" />
+                                                        </div>
+
                                                     </div>
 
-                                                </div>
                                             ))}
                                         </div>
                                     ))}
