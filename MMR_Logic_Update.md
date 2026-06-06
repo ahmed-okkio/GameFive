@@ -36,7 +36,12 @@ Ranked signals are still used as weighted inputs in the final blend even though 
 ### Historical Rank
 Not used. Historical rank data is not available via the Riot API. Removed from the formula entirely.
 
----
+
+## 4. Asset Management (Augments)
+- **Source**: CommunityDragon (cDragon) CDN
+- **Strategy**: Dynamic retrieval of augment icons using the canonical `cherry-augments.json` mapping.
+- **Why**: Ensures zero manual maintenance for new augment IDs and bypasses the need for local storage or fragile web-scraping.
+- **Base URL**: `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/assets/ux/augments/`
 
 ## 2. LP Delta Calculation (`calculateLpDelta`)
 
@@ -80,9 +85,19 @@ When the system needs to determine the skill level (MMR) for any match participa
 
 *This hierarchy ensures that active, current-season ranked data always takes precedence, with scraping acting as a safety net for unplaced or returning players.*
 
----
 
----
+## 4. Asset Management (Augments)
+- **Source**: CommunityDragon (cDragon) CDN
+- **Strategy**: Dynamic retrieval of augment icons using the canonical `cherry-augments.json` mapping.
+- **Why**: Ensures zero manual maintenance for new augment IDs and bypasses the need for local storage or fragile web-scraping.
+- **Base URL**: `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/assets/ux/augments/`
+
+
+## 4. Asset Management (Augments)
+- **Source**: CommunityDragon (cDragon) CDN
+- **Strategy**: Dynamic retrieval of augment icons using the canonical `cherry-augments.json` mapping.
+- **Why**: Ensures zero manual maintenance for new augment IDs and bypasses the need for local storage or fragile web-scraping.
+- **Base URL**: `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/assets/ux/augments/`
 
 ## 4. Promotion and Demotion Rules
 
@@ -91,7 +106,12 @@ When the system needs to determine the skill level (MMR) for any match participa
 - **Demotion**: immediate at 0 LP on a loss, no shield
 - **Master+**: no divisions, LP accumulates freely above the Master threshold
 
----
+
+## 4. Asset Management (Augments)
+- **Source**: CommunityDragon (cDragon) CDN
+- **Strategy**: Dynamic retrieval of augment icons using the canonical `cherry-augments.json` mapping.
+- **Why**: Ensures zero manual maintenance for new augment IDs and bypasses the need for local storage or fragile web-scraping.
+- **Base URL**: `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/assets/ux/augments/`
 
 ## 5. Decisions Summary
 

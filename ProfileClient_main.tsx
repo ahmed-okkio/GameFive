@@ -6,9 +6,6 @@ import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { ProgressScreen } from "@/components/ProgressScreen";
 import { getLatestDDragonVersion, getProfileIconUrl } from "@/lib/riot/ddragon";
-import { StatBar } from "@/components/StatBar";
-import { LoadoutRow } from "@/components/LoadoutRow";
-import { ChampionAvatar } from "@/components/ChampionAvatar";
 
 type ProfileJobSnapshot = {
   status: string;
@@ -22,8 +19,11 @@ type ProfileJobSnapshot = {
   updatedAt?: string | null;
 };
 
-export type StatusResponse =
-  | { state: "awaiting"; job: ProfileJobSnapshot; }
+type StatusResponse =
+  | {
+      state: "awaiting";
+      job: ProfileJobSnapshot;
+    }
   | {
       state: "ready";
       player: {
@@ -36,8 +36,14 @@ export type StatusResponse =
         promoWins: number;
         promoLosses: number;
       };
-      mmr: { currentLp: number; mayhemGames: number; };
-      tier: { label: string; tier: string; };
+      mmr: {
+        currentLp: number;
+        mayhemGames: number;
+      };
+      tier: {
+        label: string;
+        tier: string;
+      };
       matches: Array<{
         id: string;
         win: boolean;
@@ -71,10 +77,6 @@ export type StatusResponse =
             playerRiotIdTag: string | null;
             rankSignalMmr: number | null;
             rankLabelAtMatch: string;
-            spell1Id: number | null;
-            spell2Id: number | null;
-            itemsJson: unknown;
-            augmentsJson: unknown;
           }>
         };
       }>;
@@ -97,7 +99,6 @@ type ProfileClientProps = {
   tagLine: string;
   initialStatus?: StatusResponse;
   maintenanceMode: boolean;
-  initialVersion: string;
 };
 
 type ReadyStatus = Extract<StatusResponse, { state: "ready" }>;
@@ -118,6 +119,7 @@ function formatTimeAgo(dateValue: string) {
   const elapsedMs = Date.now() - new Date(dateValue).getTime();
   const minutes = Math.floor(elapsedMs / 60_000);
   const hours = Math.floor(elapsedMs / 3_600_000);
+  
   if (minutes < 60) return `${minutes} minutes ago`;
   if (hours < 24) return `${hours} hours ago`;
   return `${Math.floor(hours / 24)} days ago`;
@@ -132,11 +134,42 @@ function getKillParticipation(participant: Pick<MatchParticipant, "kills" | "ass
   return teamKills > 0 ? Math.round(((participant.kills + participant.assists) / teamKills) * 100) : 0;
 }
 
-export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMode, initialVersion }: ProfileClientProps) {
+function StatBar({ value, max, color }: { value: number; max: number; color: "damage" | "healing" }) {
+  const width = max > 0 ? Math.max(4, Math.round((value / max) * 100)) : 0;
+  const barColor = color === "damage" ? "bg-red-400" : "bg-emerald-400";
+  const label = color === "damage" ? "Damage " : "Healing ";
+
+  return (
+    <div className="min-w-0">
+      <div className="mb-1 text-right font-mono text-[11px] text-stone-300">
+        {label}{value.toLocaleString()}
+      </div>
+      <div className="h-1.5 w-full rounded bg-stone-700/70">
+        <div className={`h-1.5 rounded ${barColor}`} style={{ width: `${width}%` }} />
+      </div>
+    </div>
+  );
+}
+
+function ChampionAvatar({ image, name, size = "md" }: { image: string | null; name: string; size?: "sm" | "md" | "lg" }) {
+  const sizeClass = size === "lg" ? "h-14 w-14" : size === "sm" ? "h-8 w-8" : "h-11 w-11";
+
+  return (
+    <div className={`${sizeClass} shrink-0 overflow-hidden rounded-full bg-black/40 ring-1 ring-white/10`}>
+      {image ? (
+        <Image src={image} alt={name} width={44} height={44} className="h-full w-full object-cover" />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center text-xs font-black text-stone-500">?</div>
+      )}
+    </div>
+  );
+}
+
+export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMode }: ProfileClientProps) {
   const [status, setStatus] = useState<StatusResponse | null>(initialStatus ?? null);
   const [tab, setTab] = useState("matches");
   const [expandedMatchId, setExpandedMatchId] = useState<string | null>(null);
-  const [ddragonVersion, setDdragonVersion] = useState<string | null>(initialVersion);
+  const [ddragonVersion, setDdragonVersion] = useState<string | null>(null);
   const [refreshState, setRefreshState] = useState<{ loading: boolean; message: string | null; error: string | null }>({
     loading: false,
     message: null,
@@ -144,10 +177,8 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
   });
 
   useEffect(() => {
-    if (!initialVersion) {
       getLatestDDragonVersion().then(setDdragonVersion);
-    }
-  }, [initialVersion]);
+  }, []);
 
   async function refresh() {
     setRefreshState({ loading: true, message: null, error: null });
@@ -400,106 +431,103 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
             {tab === "matches" ? (
                 <div className="space-y-2">
                     {status.matches.slice(0, 20).map((match) => {
-                      const viewedParticipant = match.match.participants.find((p) => {
-                          const pName = p.player?.riotIdName ?? p.playerRiotIdName;
-                          const pTag = p.player?.riotIdTag ?? p.playerRiotIdTag;
-                          return pName === status.player.riotIdName && pTag === status.player.riotIdTag;
+                      const viewedParticipant = match.match.participants.find((participant) => {
+                        const participantName = participant.player?.riotIdName ?? participant.playerRiotIdName;
+                        const participantTag = participant.player?.riotIdTag ?? participant.playerRiotIdTag;
+                        return participantName === status.player.riotIdName && participantTag === status.player.riotIdTag;
                       });
+                      const viewedTeam = viewedParticipant?.team ?? match.match.participants.find((participant) => participant.win === match.win)?.team ?? 0;
                       const kp = viewedParticipant ? getKillParticipation(viewedParticipant, match.match.participants) : 0;
-                      const maxDamage = Math.max(...match.match.participants.map(p => p.damageToChampions), 1);
-                      const maxHealing = Math.max(...match.match.participants.map(p => p.healingDone), 1);
+                      const maxDamage = Math.max(...match.match.participants.map((participant) => participant.damageToChampions), 1);
+                      const maxHealing = Math.max(...match.match.participants.map((participant) => participant.healingDone), 1);
 
                       return (
-                        <div key={match.id} className={`overflow-hidden rounded-lg border ${match.win ? "border-sky-500/30 bg-sky-950/20" : "border-red-500/30 bg-red-950/20"}`}>
-                            <div className="flex cursor-pointer flex-col gap-3 p-3 text-sm hover:bg-black/20 md:flex-row md:items-center md:justify-between" onClick={() => setExpandedMatchId(expandedMatchId === match.id ? null : match.id)}>
-                                <div className="flex min-w-0 items-center gap-3">
-                                  <div className="w-20 shrink-0">
-                                    <div className={`font-bold ${match.win ? "text-sky-300" : "text-red-400"}`}>{match.win ? "Victory" : "Defeat"}</div>
-                                    <div className="text-xs text-stone-500">{formatTimeAgo(match.match.gameDate)}</div>
-                                    <div className="mt-2 text-xs text-stone-400">{formatDuration(match.match.durationSeconds)}</div>
-                                  </div>
-                                  <div className="flex items-center gap-3">
-                                    <ChampionAvatar image={match.championImage} name={match.championName} size="lg" />
-                                    <div className="flex flex-col gap-1 min-w-0">
-                                      <div className="font-semibold text-white truncate">{match.championName}</div>
-                                      {viewedParticipant && (
-                                          <LoadoutRow items={Array.isArray(viewedParticipant.itemsJson) ? viewedParticipant.itemsJson as number[] : []} spell1Id={viewedParticipant.spell1Id} spell2Id={viewedParticipant.spell2Id} augments={Array.isArray(viewedParticipant.augmentsJson) ? viewedParticipant.augmentsJson as number[] : []} version={ddragonVersion} size="md" />
-                                      )}
-                                    </div>
-                                  </div>
+                      <div key={match.id} className={`overflow-hidden rounded-lg border ${match.win ? "border-sky-500/40 bg-sky-950/20" : "border-red-500/40 bg-red-950/20"}`}>
+                        <div 
+                          className="flex cursor-pointer flex-col gap-3 p-3 text-sm hover:bg-black/20 md:flex-row md:items-center md:justify-between"
+                          onClick={() => setExpandedMatchId(expandedMatchId === match.id ? null : match.id)}
+                        >
+                            <div className="flex min-w-0 items-center gap-3">
+                                <div className="w-20 shrink-0">
+                                  <div className={`font-bold ${match.win ? "text-sky-300" : "text-red-400"}`}>{match.win ? "Victory" : "Defeat"}</div>
+                                  <div className="text-xs text-stone-500">{formatTimeAgo(match.match.gameDate)}</div>
+                                  <div className="mt-2 text-xs text-stone-400">{formatDuration(match.match.durationSeconds)}</div>
                                 </div>
-                                <div className="flex items-center justify-between gap-3 md:justify-end">
-                                  <div className="min-w-0 text-right">
-                                    <div className="font-mono text-lg font-black text-white">
-                                      {match.kills} / <span className="text-red-300">{match.deaths}</span> / {match.assists}
-                                    </div>
-                                    <div className="text-xs text-stone-400">
-                                      {formatKda(match.kills, match.deaths, match.assists)}:1 KDA <span className="text-red-300">({kp}% KP)</span>
-                                    </div>
+                                <ChampionAvatar image={match.championImage} name={match.championName} size="lg" />
+                                <div className="min-w-0">
+                                  <div className="font-semibold text-white">{match.championName}</div>
+                                  <div className="font-mono text-lg font-black text-white">
+                                    {match.kills} / <span className="text-red-300">{match.deaths}</span> / {match.assists}
                                   </div>
-                                  {expandedMatchId === match.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                                  <div className="text-xs text-stone-400">
+                                    {formatKda(match.kills, match.deaths, match.assists)}:1 KDA <span className="text-red-300">({kp}% KP)</span>
+                                  </div>
                                 </div>
                             </div>
-
-                            {expandedMatchId === match.id && (
-                                <div className="overflow-x-auto border-t border-line/70">
-                                    {[100, 200].map(teamId => (
-                                        <div key={teamId} className={`${teamId === (viewedParticipant?.team ?? match.match.participants.find(p => p.win === match.win)?.team) ? "bg-white/[0.03]" : "bg-black/10"} min-w-[720px] p-3`}>
-                                            <h4 className={`mb-2 px-1 text-xs font-bold uppercase tracking-widest ${teamId === 100 ? "text-sky-400" : "text-red-400"}`}>
-                                                {teamId === 100 ? "Blue Team" : "Red Team"}
-                                            </h4>
-                                            <div className="grid grid-cols-[160px_70px_60px_1fr_80px] items-center gap-2 px-3 pb-1 text-[10px] uppercase tracking-widest text-stone-500">
-                                                <span>Player</span><span>KDA</span><span>KP (%)</span><span>Loadout</span><span>Stats</span>
-                                            </div>
-                                            {match.match.participants
-                                                .filter(p => p.team === teamId)
-                                                .map(p => (
-                                                <div key={p.id} className="grid grid-cols-[160px_70px_60px_1fr_80px] items-center gap-2 rounded px-3 py-1.5 text-xs bg-black/20">
-
-                                                    <div className="font-bold text-white truncate text-[11px] flex items-center gap-2">
-                                                        {(() => {
-                                                            const playerName = p.player?.riotIdName ?? p.playerRiotIdName;
-                                                            const playerTag = p.player?.riotIdTag ?? p.playerRiotIdTag;
-                                                            const displayName = playerName ? `${playerName}${playerTag ? `#${playerTag}` : ""}` : "Unknown name";
-                                                            const rankAtMatch = maintenanceMode ? "Under Maintenance" : (p.rankLabelAtMatch ?? "Unknown rank");
-                                                            const isLinked = Boolean(p.player && playerName && playerTag);
-
-                                                            return isLinked ? (
-                                                                <Link href={`/player/${encodeURIComponent(playerName!)}/${encodeURIComponent(playerTag!)}`} className="flex min-w-0 items-center gap-2 font-semibold text-white hover:text-gold">
-                                                                    <ChampionAvatar image={p.championImage} name={p.championName ?? "Unknown"} size="sm" />
-                                                                    <span className="min-w-0">
-                                                                        <span className="block truncate">{displayName}</span>
-                                                                        <span className={`block truncate text-[11px] font-normal ${rankAtMatch === "Unknown rank" ? "text-stone-500" : "text-gold/80"}`}>{rankAtMatch}</span>
-                                                                    </span>
-                                                                </Link>
-                                                            ) : (
-                                                                <div className="flex min-w-0 items-center gap-2 font-semibold text-stone-400">
-                                                                    <ChampionAvatar image={p.championImage} name={p.championName ?? "Unknown"} size="sm" />
-                                                                    <span className="min-w-0">
-                                                                        <span className="block truncate">{displayName}</span>
-                                                                        <span className={`block truncate text-[11px] font-normal ${rankAtMatch === "Unknown rank" ? "text-stone-500" : "text-gold/80"}`}>{rankAtMatch}</span>
-                                                                    </span>
-                                                                </div>
-                                                            );
-                                                        })()}
-                                                    </div>
-                                                    <span className="text-right font-mono text-stone-300">{p.kills}/{p.deaths}/{p.assists}</span>
-                                                    <span className="text-right font-mono text-stone-300">{getKillParticipation(p, match.match.participants)}% KP</span>
-                                                    <div className="flex justify-start min-w-0"><LoadoutRow items={Array.isArray(p.itemsJson) ? p.itemsJson as number[] : []} spell1Id={p.spell1Id} spell2Id={p.spell2Id} augments={Array.isArray(p.augmentsJson) ? p.augmentsJson as number[] : []} version={ddragonVersion} size="sm" /></div>
-                                                    <div className="flex flex-col gap-0.5 items-end">
-                                                        <StatBar value={p.damageToChampions} max={maxDamage} color="damage" />
-                                                        <StatBar value={p.healingDone} max={maxHealing} color="healing" />
-                                                    </div>
-
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
+                            <div className="flex items-center justify-between gap-3 md:justify-end">
+                                <span className="font-mono font-bold text-gold">
+                                    {match.isPlacement ? "Placement" : (match.lpDelta >= 0 ? `+${match.lpDelta} LP` : `${match.lpDelta} LP`)}
+                                </span>
+                                {expandedMatchId === match.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                            </div>
                         </div>
-                      );
-                    })}
+                        {expandedMatchId === match.id && (
+                          <div className="overflow-x-auto border-t border-line/70">
+                              {[100, 200].map(teamId => (
+                                <div key={teamId} className={`${teamId === viewedTeam ? "bg-white/[0.03]" : "bg-black/10"} min-w-[720px] p-3`}>
+                                    <h4 className={`mb-2 px-1 text-xs font-bold uppercase tracking-widest ${teamId === viewedTeam ? "text-gold" : "text-stone-500"}`}>
+                                        {teamId === viewedTeam ? "Your Team" : "Enemy Team"} <span className="font-normal tracking-normal text-stone-500">({teamId === 100 ? "Blue" : "Red"})</span>
+                                    </h4>
+                                    <div className="grid grid-cols-[minmax(160px,1.5fr)_90px_70px_minmax(80px,1fr)_minmax(80px,1fr)] gap-3 px-3 pb-1 text-[11px] uppercase tracking-widest text-stone-500">
+                                      <span>Player</span>
+                                      <span className="text-right">KDA</span>
+                                      <span className="text-right">KP</span>
+                                      <span className="text-right">Damage</span>
+                                      <span className="text-right">Healing</span>
+                                    </div>
+                                    <div className="space-y-1">
+                                        {match.match.participants
+                                            .filter(p => p.team === teamId)
+                                            .map(p => (
+                                            <div key={p.id} className="grid grid-cols-[minmax(160px,1.5fr)_90px_70px_minmax(80px,1fr)_minmax(80px,1fr)] items-center gap-3 rounded bg-black/20 px-3 py-2 text-sm">
+                                                {(() => {
+                                                  const playerName = p.player?.riotIdName ?? p.playerRiotIdName;
+                                                  const playerTag = p.player?.riotIdTag ?? p.playerRiotIdTag;
+                                                  const displayName = playerName ? `${playerName}${playerTag ? `#${playerTag}` : ""}` : "Unknown name";
+                                                  const rankAtMatch = maintenanceMode ? "Under Maintenance" : (p.rankLabelAtMatch ?? "Unknown rank");
+                                                  const isLinked = Boolean(p.player && playerName && playerTag);
+
+                                                  return isLinked ? (
+                                                    <Link href={`/player/${encodeURIComponent(playerName!)}/${encodeURIComponent(playerTag!)}`} className="flex min-w-0 items-center gap-2 font-semibold text-white hover:text-gold">
+                                                      <ChampionAvatar image={p.championImage} name={p.championName ?? "Unknown"} size="sm" />
+                                                      <span className="min-w-0">
+                                                        <span className="block truncate">{displayName}</span>
+                                                        <span className={`block truncate text-[11px] font-normal ${rankAtMatch === "Unknown rank" ? "text-stone-500" : "text-gold/80"}`}>{rankAtMatch}</span>
+                                                      </span>
+                                                    </Link>
+                                                  ) : (
+                                                    <div className="flex min-w-0 items-center gap-2 font-semibold text-stone-400">
+                                                      <ChampionAvatar image={p.championImage} name={p.championName ?? "Unknown"} size="sm" />
+                                                      <span className="min-w-0">
+                                                        <span className="block truncate">{displayName}</span>
+                                                        <span className={`block truncate text-[11px] font-normal ${rankAtMatch === "Unknown rank" ? "text-stone-500" : "text-gold/80"}`}>{rankAtMatch}</span>
+                                                      </span>
+                                                    </div>
+                                                  );
+                                                })()}
+                                                <span className="text-right font-mono text-stone-300">{p.kills}/{p.deaths}/{p.assists}</span>
+                                                <span className="text-right font-mono text-stone-300">{getKillParticipation(p, match.match.participants)}%</span>
+                                                <StatBar value={p.damageToChampions} max={maxDamage} color="damage" />
+                                                <StatBar value={p.healingDone} max={maxHealing} color="healing" />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+                    )})}
                 </div>
             ) : (
                 <div className="overflow-x-auto">

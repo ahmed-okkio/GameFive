@@ -214,7 +214,11 @@ export type PlayerProfile =
             playerRiotIdTag: string | null;
             rankSignalMmr: number | null;
             rankLabelAtMatch: string;
-          }>
+            spell1Id: number | null;
+            spell2Id: number | null;
+            itemsJson: unknown;
+            augmentsJson: unknown;
+            }>
         };
       }>;
       champions: Array<{
@@ -245,10 +249,6 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
     take: 100
   });
 
-  const lastMayhemGame = participants
-    .filter((p) => p.match.gameMode === "MAYHEM")
-    .sort((a, b) => b.match.gameDate.getTime() - a.match.gameDate.getTime())[0];
-  
   const displayedMmr = Math.round(player.rawMmr);
   const tier = getTierLabel(displayedMmr);
   const championAssets = await getChampionAssetMap();
@@ -312,7 +312,11 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
                       ? (part.player.soloDuoTier 
                           ? `${part.player.soloDuoTier.charAt(0).toUpperCase() + part.player.soloDuoTier.slice(1).toLowerCase()} ${part.player.soloDuoDivision ?? ""}` 
                           : "Unranked")
-                      : "Unknown rank")
+                      : "Unknown rank"),
+                spell1Id: part.spell1Id,
+                spell2Id: part.spell2Id,
+                itemsJson: part.itemsJson,
+                augmentsJson: part.augmentsJson
             }))
         }
     })),

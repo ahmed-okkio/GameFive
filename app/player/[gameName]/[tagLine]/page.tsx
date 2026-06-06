@@ -1,6 +1,7 @@
-import { ProfileClient } from "@/components/ProfileClient";
+import { ProfileClient, StatusResponse } from "@/components/ProfileClient";
 import { getPlayerProfile } from "@/lib/players";
 import { appConfig } from "@/lib/config";
+import { getLatestDDragonVersion } from "@/lib/riot/ddragon";
 import type { Metadata } from "next";
 
 type PageProps = {
@@ -25,7 +26,11 @@ export default async function PlayerPage({ params }: PageProps) {
   const { gameName, tagLine } = await params;
   const decodedGameName = decodeURIComponent(gameName);
   const decodedTagLine = decodeURIComponent(tagLine);
-  const profile = await getPlayerProfile(decodedGameName, decodedTagLine);
+  
+  const [profile, ddragonVersion] = await Promise.all([
+    getPlayerProfile(decodedGameName, decodedTagLine),
+    getLatestDDragonVersion()
+  ]);
 
   if (profile.state === "awaiting") {
       return <div>Player not found or awaiting calculation...</div>;
@@ -86,7 +91,11 @@ export default async function PlayerPage({ params }: PageProps) {
                       playerRiotIdName: part.playerRiotIdName,
                       playerRiotIdTag: part.playerRiotIdTag,
                       rankSignalMmr: part.rankSignalMmr,
-                      rankLabelAtMatch: part.rankLabelAtMatch
+                      rankLabelAtMatch: part.rankLabelAtMatch,
+                      spell1Id: part.spell1Id,
+                      spell2Id: part.spell2Id,
+                      itemsJson: part.itemsJson,
+                      augmentsJson: part.augmentsJson
                   }))
               }
           })),
@@ -107,5 +116,11 @@ export default async function PlayerPage({ params }: PageProps) {
           }))
         };
 
-  return <ProfileClient gameName={decodedGameName} tagLine={decodedTagLine} initialStatus={initialStatus} maintenanceMode={appConfig.maintenanceMode} />;
+  return <ProfileClient 
+            gameName={decodedGameName} 
+            tagLine={decodedTagLine} 
+            initialStatus={initialStatus as StatusResponse} 
+            maintenanceMode={appConfig.maintenanceMode} 
+            initialVersion={ddragonVersion}
+         />;
 }
