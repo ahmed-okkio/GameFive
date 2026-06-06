@@ -6,5 +6,4 @@ internal sealed class CompanionConfig
     public string ServerBaseUrl { get; set; } = "https://game-five-kohl.vercel.app/";
     public int DiagnosticMatchLimit { get; set; } = 10;
     public string GitHubRepo { get; set; } = "ahmed-okkio/GameFive";
-    public string CurrentVersion { get; set; } = "1.0.0";
 }

@@ -17,10 +17,6 @@ internal sealed class UpdateManager
         _logger = logger;
         _httpClient = new HttpClient();
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "GameFiveCompanion");
-
-#if !DEBUG
-        AppDomain.CurrentDomain.ProcessExit += (s, e) => ApplyUpdate();
-#endif
     }
 
     public async Task CheckForUpdatesAsync(CancellationToken ct)
@@ -30,6 +26,7 @@ internal sealed class UpdateManager
         await Task.CompletedTask;
         return;
 #else
+        var currentVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "0.0.0";
         try
         {
             _logger.Info($"Checking for updates from {_config.GitHubRepo}...");
@@ -38,13 +35,14 @@ internal sealed class UpdateManager
 
             if (release?.TagName == null) return;
 
-            if (IsNewer(release.TagName, _config.CurrentVersion))
+            if (IsNewer(release.TagName, currentVersion))
             {
-                _logger.Info($"New version found: {release.TagName}. Current version: {_config.CurrentVersion}");
+                _logger.Info($"New version found: {release.TagName}. Current version: {currentVersion}");
                 var asset = release.Assets.FirstOrDefault(a => a.Name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase));
                 if (asset != null)
                 {
                     await DownloadUpdateAsync(asset.BrowserDownloadUrl, ct);
+                    ApplyUpdate();
                 }
                 else
                 {
@@ -92,7 +90,7 @@ internal sealed class UpdateManager
             }
 
             _pendingUpdatePath = tempPath;
-            _logger.Info($"Update downloaded to {_pendingUpdatePath}. It will be applied on next exit.");
+            _logger.Info($"Update downloaded to {_pendingUpdatePath}. Applying immediately.");
         }
         catch (Exception ex)
         {
@@ -130,6 +128,9 @@ del ""%~f0""
 
             _logger.Info("Starting update script and exiting...");
             Process.Start(startInfo);
+            
+            // Explicitly exit the application
+            Environment.Exit(0);
         }
         catch (Exception ex)
         {

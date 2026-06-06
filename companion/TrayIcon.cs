@@ -60,6 +60,8 @@ internal sealed class TrayIcon : IDisposable
         };
 
         _menu = new ContextMenuStrip();
+        var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "Unknown";
+        _menu.Items.Add($"Version: {version}", null, null).Enabled = false;
         _menu.Items.Add("Reconnect", null, (_, _) => _monitor.Reconnect());
         _menu.Items.Add("Upload recent games", null, async (_, _) => {
             var lockfile = LcuLockfile.TryRead(_logger);
