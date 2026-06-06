@@ -10,3 +10,16 @@ export const SPELL_MAP: Record<number, string> = {
   6: "SummonerHaste",
   32: "SummonerSnowball"
 };
+
+export const SPELL_DISPLAY_NAME: Record<string, string> = {
+  "SummonerFlash": "Flash",
+  "SummonerDot": "Ignite",
+  "SummonerTeleport": "Teleport",
+  "SummonerBarrier": "Barrier",
+  "SummonerSmite": "Smite",
+  "SummonerExhaust": "Exhaust",
+  "SummonerHeal": "Heal",
+  "SummonerBoost": "Cleanse",
+  "SummonerHaste": "Ghost",
+  "SummonerSnowball": "Mark"
+};

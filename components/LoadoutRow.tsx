@@ -1,8 +1,10 @@
 "use client";
 import { useState } from "react";
-import { getItemIconUrl, getCDragonItemIconUrl, getSpellIconUrl, DEFAULT_DDRAGON_VERSION } from "@/lib/riot/ddragon";
+import { getItemIconUrl, getSpellIconUrl, DEFAULT_DDRAGON_VERSION } from "@/lib/riot/ddragon";
 import { AugmentBadge } from "@/components/AugmentBadge";
-import { SPELL_MAP } from "@/lib/riot/spells";
+import { SPELL_MAP, SPELL_DISPLAY_NAME } from "@/lib/riot/spells";
+import { AUGMENT_NAME_MAP } from "@/lib/riot/augments";
+import { ITEM_NAME_MAP } from "@/lib/riot/items";
 
 type LoadoutRowProps = {
     items: number[];
@@ -44,7 +46,7 @@ export function LoadoutRow({ items, spell1Id, spell2Id, augments, version, size 
                 <div className="grid grid-cols-3 gap-0.5 shrink-0 ml-1">
                     {augments.map((augId, i) => (
                         <div key={i} className={augmentSize}>
-                            <AugmentBadge augmentId={augId} augmentName={`Augment ${augId}`} />
+                            <AugmentBadge augmentId={augId} augmentName={AUGMENT_NAME_MAP[augId] ?? `Augment ${augId}`} />
                         </div>
                     ))}
                 </div>
@@ -57,10 +59,11 @@ function SpellIcon({ id, version, className }: { id: number | null, version: str
     const [hasError, setHasError] = useState(false);
     if (!id) return <div className={`${className} bg-stone-900/50 rounded-sm border border-white/5`} />;
     
-    const spellName = SPELL_MAP[id] ?? "SummonerFlash";
-    const url = getSpellIconUrl(spellName, version);
+    const internalName = SPELL_MAP[id] ?? "SummonerSpell";
+    const displayName = SPELL_DISPLAY_NAME[internalName] ?? internalName;
+    const url = getSpellIconUrl(internalName, version);
 
-    if (hasError) return <div className={`${className} bg-stone-800 rounded-sm border border-white/5`} />;
+    if (hasError) return <div className={`${className} bg-stone-800 rounded-sm border border-white/5`} title={displayName} />;
 
     return (
         <img 
@@ -68,11 +71,13 @@ function SpellIcon({ id, version, className }: { id: number | null, version: str
             alt="Spell" 
             className={`${className} rounded-sm border border-white/5`} 
             onError={() => setHasError(true)}
+            title={displayName}
         />
     );
 }
 function ItemIcon({ id, version, className }: { id: number, version: string, className: string }) {
     const [hasError, setHasError] = useState(false);
+    const itemName = ITEM_NAME_MAP[id] ?? `Item ${id}`;
 
     if (id === 0) {
         return <div className={`${className} bg-stone-900/50 rounded-sm border border-white/5`} />;
@@ -85,9 +90,10 @@ function ItemIcon({ id, version, className }: { id: number, version: string, cla
                 alt="Item" 
                 className={`${className} rounded-sm border border-white/10 bg-black/20`}
                 onError={() => setHasError(true)}
+                title={itemName}
             />
         );
     }
 
-    return <div className={`${className} bg-stone-900/50 rounded-sm border border-white/5`} />;
+    return <div className={`${className} bg-stone-900/50 rounded-sm border border-white/5`} title={itemName} />;
 }

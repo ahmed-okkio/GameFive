@@ -4,7 +4,7 @@ export function StatBar({ value, max, color }: { value: number; max: number; col
   const label = color === "damage" ? "Damage" : "Healing";
 
   return (
-    <div className="flex flex-col items-end gap-0.5">
+    <div className="flex flex-col items-start gap-0.5">
       <div className="flex items-center gap-1">
         <span className="text-[9px] font-bold text-stone-500">{label}</span>
         <span className="font-mono text-[10px] text-stone-300">{value.toLocaleString()}</span>
