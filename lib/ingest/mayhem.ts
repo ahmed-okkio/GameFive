@@ -217,25 +217,16 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
         participantLpDelta = Math.round(participant.win ? delta : -delta);
 
         const newMmr = player.rawMmr + participantLpDelta;
-        const promoState = applyPromoUpdate({
-          previousMmr: player.rawMmr, updatedMmr: newMmr, win: participant.win,
-          promo: { promoFromTier: player.promoFromTier, promoToTier: player.promoToTier, promoWins: player.promoWins, promoLosses: player.promoLosses }
-        });
-        const resolvedMmr = Math.round(promoState.rawMmr);
-        const tier = getTierLabel(resolvedMmr);
+        const tier = getTierLabel(newMmr);
 
         await prisma.player.update({
             where: { id: player.id },
             data: {
-                rawMmr: resolvedMmr,
-                currentLp: Math.round(resolvedMmr % 100),
+                rawMmr: newMmr,
+                currentLp: Math.round(newMmr % 100),
                 mayhemGames: { increment: 1 },
                 lastGameDate: new Date(payload.gameCreation),
-                lastGameTier: promoState.promoFromTier && promoState.promoToTier ? getPromoRankLabel(promoState) : tier.label,
-                promoFromTier: promoState.promoFromTier,
-                promoToTier: promoState.promoToTier,
-                promoWins: promoState.promoWins,
-                promoLosses: promoState.promoLosses,
+                lastGameTier: tier.label,
                 cacheUpdatedAt: new Date()
             }
         });
