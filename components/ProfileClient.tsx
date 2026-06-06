@@ -136,6 +136,7 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
   const [status, setStatus] = useState<StatusResponse | null>(initialStatus ?? null);
   const [tab, setTab] = useState("matches");
   const [expandedMatchId, setExpandedMatchId] = useState<string | null>(null);
+  const [matchesToDisplay, setMatchesToDisplay] = useState(20);
   const [ddragonVersion, setDdragonVersion] = useState<string | null>(initialVersion);
   const [refreshState, setRefreshState] = useState<{ loading: boolean; message: string | null; error: string | null }>({
     loading: false,
@@ -399,7 +400,7 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
 
             {tab === "matches" ? (
                 <div className="space-y-2">
-                    {status.matches.slice(0, 20).map((match) => {
+                    {status.matches.slice(0, matchesToDisplay).map((match) => {
                       const viewedParticipant = match.match.participants.find((p) => {
                           const pName = p.player?.riotIdName ?? p.playerRiotIdName;
                           const pTag = p.player?.riotIdTag ?? p.playerRiotIdTag;
@@ -502,6 +503,14 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
                         </div>
                       );
                     })}
+                    {matchesToDisplay < status.matches.length && (
+                        <button
+                            onClick={() => setMatchesToDisplay(prev => prev + 20)}
+                            className="w-full rounded-lg border border-line bg-panel p-3 text-center text-sm font-bold text-gold hover:bg-black/20"
+                        >
+                            Load More
+                        </button>
+                    )}
                 </div>
             ) : (
                 <div className="overflow-x-auto">
