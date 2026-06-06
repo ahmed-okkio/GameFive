@@ -23,12 +23,15 @@ export function LoadoutRow({ items, spell1Id, spell2Id, augments, version, size 
     const iconSize = size === "sm" ? "w-6 h-6" : "w-9 h-9";
     const spellSize = size === "sm" ? "w-4 h-4" : "w-6 h-6";
     const augmentSize = size === "sm" ? "w-4 h-4" : "w-8 h-8";
+    
+    const gapSize = size === "sm" ? "gap-2" : "gap-6";
+    const marginSize = size === "sm" ? "ml-1" : "ml-4";
 
     const activeItems = items.filter(id => id !== 0);
     const paddedItems = [...activeItems, ...Array(7 - activeItems.length).fill(0)];
 
     return (
-        <div className="flex items-center gap-2">
+        <div className={`flex items-center ${gapSize}`}>
             <div className="flex items-center gap-1.5">
                 <div className="flex flex-col gap-0.5 shrink-0">
                     {[spell1Id, spell2Id].map((id, i) => id ? (
@@ -44,7 +47,7 @@ export function LoadoutRow({ items, spell1Id, spell2Id, augments, version, size 
             </div>
 
             {augments.length > 0 && (
-                <div className="grid grid-cols-3 gap-0.5 shrink-0 ml-1">
+                <div className={`grid grid-cols-3 gap-1 shrink-0 ${marginSize}`}>
                     {augments.map((augId, i) => (
                         <div key={i} className={augmentSize}>
                             <AugmentBadge augmentId={augId} augmentName={AUGMENT_NAME_MAP[augId] ?? `Augment ${augId}`} />

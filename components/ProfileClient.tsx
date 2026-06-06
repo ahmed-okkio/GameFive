@@ -229,7 +229,7 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
       ? `${status.player.promoFromTier} I PROMO (${status.player.promoWins}W ${status.player.promoLosses}L)`
       : null;
   
-  const rankLabel = maintenanceMode ? "Under Maintenance" : (status.player.isPlaced ? (promoLabel ?? status.tier.label) : "Unranked");
+  const rankLabel = maintenanceMode ? "Under Maintenance" : (status.player.isPlaced ? (promoLabel ?? status.tier.label) : (status.mmr.mayhemGames > 0 ? "Placements" : "Unranked"));
     
   const getTierIcon = (tierName: string) => {
     if (maintenanceMode) return null;
@@ -428,14 +428,17 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
                                     </div>
                                   </div>
                                 </div>
-                                <div className="flex items-center justify-between gap-3 md:justify-end">
-                                  <div className="min-w-0 text-right">
-                                    <div className="font-mono text-lg font-black text-white">
-                                      {match.kills} / <span className="text-red-300">{match.deaths}</span> / {match.assists}
+                                  <div className="flex items-center justify-between gap-3 md:justify-end">
+                                  <div className="min-w-0 text-right whitespace-nowrap">
+                                    <div className="font-mono font-black text-white text-sm">
+                                      {match.kills}/<span className="text-red-300">{match.deaths}</span>/{match.assists}
                                     </div>
-                                    <div className="text-xs text-stone-400">
-                                      {formatKda(match.kills, match.deaths, match.assists)}:1 KDA <span className="text-red-300">({kp}% KP)</span>
+                                    <div className="text-[11px] text-stone-400">
+                                      {formatKda(match.kills, match.deaths, match.assists)}:1 · {kp}% KP
                                     </div>
+                                  </div>
+                                  <div className={`font-black text-right whitespace-nowrap ${match.lpDelta >= 0 ? "text-sky-300" : "text-red-400"}`}>
+                                    {match.isPlacement ? "Placement" : `${match.lpDelta >= 0 ? "+" : ""}${match.lpDelta} LP`}
                                   </div>
                                   {expandedMatchId === match.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                                 </div>
@@ -445,9 +448,6 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
                                 <div className="overflow-x-auto border-t border-line/70">
                                     {[100, 200].map(teamId => (
                                         <div key={teamId} className={`${teamId === (viewedParticipant?.team ?? match.match.participants.find(p => p.win === match.win)?.team) ? "bg-white/[0.03]" : "bg-black/10"} min-w-[720px] p-3`}>
-                                            <h4 className={`mb-2 px-1 text-xs font-bold uppercase tracking-widest ${teamId === 100 ? "text-sky-400" : "text-red-400"}`}>
-                                                {teamId === 100 ? "Blue Team" : "Red Team"}
-                                            </h4>
                                             <div className="grid grid-cols-[160px_70px_60px_1fr_80px] items-center gap-2 px-3 pb-1 text-[10px] uppercase tracking-widest text-stone-500">
                                                 <span>Player</span><span className="text-center">KDA</span><span className="text-center">KP %</span><span className="text-left">Loadout</span><span className="text-right">Stats</span>
                                             </div>
@@ -483,8 +483,8 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
                                                                 );
                                                             })()}
                                                         </div>
-                                                        <span className="text-right font-mono text-stone-300 w-12">{p.kills}/{p.deaths}/{p.assists}</span>
-                                                        <span className="text-right font-mono text-stone-300 w-12">{getKillParticipation(p, match.match.participants)}% KP</span>
+                                                        <span className="text-center font-mono text-stone-300 w-12">{p.kills}/{p.deaths}/{p.assists}</span>
+                                                        <span className="text-center font-mono text-stone-300 w-12">{getKillParticipation(p, match.match.participants)}% KP</span>
                                                         <div className="flex justify-start min-w-0"><LoadoutRow items={Array.isArray(p.itemsJson) ? p.itemsJson as number[] : []} spell1Id={p.spell1Id} spell2Id={p.spell2Id} augments={Array.isArray(p.augmentsJson) ? p.augmentsJson as number[] : []} version={ddragonVersion} size="sm" /></div>
                                                         <div className="flex flex-col gap-0.5 items-end">
                                                             <StatBar value={p.damageToChampions} max={maxDamage} color="damage" />
@@ -494,6 +494,7 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
                                                     </div>
 
                                             ))}
+
                                         </div>
                                     ))}
                                 </div>
