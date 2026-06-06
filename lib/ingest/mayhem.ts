@@ -114,9 +114,27 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
       const name = participant.gameName ?? participant.summonerName ?? "Unknown";
       const tag = participant.tagLine ?? "EUW";
 
-      const existingPlayer = await getPlayerByPuuid(participant.puuid);
-      if (existingPlayer) {
-          const player = await hydrateRankedSignals(existingPlayer);
+      // Try lookup by Name/Tag first
+      let player = await prisma.player.findFirst({
+          where: { riotIdName: name, riotIdTag: tag }
+      });
+
+      // Fallback lookup by PUUID
+      if (!player) {
+          player = await getPlayerByPuuid(participant.puuid);
+      }
+
+      // Self-heal: If found but PUUID is missing/mismatched, update it
+      if (player && participant.puuid && player.puuid !== participant.puuid) {
+          player = await prisma.player.update({
+              where: { id: player.id },
+              data: { puuid: participant.puuid }
+          });
+          console.log(`[Ingest] Updated PUUID for ${name}#${tag}`);
+      }
+
+      if (player) {
+          player = await hydrateRankedSignals(player);
           playerRows.set(participant.puuid, player);
           playerRankSignals.set(participant.puuid, bestRankedMmrWithHistoricalFallback(player));
       } else if (participant.puuid === payload.uploaderPuuid) {
