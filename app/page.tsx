@@ -3,9 +3,42 @@ import { SearchForm } from "@/components/SearchForm";
 import Link from "next/link";
 import { Activity, ArrowUpRight, Download, Trophy } from "lucide-react";
 import { getTierLabel } from "@/lib/mmr/tier";
+import { DEFAULT_DDRAGON_VERSION, getLatestDDragonVersion } from "@/lib/riot/ddragon";
+import { getChampionAssetMap } from "@/lib/riot/champions";
+// import { MatchRow } from "@/components/MatchRow";
+
+type MatchParticipant = {
+  id: string;
+  win: boolean;
+  kills: number;
+  deaths: number;
+  assists: number;
+  lpDelta: number;
+  isPlacement: boolean;
+  championId: number;
+  championName: string | null;
+  itemsJson: unknown;
+  augmentsJson: unknown;
+  spell1Id: number | null;
+  spell2Id: number | null;
+  team: number;
+  match: {
+    matchId: string;
+    gameDate: Date;
+    durationSeconds: number;
+    participants: {
+      team: number;
+      kills: number;
+      assists: number;
+    }[];
+  };
+};
 
 export default async function HomePage() {
-  const [trackedPlayers, placedPlayers, mayhemMatches, topPlayers] = await Promise.all([
+  const latestVersion = await getLatestDDragonVersion().catch(() => DEFAULT_DDRAGON_VERSION);
+  const championAssets = await getChampionAssetMap();
+
+  const [trackedPlayers, placedPlayers, mayhemMatches, topPlayers, recentGames] = await Promise.all([
     prisma.player.count(),
     prisma.player.count({ where: { isPlaced: true } }),
     prisma.match.count({ where: { gameMode: "MAYHEM" } }),
@@ -24,85 +57,86 @@ export default async function HomePage() {
         promoWins: true,
         promoLosses: true
       }
-    })
+    }),
+    prisma.matchParticipant.findMany({
+      where: { 
+        playerId: { not: null },
+        match: { gameMode: "MAYHEM" }
+      },
+      take: 3,
+      orderBy: { match: { gameDate: "desc" } },
+      include: {
+        player: true,
+        match: {
+          include: {
+            participants: true
+          }
+        }
+      }
+    }) as Promise<MatchParticipant[]>
   ]);
 
   return (
     <section className="mx-auto min-h-[calc(100vh-170px)] max-w-6xl px-4 py-8 sm:py-12">
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
-        <div className="min-w-0">
+      <div className="grid gap-8">
+        <div className=" min-w-0">
           <p className="mb-3 inline-flex rounded border border-gold/40 bg-gold/10 px-3 py-1 text-sm font-semibold text-gold">
             EUW Mayhem tracker
           </p>
           <h1 className="font-display max-w-4xl text-4xl font-black leading-tight text-white sm:text-6xl">
             GameFive
           </h1>
-          <p className="mt-3 max-w-2xl text-base leading-7 text-stone-300 sm:text-lg">
+          <p className="mt-3 max-w-2xl text-base leading-7 text-stone-300 sm:lg">
             Search a Riot ID to view Mayhem MMR, recent games, champion stats, and lobby performance.
           </p>
 
           <div className="mt-7 w-full rounded-lg border border-line bg-panel p-4 shadow-2xl shadow-black/20 sm:p-5">
             <SearchForm />
           </div>
-
-          <div className="mt-5 flex flex-wrap gap-3 text-sm text-stone-300">
-            <span className="inline-flex items-center gap-2 rounded border border-line bg-black/20 px-3 py-2">
-              <Activity size={16} className="text-emerald-400" />
-              Live Mayhem ingestion
-            </span>
-            <span className="inline-flex items-center gap-2 rounded border border-line bg-black/20 px-3 py-2">
-              <Trophy size={16} className="text-gold" />
-              Private leaderboard
-            </span>
-          </div>
         </div>
 
-        <aside className="space-y-4">
-          <div className="rounded-lg border border-line bg-panel p-4 shadow-xl shadow-black/20">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-stone-400">Live state</h2>
-            <dl className="mt-4 grid grid-cols-2 gap-3">
-              <div className="rounded border border-line bg-black/20 p-3">
-                <dt className="text-xs text-stone-500">Tracked players</dt>
-                <dd className="mt-1 text-2xl font-black text-white">{trackedPlayers.toLocaleString()}</dd>
-              </div>
-              <div className="rounded border border-line bg-black/20 p-3">
-                <dt className="text-xs text-stone-500">Placed players</dt>
-                <dd className="mt-1 text-2xl font-black text-white">{placedPlayers.toLocaleString()}</dd>
-              </div>
-              <div className="rounded border border-line bg-black/20 p-3 col-span-2">
-                <dt className="text-xs text-stone-500">Mayhem matches</dt>
-                <dd className="mt-1 text-2xl font-black text-white">{mayhemMatches.toLocaleString()}</dd>
-              </div>
-            </dl>
-          </div>
 
-          <div className="rounded-lg border border-line bg-panel p-4">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-stone-400">Companion</h2>
-            <p className="mt-3 text-sm leading-6 text-stone-300">
-              Run the desktop app to upload games automatically and keep placement data current.
-            </p>
-            <Link
-            href="/companion"
-            className="interactive mt-4 hidden items-center gap-2 rounded border border-sky-300/30 bg-sky-500/15 px-3 py-2 text-sm font-semibold text-sky-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] hover:border-sky-200/50 hover:bg-sky-400/20 hover:text-white sm:inline-flex"
-          >
-              <Download size={16} />
-              Download Companion
-            </Link>
-          </div>
 
-          <div className="rounded-lg border border-line bg-panel p-4">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-stone-400">What you get</h2>
-            <ul className="mt-3 space-y-2 text-sm leading-6 text-stone-300">
-              <li>Rank snapshots, placements, and promos</li>
-              <li>Recent Mayhem history and lobby MMR</li>
-              <li>Private leaderboard and match replay data</li>
-            </ul>
-          </div>
-        </aside>
+         
       </div>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(340px,0.9fr)]">
-        <section className="rounded-lg border border-line bg-panel shadow-xl shadow-black/20">
+      <div className="mt-8 space-y-8">
+        <section className="rounded-lg border border-line bg-panel shadow-xl shadow-black/20 overflow-hidden">
+          <div className="flex items-center justify-between border-b border-line px-4 py-4 sm:px-5">
+            <div>
+              <h2 className="text-sm font-bold uppercase tracking-widest text-stone-400">Recent Games</h2>
+              <p className="mt-1 text-sm text-stone-500">Latest activity across the server</p>
+            </div>
+          </div>
+
+          <div className="divide-y divide-line/80 overflow-x-auto">
+            <div className="min-w-[800px] divide-y divide-line/80">
+              {recentGames.map((participant: MatchParticipant) => {
+                  const matchData = {
+                      id: participant.match.matchId,
+                      win: participant.win,
+                      kills: participant.kills,
+                      deaths: participant.deaths,
+                      assists: participant.assists,
+                      lpDelta: participant.lpDelta,
+                      isPlacement: participant.isPlacement,
+                      championName: participant.championName ?? "Unknown",
+                      championImage: championAssets[participant.championId]?.imageUrl ?? null,
+                      match: {
+                          gameDate: participant.match.gameDate.toISOString(),
+                          durationSeconds: participant.match.durationSeconds
+                      }
+                  };
+                  return (
+                    <div key={participant.id} className={`${participant.win ? "bg-sky-500/5" : "bg-red-500/5"}`}>
+                       
+                    </div>
+              )})}
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-lg border border-line bg-panel shadow-xl shadow-black/20 overflow-hidden">
           <div className="flex items-center justify-between border-b border-line px-4 py-4 sm:px-5">
             <div>
               <h2 className="text-sm font-bold uppercase tracking-widest text-stone-400">Top of board</h2>
@@ -114,11 +148,11 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <div className="overflow-hidden">
-            <table className="w-full border-collapse text-left">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-left min-w-[600px]">
               <thead className="bg-black/20 text-xs uppercase tracking-widest text-stone-500">
                 <tr>
-                  <th className="px-4 py-3 sm:px-5">#</th>
+                  <th className="px-4 py-3 sm:px-5 w-12">#</th>
                   <th className="px-4 py-3 sm:px-5">Player</th>
                   <th className="px-4 py-3 sm:px-5">Rank</th>
                   <th className="px-4 py-3 text-right sm:px-5">LP</th>
