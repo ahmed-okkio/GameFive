@@ -1,9 +1,11 @@
+import { MatchRow } from "@/components/MatchRow";
 import { prisma } from "@/lib/prisma";
 import { SearchForm } from "@/components/SearchForm";
 import Link from "next/link";
+import Image from "next/image";
 import { Activity, ArrowUpRight, Download, Trophy } from "lucide-react";
 import { getTierLabel } from "@/lib/mmr/tier";
-import { DEFAULT_DDRAGON_VERSION, getLatestDDragonVersion } from "@/lib/riot/ddragon";
+import { DEFAULT_DDRAGON_VERSION, getLatestDDragonVersion, getProfileIconUrl } from "@/lib/riot/ddragon";
 import { getChampionAssetMap } from "@/lib/riot/champions";
 // import { MatchRow } from "@/components/MatchRow";
 
@@ -22,6 +24,11 @@ type MatchParticipant = {
   spell1Id: number | null;
   spell2Id: number | null;
   team: number;
+  player: {
+    riotIdName: string;
+    riotIdTag: string;
+    profileIconId: number | null;
+  } | null;
   match: {
     matchId: string;
     gameDate: Date;
@@ -109,8 +116,7 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="divide-y divide-line/80 overflow-x-auto">
-            <div className="min-w-[800px] divide-y divide-line/80">
+            <div className="divide-y divide-line/80">
               {recentGames.map((participant: MatchParticipant) => {
                   const matchData = {
                       id: participant.match.matchId,
@@ -125,15 +131,23 @@ export default async function HomePage() {
                       match: {
                           gameDate: participant.match.gameDate.toISOString(),
                           durationSeconds: participant.match.durationSeconds
-                      }
+                      },
+                      viewedParticipant: {
+                          itemsJson: participant.itemsJson,
+                          spell1Id: participant.spell1Id,
+                          spell2Id: participant.spell2Id,
+                          augmentsJson: participant.augmentsJson
+                      },
+                      ddragonVersion: latestVersion,
+                      player: participant.player ? {
+                          name: participant.player.riotIdName,
+                          profileIconUrl: participant.player.profileIconId ? getProfileIconUrl(participant.player.profileIconId, latestVersion) : undefined
+                      } : undefined
                   };
                   return (
-                    <div key={participant.id} className={`${participant.win ? "bg-sky-500/5" : "bg-red-500/5"}`}>
-                       
-                    </div>
+                      <MatchRow match={matchData} />
               )})}
             </div>
-          </div>
         </section>
 
         <section className="rounded-lg border border-line bg-panel shadow-xl shadow-black/20 overflow-hidden">

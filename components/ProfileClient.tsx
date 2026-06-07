@@ -9,6 +9,7 @@ import { getLatestDDragonVersion, getProfileIconUrl } from "@/lib/riot/ddragon";
 import { StatBar } from "@/components/StatBar";
 import { LoadoutRow } from "@/components/LoadoutRow";
 import { ChampionAvatar } from "@/components/ChampionAvatar";
+import { MatchRow } from "@/components/MatchRow";
 
 type ProfileJobSnapshot = {
   status: string;
@@ -461,43 +462,38 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
                       const maxDamage = Math.max(...match.match.participants.map(p => p.damageToChampions), 1);
                       const maxHealing = Math.max(...match.match.participants.map(p => p.healingDone), 1);
 
+                      const matchData = {
+                          id: match.id,
+                          win: match.win,
+                          kills: match.kills,
+                          deaths: match.deaths,
+                          assists: match.assists,
+                          lpDelta: match.lpDelta,
+                          isPlacement: match.isPlacement,
+                          championName: match.championName,
+                          championImage: match.championImage,
+                          match: {
+                              gameDate: match.match.gameDate,
+                              durationSeconds: match.match.durationSeconds
+                          },
+                          kp,
+                          viewedParticipant: viewedParticipant ? {
+                              itemsJson: viewedParticipant.itemsJson,
+                              spell1Id: viewedParticipant.spell1Id,
+                              spell2Id: viewedParticipant.spell2Id,
+                              augmentsJson: viewedParticipant.augmentsJson
+                          } : undefined,
+                          ddragonVersion: ddragonVersion
+                      };
+
                       return (
-                        <div key={match.id} className={`overflow-hidden rounded-lg border ${match.win ? "border-sky-500/30 bg-sky-950/20" : "border-red-500/30 bg-red-950/20"}`}>
-                            <div className="flex cursor-pointer flex-col gap-3 p-3 text-sm hover:bg-black/20 md:flex-row md:items-center md:justify-between" onClick={() => setExpandedMatchId(expandedMatchId === match.id ? null : match.id)}>
-                                <div className="flex min-w-0 items-center gap-3">
-                                  <div className="w-20 shrink-0">
-                                    <div className={`font-bold ${match.win ? "text-sky-300" : "text-red-400"}`}>{match.win ? "Victory" : "Defeat"}</div>
-                                    <div className="text-xs text-stone-500">{formatTimeAgo(match.match.gameDate)}</div>
-                                    <div className="mt-2 text-xs text-stone-400">{formatDuration(match.match.durationSeconds)}</div>
-                                  </div>
-                                  <div className="flex items-center gap-3">
-                                    <ChampionAvatar image={match.championImage} name={match.championName} size="lg" />
-                                    <div className="flex flex-col gap-1 min-w-0">
-                                      <div className="font-semibold text-white truncate">{match.championName}</div>
-                                      {viewedParticipant && (
-                                          <LoadoutRow items={Array.isArray(viewedParticipant.itemsJson) ? viewedParticipant.itemsJson as number[] : []} spell1Id={viewedParticipant.spell1Id} spell2Id={viewedParticipant.spell2Id} augments={Array.isArray(viewedParticipant.augmentsJson) ? viewedParticipant.augmentsJson as number[] : []} version={ddragonVersion} size="md" />
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                                  <div className="flex items-center justify-between gap-3 md:justify-end">
-                                  <div className="min-w-0 text-right whitespace-nowrap">
-                                    <div className="font-mono font-black text-white text-sm">
-                                      {match.kills}/<span className="text-red-300">{match.deaths}</span>/{match.assists}
-                                    </div>
-                                    <div className="text-[11px] text-stone-400">
-                                      {formatKda(match.kills, match.deaths, match.assists)}:1 · {kp}% KP
-                                    </div>
-                                  </div>
-                                  <div className={`font-black text-right whitespace-nowrap ${match.lpDelta >= 0 ? "text-sky-300" : "text-red-400"}`}>
-                                    {match.isPlacement ? "Placement" : `${match.lpDelta >= 0 ? "+" : ""}${match.lpDelta} LP`}
-                                  </div>
-                                  {expandedMatchId === match.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                                </div>
+                        <div key={match.id}>
+                            <div onClick={() => setExpandedMatchId(expandedMatchId === match.id ? null : match.id)}>
+                                <MatchRow match={matchData} />
                             </div>
 
                             {expandedMatchId === match.id && (
-                                <div className="overflow-x-auto border-t border-line/70">
+                                <div className="overflow-x-auto border-t border-line/70 bg-black/10 rounded-b-lg">
                                     {[100, 200].map(teamId => (
                                         <div key={teamId} className={`${teamId === (viewedParticipant?.team ?? match.match.participants.find(p => p.win === match.win)?.team) ? "bg-white/[0.03]" : "bg-black/10"} min-w-[720px] p-3`}>
                                             <div className="grid grid-cols-[160px_70px_60px_1fr_80px] items-center gap-2 px-3 pb-1 text-[10px] uppercase tracking-widest text-stone-500">
