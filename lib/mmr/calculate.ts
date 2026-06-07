@@ -31,15 +31,15 @@ export function calculateLpDelta(input: LpDeltaInput): number {
 
   let opponentFactor = 1.0;
   if (myTeam !== null && opposingTeam !== null) {
-    if (input.win) {
-        // Win: Gain more if opposing team is stronger
-        opponentFactor = opposingTeam / Math.max(myTeam, 1);
-    } else {
-        // Loss: Lose less if opposing team is stronger (mitigation)
-        opponentFactor = myTeam / Math.max(opposingTeam, 1);
-    }
-    // Clamp to reasonable range (0.7x to 1.3x)
-    opponentFactor = Math.min(1.3, Math.max(0.7, opponentFactor));
+    const diff = input.win 
+      ? (opposingTeam - myTeam) // Winning against stronger team
+      : (myTeam - opposingTeam); // Losing against weaker team
+
+    // Linear scaling: 600 MMR difference = 0.3 factor shift
+    const adjustment = (diff / 600) * 0.3;
+    
+    // Apply adjustment and clamp to 0.7 - 1.3 range
+    opponentFactor = Math.min(1.3, Math.max(0.7, 1 + adjustment));
   }
   
   const streakMultiplier = 1 + (0.05 * Math.min(input.consecutiveStreak, 5));

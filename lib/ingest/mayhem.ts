@@ -135,11 +135,11 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
       if (player) {
           player = await hydrateRankedSignals(player);
           playerRows.set(participant.puuid, player);
-          playerRankSignals.set(participant.puuid, bestRankedMmrWithHistoricalFallback(player));
+          playerRankSignals.set(participant.puuid, player.rawMmr);
       } else if (participant.puuid === payload.uploaderPuuid) {
           const player = await upsertPlayer(name, tag, participant.puuid);
           playerRows.set(participant.puuid, player);
-          playerRankSignals.set(participant.puuid, bestRankedMmrWithHistoricalFallback(player));
+          playerRankSignals.set(participant.puuid, player.rawMmr);
       } else {
           // Non-uploader, not in DB - resolve without persisting
           const rankMmr = await resolveRank(name, tag);
