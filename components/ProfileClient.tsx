@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
+import { ExternalLink, RefreshCw } from "lucide-react";
 import Image from "next/image";
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
@@ -107,21 +107,6 @@ type MatchParticipant = ProfileMatch["match"]["participants"][number];
 
 function formatKda(kills: number, deaths: number, assists: number) {
   return ((kills + assists) / Math.max(deaths, 1)).toFixed(2);
-}
-
-function formatDuration(seconds: number) {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${minutes}m ${remainingSeconds.toString().padStart(2, "0")}s`;
-}
-
-function formatTimeAgo(dateValue: string) {
-  const elapsedMs = Date.now() - new Date(dateValue).getTime();
-  const minutes = Math.floor(elapsedMs / 60_000);
-  const hours = Math.floor(elapsedMs / 3_600_000);
-  if (minutes < 60) return `${minutes} minutes ago`;
-  if (hours < 24) return `${hours} hours ago`;
-  return `${Math.floor(hours / 24)} days ago`;
 }
 
 function getTeamKills(participants: MatchParticipant[], team: number) {

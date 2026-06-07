@@ -2,8 +2,7 @@ import { MatchRow } from "@/components/MatchRow";
 import { prisma } from "@/lib/prisma";
 import { SearchForm } from "@/components/SearchForm";
 import Link from "next/link";
-import Image from "next/image";
-import { Activity, ArrowUpRight, Download, Trophy } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { getTierLabel } from "@/lib/mmr/tier";
 import { DEFAULT_DDRAGON_VERSION, getLatestDDragonVersion, getProfileIconUrl } from "@/lib/riot/ddragon";
 import { getChampionAssetMap } from "@/lib/riot/champions";
@@ -45,7 +44,7 @@ export default async function HomePage() {
   const latestVersion = await getLatestDDragonVersion().catch(() => DEFAULT_DDRAGON_VERSION);
   const championAssets = await getChampionAssetMap();
 
-  const [trackedPlayers, placedPlayers, mayhemMatches, topPlayers, recentGames] = await Promise.all([
+  const [, , , topPlayers, recentGames] = await Promise.all([
     prisma.player.count(),
     prisma.player.count({ where: { isPlaced: true } }),
     prisma.match.count({ where: { gameMode: "MAYHEM" } }),
@@ -145,7 +144,7 @@ export default async function HomePage() {
                       } : undefined
                   };
                   return (
-                      <MatchRow match={matchData} />
+                        <MatchRow key={participant.id} match={matchData} />
               )})}
             </div>
         </section>
@@ -163,7 +162,7 @@ export default async function HomePage() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-left min-w-[600px]">
+            <table className="w-full border-collapse text-left min-w-[500px]">
               <thead className="bg-black/20 text-xs uppercase tracking-widest text-stone-500">
                 <tr>
                   <th className="px-4 py-3 sm:px-5 w-12">#</th>

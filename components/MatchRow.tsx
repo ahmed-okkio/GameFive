@@ -102,7 +102,7 @@ export function MatchRow({ match }: { match: MatchData }) {
           <div className={`font-black text-right whitespace-nowrap ${match.lpDelta >= 0 ? "text-sky-300" : "text-red-400"}`}>
             {match.isPlacement ? "Placement" : `${match.lpDelta >= 0 ? "+" : ""}${match.lpDelta} LP`}
           </div>
-          {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          {match.player? null : (expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />) }
         </div>
       </div>
     </div>
