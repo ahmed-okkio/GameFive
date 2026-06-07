@@ -54,6 +54,8 @@ model Match {
   durationSeconds  Int                @map("duration_seconds")
   queueId          Int                @map("queue_id")
   lobbyAvgMmr      Float?             @map("lobby_avg_mmr")
+  team100AvgMmr    Int?               @map("team_100_avg_mmr")
+  team200AvgMmr    Int?               @map("team_200_avg_mmr")
   teamsJson        Json?              @map("teams_json")
   createdAt        DateTime           @default(now()) @map("created_at")
   participants     MatchParticipant[]

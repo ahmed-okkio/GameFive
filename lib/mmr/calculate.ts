@@ -16,7 +16,9 @@ export function calculatePlacementMmr(input: PlacementInput): number {
 
 export type LpDeltaInput = {
   playerCurrentMmr: number;
-  lobbyAvgMmr: number | null; // Allow null
+  myTeamAvgMmr: number | null;
+  opposingTeamAvgMmr: number | null;
+  lobbyAvgFallback: number | null;
   consecutiveStreak: number;
   win: boolean;
 };
@@ -24,14 +26,17 @@ export type LpDeltaInput = {
 export function calculateLpDelta(input: LpDeltaInput): number {
   const BASE_LP = 20;
   
+  const myTeam = input.myTeamAvgMmr ?? input.lobbyAvgFallback;
+  const opposingTeam = input.opposingTeamAvgMmr ?? input.lobbyAvgFallback;
+
   let opponentFactor = 1.0;
-  if (input.lobbyAvgMmr !== null) {
+  if (myTeam !== null && opposingTeam !== null) {
     if (input.win) {
-        // Win: Gain more for higher lobby MMR
-        opponentFactor = input.lobbyAvgMmr / Math.max(input.playerCurrentMmr, 1);
+        // Win: Gain more if opposing team is stronger
+        opponentFactor = opposingTeam / Math.max(myTeam, 1);
     } else {
-        // Loss: Lose less for higher lobby MMR (mitigation)
-        opponentFactor = input.playerCurrentMmr / Math.max(input.lobbyAvgMmr, 1);
+        // Loss: Lose less if opposing team is stronger (mitigation)
+        opponentFactor = myTeam / Math.max(opposingTeam, 1);
     }
     // Clamp to reasonable range (0.7x to 1.3x)
     opponentFactor = Math.min(1.3, Math.max(0.7, opponentFactor));

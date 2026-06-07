@@ -148,11 +148,30 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
   }));
   console.log(`[Ingest] Players resolved.`);
 
-  // 2. Calculate Lobby Average MMR
-  const rankedParticipants = [...playerRankSignals.values()].filter((value): value is number => value !== null);
-  const lobbyAvgMmr = rankedParticipants.length > 0
-      ? rankedParticipants.reduce((sum, pMmr) => sum + pMmr, 0) / rankedParticipants.length
+  // 2. Calculate Team Average MMRs
+  const team100Ranked: number[] = [];
+  const team200Ranked: number[] = [];
+
+  payload.participants.forEach(p => {
+      const m = playerRankSignals.get(p.puuid);
+      if (m !== null && m !== undefined) {
+          if (p.teamId === 100) team100Ranked.push(m);
+          else if (p.teamId === 200) team200Ranked.push(m);
+      }
+  });
+
+  const allRanked = [...team100Ranked, ...team200Ranked];
+  const lobbyAvgMmr = allRanked.length > 0
+      ? allRanked.reduce((sum, pMmr) => sum + pMmr, 0) / allRanked.length
       : null;
+
+  const team100Avg = team100Ranked.length > 0
+      ? team100Ranked.reduce((a, b) => a + b, 0) / team100Ranked.length
+      : lobbyAvgMmr;
+
+  const team200Avg = team200Ranked.length > 0
+      ? team200Ranked.reduce((a, b) => a + b, 0) / team200Ranked.length
+      : lobbyAvgMmr;
 
   // 3. Create the match
   const storedMatch = await prisma.match.create({
@@ -163,6 +182,8 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
       durationSeconds: payload.gameDuration,
       queueId: payload.queueId,
       lobbyAvgMmr,
+      team100AvgMmr: team100Avg ? Math.round(team100Avg) : null,
+      team200AvgMmr: team200Avg ? Math.round(team200Avg) : null,
       teamsJson: payload.teams ?? undefined
     }
   });
@@ -207,9 +228,14 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
             else break;
         }
         
+        const myTeamAvgMmr = participant.teamId === 100 ? team100Avg : team200Avg;
+        const opposingTeamAvgMmr = participant.teamId === 100 ? team200Avg : team100Avg;
+
         const delta = calculateLpDelta({
             playerCurrentMmr: player.rawMmr,
-            lobbyAvgMmr: lobbyAvgMmr,
+            myTeamAvgMmr,
+            opposingTeamAvgMmr,
+            lobbyAvgFallback: lobbyAvgMmr,
             consecutiveStreak: consecutiveStreak,
             win: participant.win
         });

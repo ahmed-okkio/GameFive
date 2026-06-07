@@ -7,7 +7,9 @@ describe("MMR/LP Integer Integrity", () => {
   it("ensures LP delta results in a roundable value that behaves as an integer", () => {
     const delta = calculateLpDelta({
       playerCurrentMmr: 1600,
-      lobbyAvgMmr: 1700,
+      myTeamAvgMmr: 1600,
+      opposingTeamAvgMmr: 1700,
+      lobbyAvgFallback: 1650,
       consecutiveStreak: 3,
       win: true
     });
@@ -43,7 +45,9 @@ describe("calculateLpDelta", () => {
   it("calculates correct LP delta for a win", () => {
     const delta = calculateLpDelta({
       playerCurrentMmr: 1600,
-      lobbyAvgMmr: 1600,
+      myTeamAvgMmr: 1600,
+      opposingTeamAvgMmr: 1600,
+      lobbyAvgFallback: 1600,
       consecutiveStreak: 0,
       win: true
     });
@@ -53,11 +57,55 @@ describe("calculateLpDelta", () => {
   it("applies streak multiplier", () => {
     const delta = calculateLpDelta({
       playerCurrentMmr: 1600,
-      lobbyAvgMmr: 1600,
+      myTeamAvgMmr: 1600,
+      opposingTeamAvgMmr: 1600,
+      lobbyAvgFallback: 1600,
       consecutiveStreak: 5,
       win: true
     });
     expect(delta).toBe(25); // 20 * 1.0 * 1.25
+  });
+
+  it("handles team disparity", () => {
+    const delta = calculateLpDelta({
+      playerCurrentMmr: 1600,
+      myTeamAvgMmr: 1500,
+      opposingTeamAvgMmr: 1800,
+      lobbyAvgFallback: 1650,
+      consecutiveStreak: 0,
+      win: true
+    });
+    // factor = 1800 / 1500 = 1.2
+    // lp = 20 * 1.2 = 24
+    expect(delta).toBe(24);
+  });
+
+  it("handles team disparity (loss mitigation)", () => {
+    const delta = calculateLpDelta({
+      playerCurrentMmr: 1600,
+      myTeamAvgMmr: 1500,
+      opposingTeamAvgMmr: 1800,
+      lobbyAvgFallback: 1650,
+      consecutiveStreak: 0,
+      win: false
+    });
+    // factor = 1500 / 1800 = 0.8333...
+    // lp = 20 * 0.8333... = 16.6666...
+    expect(delta).toBeCloseTo(16.666666666666668, 10);
+  });
+
+  it("clamps opponent factor", () => {
+    const delta = calculateLpDelta({
+      playerCurrentMmr: 1600,
+      myTeamAvgMmr: 1000,
+      opposingTeamAvgMmr: 2000,
+      lobbyAvgFallback: 1500,
+      consecutiveStreak: 0,
+      win: true
+    });
+    // factor = 2000 / 1000 = 2.0 -> clamped to 1.3
+    // lp = 20 * 1.3 = 26
+    expect(delta).toBe(26);
   });
 });
 
