@@ -21,9 +21,14 @@ export async function POST(_request: Request, context: Context) {
     return NextResponse.json({ error: "Player not found." }, { status: 404 });
   }
 
-  if (player.manualRefreshAt && Date.now() - player.manualRefreshAt.getTime() < 3 * 60 * 1000) {
+  const cooldownMs = 3 * 60 * 1000;
+  const lastRefresh = player.manualRefreshAt?.getTime() ?? 0;
+  const timeSinceLast = Date.now() - lastRefresh;
+
+  if (player.manualRefreshAt && timeSinceLast < cooldownMs) {
+    const remainingSeconds = Math.ceil((cooldownMs - timeSinceLast) / 1000);
     return NextResponse.json(
-      { error: "Manual refresh is available every 3 minutes." },
+      { error: `Manual refresh is available every 3 minutes. Please try again in ${remainingSeconds} seconds.` },
       { status: 429 }
     );
   }

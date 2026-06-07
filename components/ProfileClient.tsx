@@ -137,6 +137,7 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
   const [tab, setTab] = useState("matches");
   const [expandedMatchId, setExpandedMatchId] = useState<string | null>(null);
   const [matchesToDisplay, setMatchesToDisplay] = useState(20);
+  const [championSort, setChampionSort] = useState<{ key: "name" | "games" | "winrate" | "kda"; direction: "asc" | "desc" }>({ key: "games", direction: "desc" });
   const [ddragonVersion, setDdragonVersion] = useState<string | null>(initialVersion);
   const [refreshState, setRefreshState] = useState<{ loading: boolean; message: string | null; error: string | null }>({
     loading: false,
@@ -154,13 +155,15 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
     setRefreshState({ loading: true, message: null, error: null });
     try {
       const response = await fetch(`/api/players/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}/refresh`, { method: "POST" });
-      if (!response.ok) throw new Error("Refresh failed.");
+      
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Refresh failed.");
       
       const statusResponse = await fetch(`/api/players/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}/status`, { cache: "no-store" });
       setStatus(await statusResponse.json());
       setRefreshState({ loading: false, message: "Profile updated.", error: null });
-    } catch {
-      setRefreshState({ loading: false, message: null, error: "Refresh failed." });
+    } catch (err: unknown) {
+      setRefreshState({ loading: false, message: null, error: err instanceof Error ? err.message : "Refresh failed." });
     }
   }
 
@@ -169,6 +172,12 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
 
     const recentMatches = status.matches.slice(0, 20);
     const wins = recentMatches.filter((match) => match.win).length;
+    
+    // Overall Stats
+    const totalMatches = status.matches.length;
+    const totalWins = status.matches.filter(m => m.win).length;
+    const overallWinrate = totalMatches > 0 ? Math.round((totalWins / totalMatches) * 100) : 0;
+
     const totals = recentMatches.reduce(
       (acc, match) => {
         const viewedParticipant = match.match.participants.find((participant) => {
@@ -208,18 +217,47 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
       championMap.set(match.championId, current);
     }
 
+    const sortedChampions = [...championMap.values()].sort((a, b) => {
+      let comparison = 0;
+      switch (championSort.key) {
+        case "name":
+          comparison = a.championName.localeCompare(b.championName);
+          break;
+        case "games":
+          comparison = a.games - b.games;
+          break;
+        case "winrate":
+          comparison = (a.wins / a.games) - (b.wins / b.games);
+          break;
+        case "kda":
+          comparison = ((a.kills + a.assists) / Math.max(a.deaths, 1)) - ((b.kills + b.assists) / Math.max(b.deaths, 1));
+          break;
+      }
+      return championSort.direction === "asc" ? comparison : -comparison;
+    });
+
     return {
       games: recentMatches.length,
       wins,
       losses: recentMatches.length - wins,
       winrate: recentMatches.length ? Math.round((wins / recentMatches.length) * 100) : 0,
+      overallWinrate,
       avgKills: recentMatches.length ? totals.kills / recentMatches.length : 0,
       avgDeaths: recentMatches.length ? totals.deaths / recentMatches.length : 0,
       avgAssists: recentMatches.length ? totals.assists / recentMatches.length : 0,
       avgKp: recentMatches.length ? Math.round(totals.kp / recentMatches.length) : 0,
-      champions: [...championMap.values()].sort((a, b) => b.games - a.games).slice(0, 3)
+      // Recent played always top 3 sorted by games count (recency)
+      champions: [...championMap.values()].sort((a, b) => b.games - a.games).slice(0, 3),
+      allChampions: sortedChampions
     };
-  }, [status]);
+  }, [status, championSort]);
+
+  const handleSort = (key: "name" | "games" | "winrate" | "kda") => {
+    setChampionSort(prev => ({
+      key,
+      direction: prev.key === key && prev.direction === "desc" ? "asc" : "desc"
+    }));
+  };
 
   if (!status || status.state === "awaiting") {
     return <ProgressScreen gameName={gameName} tagLine={tagLine} status="loading" completedSteps={0} totalSteps={100} />;
@@ -262,7 +300,7 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
 
             <div className="mt-6 border-t border-line pt-6">
                 {status.player.isPlaced && !maintenanceMode ? (
-                    <div className="flex flex-col items-center gap-2">
+                        <div className="flex flex-col items-center gap-2">
                         <Image src={getTierIcon(status.tier.tier)!} alt={status.tier.tier} width={96} height={96} className="h-24 w-24 object-contain" />
                         <span className="text-lg font-bold text-gold">{rankLabel}</span>
                         {promoLabel ? (
@@ -270,6 +308,20 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
                         ) : (
                             <span className="text-sm text-stone-300">{status.mmr.currentLp} LP</span>
                         )}
+                        <div className="grid w-full grid-cols-2 gap-px overflow-hidden rounded border border-line bg-line">
+                          <div className="flex flex-col items-center bg-panel p-2">
+                            <span className={`text-sm font-bold ${recentSummary && recentSummary.overallWinrate > 60 ? 'text-jade' : recentSummary && recentSummary.overallWinrate < 40 ? 'text-red-500' : recentSummary && recentSummary.overallWinrate < 50 ? 'text-yellow-500' : 'text-stone-300'}`}>
+                              {recentSummary?.overallWinrate ?? 0}%
+                            </span>
+                            <span className="text-[10px] uppercase text-stone-500">Win Rate</span>
+                          </div>
+                          <div className="flex flex-col items-center bg-panel p-2">
+                            <span className="text-sm font-bold text-stone-300">
+                              {status.matches.filter(m => m.win).length}W {status.matches.filter(m => !m.win).length}L
+                            </span>
+                            <span className="text-[10px] uppercase text-stone-500">Record</span>
+                          </div>
+                        </div>
                     </div>
                 ) : (
                     <div className="flex flex-col items-center gap-2">
@@ -327,7 +379,6 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
               <div className="mb-5 border-b border-line pb-5">
                 <div className="mb-3 flex items-center justify-between">
                   <h2 className="text-sm font-bold text-white">Recent Games</h2>
-                  <span className="text-xs text-stone-500">Past {recentSummary.games} Mayhem games</span>
                 </div>
                 <div className="grid gap-4 md:grid-cols-[180px_1fr_1.2fr]">
                   <div className="flex items-center justify-center gap-4 sm:justify-start">
@@ -517,14 +568,14 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="text-left text-stone-500 uppercase tracking-widest text-xs">
-                                <th className="p-3">Champion</th>
-                                <th className="p-3 text-right">Games</th>
-                                <th className="p-3 text-right">Winrate</th>
-                                <th className="p-3 text-right">KDA</th>
+                                <th className="p-3 cursor-pointer hover:text-white" onClick={() => handleSort("name")}>Champion</th>
+                                <th className="p-3 text-right cursor-pointer hover:text-white" onClick={() => handleSort("games")}>Games</th>
+                                <th className="p-3 text-right cursor-pointer hover:text-white" onClick={() => handleSort("winrate")}>Winrate</th>
+                                <th className="p-3 text-right cursor-pointer hover:text-white" onClick={() => handleSort("kda")}>KDA</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {status.champions.map((c) => (
+                            {recentSummary?.allChampions.map((c) => (
                                 <tr key={c.championId} className="border-t border-line/50">
                                     <td className="p-3 font-semibold text-white">
                                       <div className="flex items-center gap-3">
