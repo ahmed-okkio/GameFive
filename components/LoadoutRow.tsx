@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import { RefreshCw } from "lucide-react";
 import { getItemIconUrl, getSpellIconUrl, DEFAULT_DDRAGON_VERSION } from "@/lib/riot/ddragon";
 import { AugmentBadge } from "@/components/AugmentBadge";
 import { SPELL_MAP, SPELL_DISPLAY_NAME } from "@/lib/riot/spells";
@@ -25,6 +26,17 @@ export function LoadoutRow({ items, spell1Id, spell2Id, augments, version, size 
 
     const activeItems = items.filter(id => id !== 0);
     const paddedItems = [...activeItems, ...Array(7 - activeItems.length).fill(0)];
+    
+    const hasData = activeItems.length > 0 || augments.length > 0;
+
+    if (!hasData) {
+        return (
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-500/80">
+                <RefreshCw size={14} className="shrink-0" />
+                Update the companion app to track items and augments
+            </div>
+        );
+    }
 
     return (
         <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
