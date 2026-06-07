@@ -75,9 +75,11 @@ describe("calculateLpDelta", () => {
       consecutiveStreak: 0,
       win: true
     });
-    // factor = 1800 / 1500 = 1.2
-    // lp = 20 * 1.2 = 24
-    expect(delta).toBe(24);
+    // diff = 1800 - 1500 = 300
+    // adjustment = (300 / 600) * 0.3 = 0.15
+    // factor = 1 + 0.15 = 1.15
+    // lp = 20 * 1.15 = 23
+    expect(delta).toBe(23);
   });
 
   it("handles team disparity (loss mitigation)", () => {
@@ -89,9 +91,11 @@ describe("calculateLpDelta", () => {
       consecutiveStreak: 0,
       win: false
     });
-    // factor = 1500 / 1800 = 0.8333...
-    // lp = 20 * 0.8333... = 16.6666...
-    expect(delta).toBeCloseTo(16.666666666666668, 10);
+    // diff = 1500 - 1800 = -300
+    // adjustment = (-300 / 600) * 0.3 = -0.15
+    // factor = 1 - 0.15 = 0.85
+    // lp = 20 * 0.85 = 17
+    expect(delta).toBe(17);
   });
 
   it("clamps opponent factor", () => {

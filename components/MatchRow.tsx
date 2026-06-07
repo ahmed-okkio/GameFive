@@ -57,9 +57,9 @@ export function MatchRow({ match }: { match: MatchData }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className={`overflow-hidden rounded-lg border ${match.win ? "border-sky-500/30 bg-sky-950/20" : "border-red-500/30 bg-red-950/20"}`}>
+    <div className={`overflow-hidden ${match.player? "" : "rounded-lg border"}  ${match.win ? "border-sky-500/30 bg-sky-950/20" : "border-red-500/30 bg-red-950/20"}`}>
       <div 
-        className="flex cursor-pointer flex-col gap-3 p-3 text-sm hover:bg-black/20 md:flex-row md:items-center md:justify-between" 
+        className={`flex flex-col gap-3 p-3 text-sm  md:flex-row md:items-center md:justify-between ${match.player? "" : "cursor-pointer hover:bg-black/20"}`}
         onClick={() => setExpanded(!expanded)}
       >
         <div className="flex min-w-0 items-center gap-3">

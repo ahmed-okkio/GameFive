@@ -64,8 +64,29 @@ export async function upsertPlayer(
 
   // Self-heal: Link unlinked participants to this player
   await linkUnlinkedParticipants(player.id, riotIdName, riotIdTag);
+  
+  // Retroactively fix placement status
+  await updatePlayerPlacementStatus(player.id);
 
   return hydrateRankedSignals(player);
+}
+
+export async function updatePlayerPlacementStatus(playerId: string) {
+    const matches = await prisma.matchParticipant.findMany({
+        where: { playerId, match: { gameMode: 'MAYHEM' } },
+        include: { match: true },
+        orderBy: { match: { gameDate: 'asc' } }
+    });
+
+    for (let i = 0; i < matches.length; i++) {
+        const isPlacement = i < 10;
+        if (matches[i].isPlacement !== isPlacement) {
+            await prisma.matchParticipant.update({
+                where: { id: matches[i].id },
+                data: { isPlacement }
+            });
+        }
+    }
 }
 
 export async function linkUnlinkedParticipants(playerId: string, name: string, tag: string) {
