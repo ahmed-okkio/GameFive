@@ -24,7 +24,7 @@ type ProfileJobSnapshot = {
 };
 
 export type StatusResponse =
-  | { state: "awaiting"; job: ProfileJobSnapshot; }
+  | { state: "awaiting"; job: ProfileJobSnapshot }
   | {
       state: "ready";
       player: {
@@ -37,8 +37,8 @@ export type StatusResponse =
         promoWins: number;
         promoLosses: number;
       };
-      mmr: { currentLp: number; mayhemGames: number; };
-      tier: { label: string; tier: string; };
+      mmr: { currentLp: number; mayhemGames: number };
+      tier: { label: string; tier: string };
       matches: Array<{
         id: string;
         win: boolean;
@@ -67,7 +67,7 @@ export type StatusResponse =
             healingDone: number;
             win: boolean;
             team: number;
-            player: { riotIdName: string; riotIdTag: string; } | null;
+            player: { riotIdName: string; riotIdTag: string } | null;
             playerRiotIdName: string | null;
             playerRiotIdTag: string | null;
             rankSignalMmr: number | null;
@@ -76,7 +76,7 @@ export type StatusResponse =
             spell2Id: number | null;
             itemsJson: unknown;
             augmentsJson: unknown;
-          }>
+          }>;
         };
       }>;
       champions: Array<{
@@ -110,26 +110,42 @@ function formatKda(kills: number, deaths: number, assists: number) {
 }
 
 function getTeamKills(participants: MatchParticipant[], team: number) {
-  return participants.filter((participant) => participant.team === team).reduce((sum, participant) => sum + participant.kills, 0);
+  return participants
+    .filter((participant) => participant.team === team)
+    .reduce((sum, participant) => sum + participant.kills, 0);
 }
 
-function getKillParticipation(participant: Pick<MatchParticipant, "kills" | "assists" | "team">, participants: MatchParticipant[]) {
+function getKillParticipation(
+  participant: Pick<MatchParticipant, "kills" | "assists" | "team">,
+  participants: MatchParticipant[]
+) {
   const teamKills = getTeamKills(participants, participant.team);
-  return teamKills > 0 ? Math.round(((participant.kills + participant.assists) / teamKills) * 100) : 0;
+  return teamKills > 0
+    ? Math.round(((participant.kills + participant.assists) / teamKills) * 100)
+    : 0;
 }
 
-export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMode, initialVersion }: ProfileClientProps) {
+export function ProfileClient({
+  gameName,
+  tagLine,
+  initialStatus,
+  maintenanceMode,
+  initialVersion
+}: ProfileClientProps) {
   const [status, setStatus] = useState<StatusResponse | null>(initialStatus ?? null);
   const [tab, setTab] = useState("matches");
   const [expandedMatchId, setExpandedMatchId] = useState<string | null>(null);
   const [matchesToDisplay, setMatchesToDisplay] = useState(20);
-  const [championSort, setChampionSort] = useState<{ key: "name" | "games" | "winrate" | "kda"; direction: "asc" | "desc" }>({ key: "games", direction: "desc" });
+  const [championSort, setChampionSort] = useState<{
+    key: "name" | "games" | "winrate" | "kda";
+    direction: "asc" | "desc";
+  }>({ key: "games", direction: "desc" });
   const [ddragonVersion, setDdragonVersion] = useState<string | null>(initialVersion);
-  const [refreshState, setRefreshState] = useState<{ loading: boolean; message: string | null; error: string | null }>({
-    loading: false,
-    message: null,
-    error: null
-  });
+  const [refreshState, setRefreshState] = useState<{
+    loading: boolean;
+    message: string | null;
+    error: string | null;
+  }>({ loading: false, message: null, error: null });
 
   useEffect(() => {
     if (!initialVersion) {
@@ -137,19 +153,49 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
     }
   }, [initialVersion]);
 
+// Read ?match= query param, expand and scroll once status is ready
+useEffect(() => {
+  if (!status || status.state !== "ready") return;
+
+  const params = new URLSearchParams(window.location.search);
+  const matchParam = params.get("match");
+
+  if (!matchParam) return;
+
+  setExpandedMatchId(matchParam);
+
+  setTimeout(() => {
+    const el = document.getElementById(`match-${matchParam}`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else {
+      const allMatchEls = document.querySelectorAll("[id^='match-']");
+    }
+  }, 300);
+}, [status]);
   async function refresh() {
     setRefreshState({ loading: true, message: null, error: null });
     try {
-      const response = await fetch(`/api/players/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}/refresh`, { method: "POST" });
-      
+      const response = await fetch(
+        `/api/players/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}/refresh`,
+        { method: "POST" }
+      );
+
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Refresh failed.");
-      
-      const statusResponse = await fetch(`/api/players/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}/status`, { cache: "no-store" });
+
+      const statusResponse = await fetch(
+        `/api/players/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}/status`,
+        { cache: "no-store" }
+      );
       setStatus(await statusResponse.json());
       setRefreshState({ loading: false, message: "Profile updated.", error: null });
     } catch (err: unknown) {
-      setRefreshState({ loading: false, message: null, error: err instanceof Error ? err.message : "Refresh failed." });
+      setRefreshState({
+        loading: false,
+        message: null,
+        error: err instanceof Error ? err.message : "Refresh failed."
+      });
     }
   }
 
@@ -158,30 +204,48 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
 
     const recentMatches = status.matches.slice(0, 20);
     const wins = recentMatches.filter((match) => match.win).length;
-    
+
     // Overall Stats
     const totalMatches = status.matches.length;
-    const totalWins = status.matches.filter(m => m.win).length;
-    const overallWinrate = totalMatches > 0 ? Math.round((totalWins / totalMatches) * 100) : 0;
+    const totalWins = status.matches.filter((m) => m.win).length;
+    const overallWinrate =
+      totalMatches > 0 ? Math.round((totalWins / totalMatches) * 100) : 0;
 
     const totals = recentMatches.reduce(
       (acc, match) => {
         const viewedParticipant = match.match.participants.find((participant) => {
-          const participantName = participant.player?.riotIdName ?? participant.playerRiotIdName;
-          const participantTag = participant.player?.riotIdTag ?? participant.playerRiotIdTag;
-          return participantName === status.player.riotIdName && participantTag === status.player.riotIdTag;
+          const participantName =
+            participant.player?.riotIdName ?? participant.playerRiotIdName;
+          const participantTag =
+            participant.player?.riotIdTag ?? participant.playerRiotIdTag;
+          return (
+            participantName === status.player.riotIdName &&
+            participantTag === status.player.riotIdTag
+          );
         });
         acc.kills += match.kills;
         acc.deaths += match.deaths;
         acc.assists += match.assists;
-        acc.kp += viewedParticipant ? getKillParticipation(viewedParticipant, match.match.participants) : 0;
+        acc.kp += viewedParticipant
+          ? getKillParticipation(viewedParticipant, match.match.participants)
+          : 0;
         return acc;
       },
       { kills: 0, deaths: 0, assists: 0, kp: 0 }
     );
+
     const championMap = new Map<
       number,
-      { championId: number; championName: string; championImage: string | null; games: number; wins: number; kills: number; deaths: number; assists: number }
+      {
+        championId: number;
+        championName: string;
+        championImage: string | null;
+        games: number;
+        wins: number;
+        kills: number;
+        deaths: number;
+        assists: number;
+      }
     >();
 
     for (const match of recentMatches) {
@@ -213,10 +277,12 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
           comparison = a.games - b.games;
           break;
         case "winrate":
-          comparison = (a.wins / a.games) - (b.wins / b.games);
+          comparison = a.wins / a.games - b.wins / b.games;
           break;
         case "kda":
-          comparison = ((a.kills + a.assists) / Math.max(a.deaths, 1)) - ((b.kills + b.assists) / Math.max(b.deaths, 1));
+          comparison =
+            (a.kills + a.assists) / Math.max(a.deaths, 1) -
+            (b.kills + b.assists) / Math.max(b.deaths, 1);
           break;
       }
       return championSort.direction === "asc" ? comparison : -comparison;
@@ -226,36 +292,53 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
       games: recentMatches.length,
       wins,
       losses: recentMatches.length - wins,
-      winrate: recentMatches.length ? Math.round((wins / recentMatches.length) * 100) : 0,
+      winrate: recentMatches.length
+        ? Math.round((wins / recentMatches.length) * 100)
+        : 0,
       overallWinrate,
       avgKills: recentMatches.length ? totals.kills / recentMatches.length : 0,
       avgDeaths: recentMatches.length ? totals.deaths / recentMatches.length : 0,
       avgAssists: recentMatches.length ? totals.assists / recentMatches.length : 0,
       avgKp: recentMatches.length ? Math.round(totals.kp / recentMatches.length) : 0,
-      // Recent played always top 3 sorted by games count (recency)
-      champions: [...championMap.values()].sort((a, b) => b.games - a.games).slice(0, 3),
+      champions: [...championMap.values()]
+        .sort((a, b) => b.games - a.games)
+        .slice(0, 3),
       allChampions: sortedChampions
     };
   }, [status, championSort]);
 
   const handleSort = (key: "name" | "games" | "winrate" | "kda") => {
-    setChampionSort(prev => ({
+    setChampionSort((prev) => ({
       key,
       direction: prev.key === key && prev.direction === "desc" ? "asc" : "desc"
     }));
   };
 
   if (!status || status.state === "awaiting") {
-    return <ProgressScreen gameName={gameName} tagLine={tagLine} status="loading" completedSteps={0} totalSteps={100} />;
+    return (
+      <ProgressScreen
+        gameName={gameName}
+        tagLine={tagLine}
+        status="loading"
+        completedSteps={0}
+        totalSteps={100}
+      />
+    );
   }
 
   const promoLabel =
     status.player.promoFromTier && status.player.promoToTier
       ? `${status.player.promoFromTier} I PROMO (${status.player.promoWins}W ${status.player.promoLosses}L)`
       : null;
-  
-  const rankLabel = maintenanceMode ? "Under Maintenance" : (status.player.isPlaced ? (promoLabel ?? status.tier.label) : (status.mmr.mayhemGames > 0 ? "Placements" : "Unranked"));
-    
+
+  const rankLabel = maintenanceMode
+    ? "Under Maintenance"
+    : status.player.isPlaced
+    ? (promoLabel ?? status.tier.label)
+    : status.mmr.mayhemGames > 0
+    ? "Placements"
+    : "Unranked";
+
   const getTierIcon = (tierName: string) => {
     if (maintenanceMode) return null;
     const formattedTier = tierName.charAt(0).toUpperCase() + tierName.slice(1).toLowerCase();
@@ -266,317 +349,470 @@ export function ProfileClient({ gameName, tagLine, initialStatus, maintenanceMod
     <section className="mx-auto max-w-6xl px-3 py-6 sm:px-4 sm:py-8">
       <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
         <aside className="rounded-lg border border-line bg-panel/95 p-5 shadow-xl shadow-black/20">
-            <div className="flex flex-col items-center text-center">
-                <div className="h-24 w-24 rounded-full bg-black/30 flex items-center justify-center mb-4 overflow-hidden">
-                     {ddragonVersion && status.player.profileIconId ? (
-                         <Image 
-                            src={getProfileIconUrl(status.player.profileIconId, ddragonVersion)} 
-                            alt="Profile Icon" 
-                            width={96}
-                            height={96}
-                            className="h-full w-full object-cover"
-                         />
-                     ) : (
-                         <span className="text-4xl font-black text-stone-500">?</span>
-                     )}
-                </div>
-                <h1 className="text-2xl font-black text-white">{status.player.riotIdName}</h1>
-                <p className="text-sm text-stone-500">#{status.player.riotIdTag}</p>
+          <div className="flex flex-col items-center text-center">
+            <div className="h-24 w-24 rounded-full bg-black/30 flex items-center justify-center mb-4 overflow-hidden">
+              {ddragonVersion && status.player.profileIconId ? (
+                <Image
+                  src={getProfileIconUrl(status.player.profileIconId, ddragonVersion)}
+                  alt="Profile Icon"
+                  width={96}
+                  height={96}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <span className="text-4xl font-black text-stone-500">?</span>
+              )}
             </div>
+            <h1 className="text-2xl font-black text-white">{status.player.riotIdName}</h1>
+            <p className="text-sm text-stone-500">#{status.player.riotIdTag}</p>
+          </div>
 
-            <div className="mt-6 border-t border-line pt-6">
-                {status.player.isPlaced && !maintenanceMode ? (
-                        <div className="flex flex-col items-center gap-2">
-                        <Image src={getTierIcon(status.tier.tier)!} alt={status.tier.tier} width={96} height={96} className="h-24 w-24 object-contain" />
-                        <span className="text-lg font-bold text-gold">{rankLabel}</span>
-                        {promoLabel ? (
-                            <span className="text-sm text-stone-300">{status.mmr.currentLp} LP</span>
-                        ) : (
-                            <span className="text-sm text-stone-300">{status.mmr.currentLp} LP</span>
-                        )}
-                        <div className="grid w-full grid-cols-2 gap-px overflow-hidden rounded border border-line bg-line">
-                          <div className="flex flex-col items-center bg-panel p-2">
-                            <span className={`text-sm font-bold ${recentSummary && recentSummary.overallWinrate > 60 ? 'text-jade' : recentSummary && recentSummary.overallWinrate < 40 ? 'text-red-500' : recentSummary && recentSummary.overallWinrate < 50 ? 'text-yellow-500' : 'text-stone-300'}`}>
-                              {recentSummary?.overallWinrate ?? 0}%
-                            </span>
-                            <span className="text-[10px] uppercase text-stone-500">Win Rate</span>
-                          </div>
-                          <div className="flex flex-col items-center bg-panel p-2">
-                            <span className="text-sm font-bold text-stone-300">
-                              {status.matches.filter(m => m.win).length}W {status.matches.filter(m => !m.win).length}L
-                            </span>
-                            <span className="text-[10px] uppercase text-stone-500">Record</span>
-                          </div>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="flex flex-col items-center gap-2">
-                        <span className="text-lg font-bold text-stone-300">{rankLabel}</span>
-                        {!maintenanceMode && !status.player.isPlaced ? (
-                          <div className="w-full mt-2">
-                              <div className="flex justify-between text-xs text-stone-400 mb-1">
-                                  <span>Placement Progress</span>
-                                  <span>{status.mmr.mayhemGames} / 10</span>
-                              </div>
-                              <div className="flex gap-1">
-                                  {[...Array(10)].map((_, i) => (
-                                      <div key={i} className={`h-2 flex-1 rounded-sm ${i < status.mmr.mayhemGames ? "bg-gold" : "bg-stone-700"}`} />
-                                  ))}
-                              </div>
-                          </div>
-                        ) : null}
-                        {!maintenanceMode && (
-                          <div className="mt-3 w-full rounded border border-gold/30 bg-gold/10 p-3 text-left">
-                              <p className="text-sm font-semibold text-gold">Finish placements faster</p>
-                              <p className="mt-1 text-xs leading-5 text-stone-300">
-                                  Download the Companion to upload games automatically while you play and get placed sooner.
-                              </p>
-                              <Link
-                                  href="/companion"
-                                  className="mt-3 hidden items-center gap-2 text-xs font-bold text-gold hover:underline md:inline-flex"
-                              >
-                                  Download the Companion
-                                  <ExternalLink size={13} />
-                              </Link>
-                          </div>
-                        )}
-                    </div>
-                )}
-            </div>
-            
-            <button
-                onClick={refresh}
-                disabled={refreshState.loading}
-                className="mt-6 w-full inline-flex items-center justify-center gap-2 rounded border border-line px-3 py-2 text-sm text-stone-200 hover:border-gold disabled:opacity-50"
-            >
-                <RefreshCw className={refreshState.loading ? "animate-spin" : ""} size={16} />
-                {refreshState.loading ? "Refreshing..." : "Refresh Profile"}
-            </button>
-            {refreshState.message && (
-              <p className="mt-3 text-xs text-jade">{refreshState.message}</p>
-            )}
-            {refreshState.error && (
-              <p className="mt-3 text-xs text-red-400">{refreshState.error}</p>
-            )}
-        </aside>
-
-        <div className="min-w-0 rounded-lg border border-line bg-panel/95 p-3 shadow-xl shadow-black/20 sm:p-5">
-            {recentSummary && (
-              <div className="mb-5 border-b border-line pb-5">
-                <div className="mb-3 flex items-center justify-between">
-                  <h2 className="text-sm font-bold text-white">Recent Games</h2>
-                </div>
-                <div className="grid gap-4 md:grid-cols-[180px_1fr_1.2fr]">
-                  <div className="flex items-center justify-center gap-4 sm:justify-start">
-                    <div
-                      className="grid h-24 w-24 shrink-0 place-items-center rounded-full"
-                      style={{
-                        background: `conic-gradient(rgb(96 165 250) 0 ${recentSummary.winrate}%, rgb(248 113 113) ${recentSummary.winrate}% 100%)`
-                      }}
+          <div className="mt-6 border-t border-line pt-6">
+            {status.player.isPlaced && !maintenanceMode ? (
+              <div className="flex flex-col items-center gap-2">
+                <Image
+                  src={getTierIcon(status.tier.tier)!}
+                  alt={status.tier.tier}
+                  width={96}
+                  height={96}
+                  className="h-24 w-24 object-contain"
+                />
+                <span className="text-lg font-bold text-gold">{rankLabel}</span>
+                <span className="text-sm text-stone-300">{status.mmr.currentLp} LP</span>
+                <div className="grid w-full grid-cols-2 gap-px overflow-hidden rounded border border-line bg-line">
+                  <div className="flex flex-col items-center bg-panel p-2">
+                    <span
+                      className={`text-sm font-bold ${
+                        recentSummary && recentSummary.overallWinrate > 60
+                          ? "text-jade"
+                          : recentSummary && recentSummary.overallWinrate < 40
+                          ? "text-red-500"
+                          : recentSummary && recentSummary.overallWinrate < 50
+                          ? "text-yellow-500"
+                          : "text-stone-300"
+                      }`}
                     >
-                      <div className="grid h-16 w-16 place-items-center rounded-full bg-panel text-lg font-black text-white">
-                        {recentSummary.winrate}%
-                      </div>
-                    </div>
-                    <div className="text-sm">
-                      <div className="font-semibold text-sky-300">{recentSummary.wins}W {recentSummary.losses}L</div>
-                      <div className="mt-1 text-xs text-stone-500">Win rate</div>
-                    </div>
+                      {recentSummary?.overallWinrate ?? 0}%
+                    </span>
+                    <span className="text-[10px] uppercase text-stone-500">Win Rate</span>
                   </div>
-                  <div className="flex items-center justify-center text-center">
-                    <div>
-                      <div className="text-sm text-stone-300">
-                        <span>{recentSummary.avgKills.toFixed(1)}</span>
-                        <span className="text-stone-500"> / </span>
-                        <span className="text-red-300">{recentSummary.avgDeaths.toFixed(1)}</span>
-                        <span className="text-stone-500"> / </span>
-                        <span>{recentSummary.avgAssists.toFixed(1)}</span>
-                      </div>
-                      <div className="text-2xl font-black text-white sm:text-3xl">
-                        {formatKda(recentSummary.avgKills, recentSummary.avgDeaths, recentSummary.avgAssists)}:1
-                      </div>
-                      <div className="text-xs font-bold text-red-300">P/Kill {recentSummary.avgKp}%</div>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="mb-2 text-xs text-stone-500">Recent played champions</div>
-                    <div className="space-y-2">
-                      {recentSummary.champions.map((champion) => (
-                        <div key={champion.championId} className="flex items-center gap-3 text-xs">
-                          <ChampionAvatar image={champion.championImage} name={champion.championName} size="sm" />
-                          <div className="min-w-0 flex-1">
-                            <div className="truncate font-semibold text-stone-200">{champion.championName}</div>
-                            <div className="text-stone-500">
-                              {Math.round((champion.wins / champion.games) * 100)}% ({champion.wins}W / {champion.games - champion.wins}L)
-                            </div>
-                          </div>
-                          <div className="font-mono font-bold text-sky-300">
-                            {formatKda(champion.kills, champion.deaths, champion.assists)}:1
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                  <div className="flex flex-col items-center bg-panel p-2">
+                    <span className="text-sm font-bold text-stone-300">
+                      {status.matches.filter((m) => m.win).length}W{" "}
+                      {status.matches.filter((m) => !m.win).length}L
+                    </span>
+                    <span className="text-[10px] uppercase text-stone-500">Record</span>
                   </div>
                 </div>
               </div>
-            )}
-
-            <div className="mb-4 flex gap-6 overflow-x-auto border-b border-line">
-                {["matches", "champions"].map((item) => (
-                    <button
-                        key={item}
-                        onClick={() => setTab(item)}
-                        className={`pb-2 text-sm font-bold uppercase tracking-widest ${
-                        tab === item ? "border-b-2 border-gold text-white" : "text-stone-500 hover:text-stone-300"
-                        }`}
-                    >
-                        {item === "matches" ? "Match History" : "Champions"}
-                    </button>
-                ))}
-            </div>
-
-            {tab === "matches" ? (
-                <div className="space-y-2">
-                    {status.matches.slice(0, matchesToDisplay).map((match) => {
-                      const viewedParticipant = match.match.participants.find((p) => {
-                          const pName = p.player?.riotIdName ?? p.playerRiotIdName;
-                          const pTag = p.player?.riotIdTag ?? p.playerRiotIdTag;
-                          return pName === status.player.riotIdName && pTag === status.player.riotIdTag;
-                      });
-                      const kp = viewedParticipant ? getKillParticipation(viewedParticipant, match.match.participants) : 0;
-                      const maxDamage = Math.max(...match.match.participants.map(p => p.damageToChampions), 1);
-                      const maxHealing = Math.max(...match.match.participants.map(p => p.healingDone), 1);
-
-                      const matchData = {
-                          id: match.id,
-                          win: match.win,
-                          kills: match.kills,
-                          deaths: match.deaths,
-                          assists: match.assists,
-                          lpDelta: match.lpDelta,
-                          isPlacement: match.isPlacement,
-                          championName: match.championName,
-                          championImage: match.championImage,
-                          match: {
-                              gameDate: match.match.gameDate,
-                              durationSeconds: match.match.durationSeconds
-                          },
-                          kp,
-                          viewedParticipant: viewedParticipant ? {
-                              itemsJson: viewedParticipant.itemsJson,
-                              spell1Id: viewedParticipant.spell1Id,
-                              spell2Id: viewedParticipant.spell2Id,
-                              augmentsJson: viewedParticipant.augmentsJson
-                          } : undefined,
-                          ddragonVersion: ddragonVersion
-                      };
-
-                      return (
-                        <div key={match.id}>
-                            <div onClick={() => setExpandedMatchId(expandedMatchId === match.id ? null : match.id)}>
-                                <MatchRow match={matchData} />
-                            </div>
-
-                            {expandedMatchId === match.id && (
-                                <div className="overflow-x-auto border-t border-line/70 bg-black/10 rounded-b-lg">
-                                    {[100, 200].map(teamId => (
-                                        <div key={teamId} className={`${teamId === (viewedParticipant?.team ?? match.match.participants.find(p => p.win === match.win)?.team) ? "bg-white/[0.03]" : "bg-black/10"} min-w-[720px] p-3`}>
-                                            <div className="grid grid-cols-[160px_70px_60px_1fr_80px] items-center gap-2 px-3 pb-1 text-[10px] uppercase tracking-widest text-stone-500">
-                                                <span>Player</span><span className="text-center">KDA</span><span className="text-center">KP %</span><span className="text-left">Loadout</span><span className="text-right">Stats</span>
-                                            </div>
-                                            {match.match.participants
-                                                .filter(p => p.team === teamId)
-                                                .map(p => (
-                                                <div key={p.id} className="grid grid-cols-[160px_70px_60px_1fr_80px] items-center gap-2 rounded px-3 py-1.5 text-xs bg-black/20">
-
-                                                        <div className="font-bold text-white truncate text-[11px] flex items-center gap-2 min-w-0">
-                                                            {(() => {
-                                                                const playerName = p.player?.riotIdName ?? p.playerRiotIdName;
-                                                                const playerTag = p.player?.riotIdTag ?? p.playerRiotIdTag;
-                                                                const displayName = playerName ? `${playerName}${playerTag ? `#${playerTag}` : ""}` : "Unknown name";
-                                                                const rankAtMatch = maintenanceMode ? "Under Maintenance" : (p.rankLabelAtMatch ?? "Unknown rank");
-                                                                const isLinked = Boolean(p.player && playerName && playerTag);
-
-                                                                return isLinked ? (
-                                                                    <Link href={`/player/${encodeURIComponent(playerName!)}/${encodeURIComponent(playerTag!)}`} className="flex min-w-0 items-center gap-2 font-semibold text-white hover:text-gold">
-                                                                        <ChampionAvatar image={p.championImage} name={p.championName ?? "Unknown"} size="sm" />
-                                                                        <span className="min-w-0">
-                                                                            <span className="block truncate">{displayName}</span>
-                                                                            <span className={`block truncate text-[11px] font-normal ${rankAtMatch === "Unknown rank" ? "text-stone-500" : "text-gold/80"}`}>{rankAtMatch}</span>
-                                                                        </span>
-                                                                    </Link>
-                                                                ) : (
-                                                                    <div className="flex min-w-0 items-center gap-2 font-semibold text-stone-400">
-                                                                        <ChampionAvatar image={p.championImage} name={p.championName ?? "Unknown"} size="sm" />
-                                                                        <span className="min-w-0">
-                                                                            <span className="block truncate">{displayName}</span>
-                                                                            <span className={`block truncate text-[11px] font-normal ${rankAtMatch === "Unknown rank" ? "text-stone-500" : "text-gold/80"}`}>{rankAtMatch}</span>
-                                                                        </span>
-                                                                    </div>
-                                                                );
-                                                            })()}
-                                                        </div>
-                                                        <span className="text-center font-mono text-stone-300 w-12">{p.kills}/{p.deaths}/{p.assists}</span>
-                                                        <span className="text-center font-mono text-stone-300 w-12">{getKillParticipation(p, match.match.participants)}% KP</span>
-                                                        <div className="flex justify-start min-w-0"><LoadoutRow items={Array.isArray(p.itemsJson) ? p.itemsJson as number[] : []} spell1Id={p.spell1Id} spell2Id={p.spell2Id} augments={Array.isArray(p.augmentsJson) ? p.augmentsJson as number[] : []} version={ddragonVersion} size="sm" /></div>
-                                                        <div className="flex flex-col gap-0.5 items-end">
-                                                            <StatBar value={p.damageToChampions} max={maxDamage} color="damage" />
-                                                            <StatBar value={p.healingDone} max={maxHealing} color="healing" />
-                                                        </div>
-
-                                                    </div>
-
-                                            ))}
-
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                      );
-                    })}
-                    {matchesToDisplay < status.matches.length && (
-                        <button
-                            onClick={() => setMatchesToDisplay(prev => prev + 20)}
-                            className="w-full rounded-lg border border-line bg-panel p-3 text-center text-sm font-bold text-gold hover:bg-black/20"
-                        >
-                            Load More
-                        </button>
-                    )}
-                </div>
             ) : (
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="text-left text-stone-500 uppercase tracking-widest text-xs">
-                                <th className="p-3 cursor-pointer hover:text-white" onClick={() => handleSort("name")}>Champion</th>
-                                <th className="p-3 text-right cursor-pointer hover:text-white" onClick={() => handleSort("games")}>Games</th>
-                                <th className="p-3 text-right cursor-pointer hover:text-white" onClick={() => handleSort("winrate")}>Winrate</th>
-                                <th className="p-3 text-right cursor-pointer hover:text-white" onClick={() => handleSort("kda")}>KDA</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {recentSummary?.allChampions.map((c) => (
-                                <tr key={c.championId} className="border-t border-line/50">
-                                    <td className="p-3 font-semibold text-white">
-                                      <div className="flex items-center gap-3">
-                                        <ChampionAvatar image={c.championImage} name={c.championName} size="sm" />
-                                        {c.championName}
-                                      </div>
-                                    </td>
-                                    <td className="p-3 text-right text-stone-300">{c.games}</td>
-                                    <td className="p-3 text-right text-stone-300">
-                                        {Math.round((c.wins / c.games) * 100)}%
-                                    </td>
-                                    <td className="p-3 text-right text-stone-300">
-                                        {((c.kills + c.assists) / Math.max(c.deaths, 1)).toFixed(2)}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-lg font-bold text-stone-300">{rankLabel}</span>
+                {!maintenanceMode && !status.player.isPlaced ? (
+                  <div className="w-full mt-2">
+                    <div className="flex justify-between text-xs text-stone-400 mb-1">
+                      <span>Placement Progress</span>
+                      <span>{status.mmr.mayhemGames} / 10</span>
+                    </div>
+                    <div className="flex gap-1">
+                      {[...Array(10)].map((_, i) => (
+                        <div
+                          key={i}
+                          className={`h-2 flex-1 rounded-sm ${
+                            i < status.mmr.mayhemGames ? "bg-gold" : "bg-stone-700"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+                {!maintenanceMode && (
+                  <div className="mt-3 w-full rounded border border-gold/30 bg-gold/10 p-3 text-left">
+                    <p className="text-sm font-semibold text-gold">Finish placements faster</p>
+                    <p className="mt-1 text-xs leading-5 text-stone-300">
+                      Download the Companion to upload games automatically while you play and get
+                      placed sooner.
+                    </p>
+                    <Link
+                      href="/companion"
+                      className="mt-3 hidden items-center gap-2 text-xs font-bold text-gold hover:underline md:inline-flex"
+                    >
+                      Download the Companion
+                      <ExternalLink size={13} />
+                    </Link>
+                  </div>
+                )}
+              </div>
             )}
+          </div>
+
+          <button
+            onClick={refresh}
+            disabled={refreshState.loading}
+            className="mt-6 w-full inline-flex items-center justify-center gap-2 rounded border border-line px-3 py-2 text-sm text-stone-200 hover:border-gold disabled:opacity-50"
+          >
+            <RefreshCw className={refreshState.loading ? "animate-spin" : ""} size={16} />
+            {refreshState.loading ? "Refreshing..." : "Refresh Profile"}
+          </button>
+          {refreshState.message && (
+            <p className="mt-3 text-xs text-jade">{refreshState.message}</p>
+          )}
+          {refreshState.error && (
+            <p className="mt-3 text-xs text-red-400">{refreshState.error}</p>
+          )}
+        </aside>
+
+        <div className="min-w-0 rounded-lg border border-line bg-panel/95 p-3 shadow-xl shadow-black/20 sm:p-5">
+          {recentSummary && (
+            <div className="mb-5 border-b border-line pb-5">
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-sm font-bold text-white">Recent Games</h2>
+              </div>
+              <div className="grid gap-4 md:grid-cols-[180px_1fr_1.2fr]">
+                <div className="flex items-center justify-center gap-4 sm:justify-start">
+                  <div
+                    className="grid h-24 w-24 shrink-0 place-items-center rounded-full"
+                    style={{
+                      background: `conic-gradient(rgb(96 165 250) 0 ${recentSummary.winrate}%, rgb(248 113 113) ${recentSummary.winrate}% 100%)`
+                    }}
+                  >
+                    <div className="grid h-16 w-16 place-items-center rounded-full bg-panel text-lg font-black text-white">
+                      {recentSummary.winrate}%
+                    </div>
+                  </div>
+                  <div className="text-sm">
+                    <div className="font-semibold text-sky-300">
+                      {recentSummary.wins}W {recentSummary.losses}L
+                    </div>
+                    <div className="mt-1 text-xs text-stone-500">Win rate</div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center text-center">
+                  <div>
+                    <div className="text-sm text-stone-300">
+                      <span>{recentSummary.avgKills.toFixed(1)}</span>
+                      <span className="text-stone-500"> / </span>
+                      <span className="text-red-300">{recentSummary.avgDeaths.toFixed(1)}</span>
+                      <span className="text-stone-500"> / </span>
+                      <span>{recentSummary.avgAssists.toFixed(1)}</span>
+                    </div>
+                    <div className="text-2xl font-black text-white sm:text-3xl">
+                      {formatKda(
+                        recentSummary.avgKills,
+                        recentSummary.avgDeaths,
+                        recentSummary.avgAssists
+                      )}
+                      :1
+                    </div>
+                    <div className="text-xs font-bold text-red-300">
+                      P/Kill {recentSummary.avgKp}%
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div className="mb-2 text-xs text-stone-500">Recent played champions</div>
+                  <div className="space-y-2">
+                    {recentSummary.champions.map((champion) => (
+                      <div key={champion.championId} className="flex items-center gap-3 text-xs">
+                        <ChampionAvatar
+                          image={champion.championImage}
+                          name={champion.championName}
+                          size="sm"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate font-semibold text-stone-200">
+                            {champion.championName}
+                          </div>
+                          <div className="text-stone-500">
+                            {Math.round((champion.wins / champion.games) * 100)}% ({champion.wins}W /{" "}
+                            {champion.games - champion.wins}L)
+                          </div>
+                        </div>
+                        <div className="font-mono font-bold text-sky-300">
+                          {formatKda(champion.kills, champion.deaths, champion.assists)}:1
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="mb-4 flex gap-6 overflow-x-auto border-b border-line">
+            {["matches", "champions"].map((item) => (
+              <button
+                key={item}
+                onClick={() => setTab(item)}
+                className={`pb-2 text-sm font-bold uppercase tracking-widest ${
+                  tab === item
+                    ? "border-b-2 border-gold text-white"
+                    : "text-stone-500 hover:text-stone-300"
+                }`}
+              >
+                {item === "matches" ? "Match History" : "Champions"}
+              </button>
+            ))}
+          </div>
+
+          {tab === "matches" ? (
+            <div className="space-y-2">
+              {status.matches.slice(0, matchesToDisplay).map((match) => {
+                const viewedParticipant = match.match.participants.find((p) => {
+                  const pName = p.player?.riotIdName ?? p.playerRiotIdName;
+                  const pTag = p.player?.riotIdTag ?? p.playerRiotIdTag;
+                  return (
+                    pName === status.player.riotIdName && pTag === status.player.riotIdTag
+                  );
+                });
+                const kp = viewedParticipant
+                  ? getKillParticipation(viewedParticipant, match.match.participants)
+                  : 0;
+                const maxDamage = Math.max(
+                  ...match.match.participants.map((p) => p.damageToChampions),
+                  1
+                );
+                const maxHealing = Math.max(
+                  ...match.match.participants.map((p) => p.healingDone),
+                  1
+                );
+
+                const matchData = {
+                  id: match.id,
+                  win: match.win,
+                  kills: match.kills,
+                  deaths: match.deaths,
+                  assists: match.assists,
+                  lpDelta: match.lpDelta,
+                  isPlacement: match.isPlacement,
+                  championName: match.championName,
+                  championImage: match.championImage,
+                  match: {
+                    gameDate: match.match.gameDate,
+                    durationSeconds: match.match.durationSeconds
+                  },
+                  kp,
+                  viewedParticipant: viewedParticipant
+                    ? {
+                        itemsJson: viewedParticipant.itemsJson,
+                        spell1Id: viewedParticipant.spell1Id,
+                        spell2Id: viewedParticipant.spell2Id,
+                        augmentsJson: viewedParticipant.augmentsJson
+                      }
+                    : undefined,
+                  ddragonVersion: ddragonVersion
+                };
+
+                const matchKey = match.id;
+                const isExpanded = expandedMatchId === matchKey;
+
+                return (
+                  // id added here so the ?match= scroll target works
+                  <div key={match.id} id={`match-${matchKey}`}>
+                      <div onClick={() => setExpandedMatchId(isExpanded ? null : matchKey)}>
+                        <MatchRow match={matchData} />
+                      </div>
+
+                    {isExpanded && (
+                      <div className="overflow-x-auto border-t border-line/70 bg-black/10 rounded-b-lg">
+                        {[100, 200].map((teamId) => (
+                          <div
+                            key={teamId}
+                            className={`${
+                              teamId ===
+                              (viewedParticipant?.team ??
+                                match.match.participants.find((p) => p.win === match.win)?.team)
+                                ? "bg-white/[0.03]"
+                                : "bg-black/10"
+                            } min-w-[720px] p-3`}
+                          >
+                            <div className="grid grid-cols-[160px_70px_60px_1fr_80px] items-center gap-2 px-3 pb-1 text-[10px] uppercase tracking-widest text-stone-500">
+                              <span>Player</span>
+                              <span className="text-center">KDA</span>
+                              <span className="text-center">KP %</span>
+                              <span className="text-left">Loadout</span>
+                              <span className="text-right">Stats</span>
+                            </div>
+                            {match.match.participants
+                              .filter((p) => p.team === teamId)
+                              .map((p) => (
+                                <div
+                                  key={p.id}
+                                  className="grid grid-cols-[160px_70px_60px_1fr_80px] items-center gap-2 rounded px-3 py-1.5 text-xs bg-black/20"
+                                >
+                                  <div className="font-bold text-white truncate text-[11px] flex items-center gap-2 min-w-0">
+                                    {(() => {
+                                      const playerName =
+                                        p.player?.riotIdName ?? p.playerRiotIdName;
+                                      const playerTag =
+                                        p.player?.riotIdTag ?? p.playerRiotIdTag;
+                                      const displayName = playerName
+                                        ? `${playerName}${playerTag ? `#${playerTag}` : ""}`
+                                        : "Unknown name";
+                                      const rankAtMatch = maintenanceMode
+                                        ? "Under Maintenance"
+                                        : (p.rankLabelAtMatch ?? "Unknown rank");
+                                      const isLinked = Boolean(
+                                        p.player && playerName && playerTag
+                                      );
+
+                                      return isLinked ? (
+                                        <Link
+                                          href={`/player/${encodeURIComponent(playerName!)}/${encodeURIComponent(playerTag!)}`}
+                                          className="flex min-w-0 items-center gap-2 font-semibold text-white hover:text-gold"
+                                        >
+                                          <ChampionAvatar
+                                            image={p.championImage}
+                                            name={p.championName ?? "Unknown"}
+                                            size="sm"
+                                          />
+                                          <span className="min-w-0">
+                                            <span className="block truncate">{displayName}</span>
+                                            <span
+                                              className={`block truncate text-[11px] font-normal ${
+                                                rankAtMatch === "Unknown rank"
+                                                  ? "text-stone-500"
+                                                  : "text-gold/80"
+                                              }`}
+                                            >
+                                              {rankAtMatch}
+                                            </span>
+                                          </span>
+                                        </Link>
+                                      ) : (
+                                        <div className="flex min-w-0 items-center gap-2 font-semibold text-stone-400">
+                                          <ChampionAvatar
+                                            image={p.championImage}
+                                            name={p.championName ?? "Unknown"}
+                                            size="sm"
+                                          />
+                                          <span className="min-w-0">
+                                            <span className="block truncate">{displayName}</span>
+                                            <span
+                                              className={`block truncate text-[11px] font-normal ${
+                                                rankAtMatch === "Unknown rank"
+                                                  ? "text-stone-500"
+                                                  : "text-gold/80"
+                                              }`}
+                                            >
+                                              {rankAtMatch}
+                                            </span>
+                                          </span>
+                                        </div>
+                                      );
+                                    })()}
+                                  </div>
+                                  <span className="text-center font-mono text-stone-300 w-12">
+                                    {p.kills}/{p.deaths}/{p.assists}
+                                  </span>
+                                  <span className="text-center font-mono text-stone-300 w-12">
+                                    {getKillParticipation(p, match.match.participants)}% KP
+                                  </span>
+                                  <div className="flex justify-start min-w-0">
+                                    <LoadoutRow
+                                      items={
+                                        Array.isArray(p.itemsJson)
+                                          ? (p.itemsJson as number[])
+                                          : []
+                                      }
+                                      spell1Id={p.spell1Id}
+                                      spell2Id={p.spell2Id}
+                                      augments={
+                                        Array.isArray(p.augmentsJson)
+                                          ? (p.augmentsJson as number[])
+                                          : []
+                                      }
+                                      version={ddragonVersion}
+                                      size="sm"
+                                    />
+                                  </div>
+                                  <div className="flex flex-col gap-0.5 items-end">
+                                    <StatBar
+                                      value={p.damageToChampions}
+                                      max={maxDamage}
+                                      color="damage"
+                                    />
+                                    <StatBar
+                                      value={p.healingDone}
+                                      max={maxHealing}
+                                      color="healing"
+                                    />
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              {matchesToDisplay < status.matches.length && (
+                <button
+                  onClick={() => setMatchesToDisplay((prev) => prev + 20)}
+                  className="w-full rounded-lg border border-line bg-panel p-3 text-center text-sm font-bold text-gold hover:bg-black/20"
+                >
+                  Load More
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-stone-500 uppercase tracking-widest text-xs">
+                    <th
+                      className="p-3 cursor-pointer hover:text-white"
+                      onClick={() => handleSort("name")}
+                    >
+                      Champion
+                    </th>
+                    <th
+                      className="p-3 text-right cursor-pointer hover:text-white"
+                      onClick={() => handleSort("games")}
+                    >
+                      Games
+                    </th>
+                    <th
+                      className="p-3 text-right cursor-pointer hover:text-white"
+                      onClick={() => handleSort("winrate")}
+                    >
+                      Winrate
+                    </th>
+                    <th
+                      className="p-3 text-right cursor-pointer hover:text-white"
+                      onClick={() => handleSort("kda")}
+                    >
+                      KDA
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentSummary?.allChampions.map((c) => (
+                    <tr key={c.championId} className="border-t border-line/50">
+                      <td className="p-3 font-semibold text-white">
+                        <div className="flex items-center gap-3">
+                          <ChampionAvatar
+                            image={c.championImage}
+                            name={c.championName}
+                            size="sm"
+                          />
+                          {c.championName}
+                        </div>
+                      </td>
+                      <td className="p-3 text-right text-stone-300">{c.games}</td>
+                      <td className="p-3 text-right text-stone-300">
+                        {Math.round((c.wins / c.games) * 100)}%
+                      </td>
+                      <td className="p-3 text-right text-stone-300">
+                        {((c.kills + c.assists) / Math.max(c.deaths, 1)).toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </section>

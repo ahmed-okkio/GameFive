@@ -6,10 +6,10 @@ import { ArrowUpRight } from "lucide-react";
 import { getTierLabel } from "@/lib/mmr/tier";
 import { DEFAULT_DDRAGON_VERSION, getLatestDDragonVersion, getProfileIconUrl } from "@/lib/riot/ddragon";
 import { getChampionAssetMap } from "@/lib/riot/champions";
-// import { MatchRow } from "@/components/MatchRow";
 
 type MatchParticipant = {
   id: string;
+  matchId: string;
   win: boolean;
   kills: number;
   deaths: number;
@@ -29,7 +29,6 @@ type MatchParticipant = {
     profileIconId: number | null;
   } | null;
   match: {
-    matchId: string;
     gameDate: Date;
     durationSeconds: number;
     participants: {
@@ -65,7 +64,7 @@ export default async function HomePage() {
       }
     }),
     prisma.matchParticipant.findMany({
-      where: { 
+      where: {
         playerId: { not: null },
         match: { gameMode: "MAYHEM" }
       },
@@ -100,10 +99,6 @@ export default async function HomePage() {
             <SearchForm />
           </div>
         </div>
-
-
-
-         
       </div>
 
       <div className="mt-8 space-y-8">
@@ -115,38 +110,43 @@ export default async function HomePage() {
             </div>
           </div>
 
-            <div className="divide-y divide-line/80">
-              {recentGames.map((participant: MatchParticipant) => {
-                  const matchData = {
-                      id: participant.match.matchId,
-                      win: participant.win,
-                      kills: participant.kills,
-                      deaths: participant.deaths,
-                      assists: participant.assists,
-                      lpDelta: participant.lpDelta,
-                      isPlacement: participant.isPlacement,
-                      championName: participant.championName ?? "Unknown",
-                      championImage: championAssets[participant.championId]?.imageUrl ?? null,
-                      match: {
-                          gameDate: participant.match.gameDate.toISOString(),
-                          durationSeconds: participant.match.durationSeconds
-                      },
-                      viewedParticipant: {
-                          itemsJson: participant.itemsJson,
-                          spell1Id: participant.spell1Id,
-                          spell2Id: participant.spell2Id,
-                          augmentsJson: participant.augmentsJson
-                      },
-                      ddragonVersion: latestVersion,
-                      player: participant.player ? {
-                          name: participant.player.riotIdName,
-                          profileIconUrl: participant.player.profileIconId ? getProfileIconUrl(participant.player.profileIconId, latestVersion) : undefined
-                      } : undefined
-                  };
-                  return (
-                        <MatchRow key={participant.id} match={matchData} />
-              )})}
-            </div>
+          <div className="divide-y divide-line/80">
+            {recentGames.map((participant: MatchParticipant) => {
+              const matchData = {
+                id: participant.matchId,
+                win: participant.win,
+                kills: participant.kills,
+                deaths: participant.deaths,
+                assists: participant.assists,
+                lpDelta: participant.lpDelta,
+                isPlacement: participant.isPlacement,
+                championName: participant.championName ?? "Unknown",
+                championImage: championAssets[participant.championId]?.imageUrl ?? null,
+                match: {
+                  gameDate: participant.match.gameDate.toISOString(),
+                  durationSeconds: participant.match.durationSeconds
+                },
+                viewedParticipant: {
+                  itemsJson: participant.itemsJson,
+                  spell1Id: participant.spell1Id,
+                  spell2Id: participant.spell2Id,
+                  augmentsJson: participant.augmentsJson
+                },
+                ddragonVersion: latestVersion,
+                // Pass both name and tag so MatchRow can navigate to the player profile
+                player: participant.player
+                  ? {
+                      name: participant.player.riotIdName,
+                      tag: participant.player.riotIdTag,
+                      profileIconUrl: participant.player.profileIconId
+                        ? getProfileIconUrl(participant.player.profileIconId, latestVersion)
+                        : undefined
+                    }
+                  : undefined
+              };
+              return <MatchRow key={participant.id} match={matchData} />;
+            })}
+          </div>
         </section>
 
         <section className="rounded-lg border border-line bg-panel shadow-xl shadow-black/20 overflow-hidden">
@@ -155,7 +155,10 @@ export default async function HomePage() {
               <h2 className="text-sm font-bold uppercase tracking-widest text-stone-400">Top of board</h2>
               <p className="mt-1 text-sm text-stone-500">The strongest tracked players right now</p>
             </div>
-            <Link href="/leaderboard" className="interactive inline-flex items-center gap-1.5 text-sm font-semibold text-gold hover:text-white">
+            <Link
+              href="/leaderboard"
+              className="interactive inline-flex items-center gap-1.5 text-sm font-semibold text-gold hover:text-white"
+            >
               Open board
               <ArrowUpRight size={16} />
             </Link>
@@ -177,7 +180,9 @@ export default async function HomePage() {
                     player.promoFromTier && player.promoToTier
                       ? `${player.promoFromTier} I PROMO (${player.promoWins}W ${player.promoLosses}L)`
                       : null;
-                  const rankLabel = player.isPlaced ? (promoLabel ?? getTierLabel(player.rawMmr).label) : "Unranked";
+                  const rankLabel = player.isPlaced
+                    ? (promoLabel ?? getTierLabel(player.rawMmr).label)
+                    : "Unranked";
 
                   return (
                     <tr key={player.id} className="border-t border-line/80">
@@ -192,7 +197,9 @@ export default async function HomePage() {
                       </td>
                       <td className="px-4 py-3 text-sm text-sky-300 sm:px-5">
                         <div>{rankLabel}</div>
-                        {!player.isPlaced ? <div className="text-xs text-stone-500">Placement in progress</div> : null}
+                        {!player.isPlaced ? (
+                          <div className="text-xs text-stone-500">Placement in progress</div>
+                        ) : null}
                       </td>
                       <td className="px-4 py-3 text-right font-mono font-bold text-white sm:px-5">
                         {player.isPlaced ? player.currentLp.toLocaleString() : "-"}

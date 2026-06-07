@@ -293,7 +293,7 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
     },
     tier,
     matches: participants.map(p => ({
-        id: p.id,
+        id: p.matchId,
         win: p.win,
         kills: p.kills,
         deaths: p.deaths,
