@@ -1,9 +1,8 @@
 namespace GameFive.Companion;
 
-internal sealed class CompanionConfig
+public static class CompanionConfig
 {
-    public string AuthToken { get; set; } = "game-five-383";
-    public string ServerBaseUrl { get; set; } = "https://game-five-kohl.vercel.app/";
-    public int DiagnosticMatchLimit { get; set; } = 10;
-    public string GitHubRepo { get; set; } = "ahmed-okkio/GameFive";
+    public const string AuthToken = "game-five-383";
+    public const string ServerBaseUrl = "https://game-five-kohl.vercel.app/";
+    public const int DiagnosticMatchLimit = 10;
 }

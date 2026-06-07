@@ -13,7 +13,6 @@ internal sealed class GameFiveUploader : IDisposable
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    private readonly CompanionConfig _config;
     private readonly UploadQueue _queue;
     private readonly CompanionLogger _logger;
     private readonly HttpClient _httpClient;
@@ -21,9 +20,8 @@ internal sealed class GameFiveUploader : IDisposable
     private DateTimeOffset _nextRetryAt = DateTimeOffset.MinValue;
     private bool _uploadsDisabled;
 
-    public GameFiveUploader(CompanionConfig config, UploadQueue queue, CompanionLogger logger, HttpMessageHandler? handler = null)
+    public GameFiveUploader(UploadQueue queue, CompanionLogger logger, HttpMessageHandler? handler = null)
     {
-        _config = config;
         _queue = queue;
         _logger = logger;
         _httpClient = handler != null ? new HttpClient(handler) : new HttpClient();
@@ -91,7 +89,7 @@ internal sealed class GameFiveUploader : IDisposable
 
     private async Task<bool> TryUploadAsync(CompanionMatchUpload upload, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(_config.ServerBaseUrl) || string.IsNullOrWhiteSpace(_config.AuthToken))
+        if (string.IsNullOrWhiteSpace(CompanionConfig.ServerBaseUrl) || string.IsNullOrWhiteSpace(CompanionConfig.AuthToken))
         {
             _logger.Info("Upload skipped because ServerBaseUrl/AuthToken is missing.");
             return false;
@@ -99,13 +97,13 @@ internal sealed class GameFiveUploader : IDisposable
 
         try
         {
-            var url = new Uri(new Uri(_config.ServerBaseUrl.TrimEnd('/') + "/"), "api/ingest/match");
+            var url = new Uri(new Uri(CompanionConfig.ServerBaseUrl.TrimEnd('/') + "/"), "api/ingest/match");
             var json = JsonSerializer.Serialize(upload, JsonOptions);
             using var request = new HttpRequestMessage(HttpMethod.Post, url)
             {
                 Content = new StringContent(json, Encoding.UTF8, "application/json")
             };
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _config.AuthToken);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", CompanionConfig.AuthToken);
 
             using var response = await _httpClient.SendAsync(request, cancellationToken);
             var body = await response.Content.ReadAsStringAsync(cancellationToken);

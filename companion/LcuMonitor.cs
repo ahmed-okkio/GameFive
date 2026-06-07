@@ -5,7 +5,6 @@ namespace GameFive.Companion;
 
 internal sealed class LcuMonitor : IDisposable
 {
-    public readonly CompanionConfig _config;
     public readonly GameFiveUploader _uploader;
     private readonly CompanionLogger _logger;
     private LcuConnection? _connection;
@@ -14,9 +13,8 @@ internal sealed class LcuMonitor : IDisposable
 
     public event EventHandler<LcuStatus>? StatusChanged;
 
-    public LcuMonitor(CompanionConfig config, CompanionLogger logger, GameFiveUploader uploader)
+    public LcuMonitor(CompanionLogger logger, GameFiveUploader uploader)
     {
-        _config = config;
         _logger = logger;
         _uploader = uploader;
         

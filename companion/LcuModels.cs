@@ -9,6 +9,15 @@ internal sealed class LcuSummoner
     
     [JsonPropertyName("displayName")]
     public string DisplayName { get; set; } = "";
+
+    [JsonPropertyName("gameName")]
+    public string? GameName { get; set; }
+
+    [JsonPropertyName("tagLine")]
+    public string? TagLine { get; set; }
+    
+    [JsonExtensionData]
+    public Dictionary<string, object>? ExtraData { get; set; }
 }
 
 internal sealed class LcuMatchHistoryResponse

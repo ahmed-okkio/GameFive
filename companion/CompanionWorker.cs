@@ -6,35 +6,25 @@ public class CompanionWorker : BackgroundService
 {
     private readonly CompanionLogger _logger;
     private readonly AppPaths _appPaths;
-    private readonly ConfigStore _configStore;
 
     public CompanionWorker()
     {
         _appPaths = AppPaths.Create();
         _logger = new CompanionLogger(_appPaths.LogFilePath);
-        _configStore = new ConfigStore(_appPaths.ConfigFilePath, _logger);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.Info("GameFive companion starting.");
 
-        var config = _configStore.Load();
-        if (config is null)
-        {
-            _configStore.CreateTemplate();
-            _logger.Info("Config created. Please fill it in and restart.");
-            return;
-        }
-
         StartupRegistration.EnsureRegistered(_logger);
 
-        var updateManager = new UpdateManager(config, _logger);
+        var updateManager = new UpdateManager(_logger);
         _ = updateManager.CheckForUpdatesAsync(stoppingToken);
 
         // Start WMI Monitor
-        var uploader = new GameFiveUploader(config, new UploadQueue(_appPaths.FailedUploadsPath, _logger), _logger);
-        using var monitor = new LcuMonitor(config, _logger, uploader);
+        var uploader = new GameFiveUploader(new UploadQueue(_appPaths.FailedUploadsPath, _logger), _logger);
+        using var monitor = new LcuMonitor(_logger, uploader);
         
         // Start Tray Icon thread
         var trayIcon = new TrayIcon(_logger, monitor, updateManager);

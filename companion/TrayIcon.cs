@@ -1,6 +1,7 @@
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 
 namespace GameFive.Companion;
 
@@ -41,6 +42,49 @@ internal sealed class TrayIcon : IDisposable
         }
     }
 
+    private void OpenWeb()
+    {
+        string url = "https://game-five-kohl.vercel.app/";
+        
+        if (_isConnected)
+        {
+            // Try to fetch summoner info
+            var lockfile = LcuLockfile.TryRead(_logger);
+            if (lockfile != null)
+            {
+                var connection = new LcuConnection { Port = lockfile.Port, AuthToken = lockfile.AuthToken, Protocol = lockfile.Protocol };
+                using var client = new LcuClient(connection, _logger);
+                
+                // Need to run this synchronously or handle it
+                // Since this is a button click handler, we can block or run as task
+                var summoner = Task.Run(async () => await client.GetCurrentSummonerAsync(CancellationToken.None)).GetAwaiter().GetResult();
+                
+                if (summoner != null)
+                {
+                    _logger.Info($"Summoner found: DisplayName='{summoner.DisplayName}', GameName='{summoner.GameName}', TagLine='{summoner.TagLine}'");
+                    if (summoner.ExtraData != null) {
+                         _logger.Info($"ExtraData: {string.Join(", ", summoner.ExtraData.Select(kvp => $"{kvp.Key}={kvp.Value}"))}");
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(summoner.GameName) && !string.IsNullOrWhiteSpace(summoner.TagLine))
+                    {
+                        url = $"https://game-five-kohl.vercel.app/player/{summoner.GameName}/{summoner.TagLine}";
+                    }
+                    else if (!string.IsNullOrWhiteSpace(summoner.DisplayName) && summoner.DisplayName.Contains('#'))
+                    {
+                        var parts = summoner.DisplayName.Split('#');
+                        if (parts.Length == 2)
+                        {
+                            url = $"https://game-five-kohl.vercel.app/player/{parts[0]}/{parts[1]}";
+                        }
+                    }
+                }
+            }
+        }
+        
+        Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+    }
+
     public void Run()
     {
         _logger.Info("Tray icon loop starting.");
@@ -63,11 +107,12 @@ internal sealed class TrayIcon : IDisposable
         var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "Unknown";
         _menu.Items.Add($"Version: {version}", null, null).Enabled = false;
         _menu.Items.Add("Reconnect", null, (_, _) => _monitor.Reconnect());
+        _menu.Items.Add("Open GameFive", null, (_, _) => OpenWeb());
         _menu.Items.Add("Upload recent games", null, async (_, _) => {
             var lockfile = LcuLockfile.TryRead(_logger);
             if (lockfile != null) {
                 var connection = new LcuConnection { Port = lockfile.Port, AuthToken = lockfile.AuthToken, Protocol = lockfile.Protocol };
-                await MatchUploaderService.UploadRecentMatchesAsync(connection, _monitor._uploader, _monitor._config.DiagnosticMatchLimit, _logger);
+                await MatchUploaderService.UploadRecentMatchesAsync(connection, _monitor._uploader, CompanionConfig.DiagnosticMatchLimit, _logger);
             }
         });
         _menu.Items.Add("Open Log", null, (_, _) => OpenLog());
@@ -78,6 +123,7 @@ internal sealed class TrayIcon : IDisposable
         });
 
         _notifyIcon.ContextMenuStrip = _menu;
+
         _context = new ApplicationContext();
 
         // UI Timer: Updates the text and icon on the UI thread every 500ms

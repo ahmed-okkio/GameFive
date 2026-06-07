@@ -6,14 +6,12 @@ namespace GameFive.Companion;
 
 internal sealed class UpdateManager
 {
-    private readonly CompanionConfig _config;
     private readonly CompanionLogger _logger;
     private readonly HttpClient _httpClient;
     private string? _pendingUpdatePath;
 
-    public UpdateManager(CompanionConfig config, CompanionLogger logger)
+    public UpdateManager(CompanionLogger logger)
     {
-        _config = config;
         _logger = logger;
         _httpClient = new HttpClient();
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "GameFiveCompanion");
@@ -29,9 +27,8 @@ internal sealed class UpdateManager
         var currentVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "0.0.0";
         try
         {
-            _logger.Info($"Checking for updates from {_config.GitHubRepo}...");
-            var release = await _httpClient.GetFromJsonAsync<GitHubRelease>(
-                $"https://api.github.com/repos/{_config.GitHubRepo}/releases/latest", ct);
+            _logger.Info("Checking for updates ...");
+            var release = await _httpClient.GetFromJsonAsync<GitHubRelease>("https://api.github.com/repos/ahmed-okkio/GameFive/releases/latest", ct);
 
             if (release?.TagName == null) return;
 

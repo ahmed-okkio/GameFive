@@ -40,8 +40,7 @@ internal static class LcuLockfile
             Thread.Sleep(2000);
         }
 
-        logger.Error("Could not find LCU lockfile from RiotClientInstalls.json. Exiting.");
-        Environment.Exit(1);
+        logger.Error("Could not find LCU lockfile from RiotClientInstalls.json.");
         return null;
     }
 
