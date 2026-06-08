@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import type { Player } from "@prisma/client";
-import { bestRankedMmrWithHistoricalFallback, rankedToMmr } from "@/lib/mmr/ranked";
+import { rankedToMmr } from "@/lib/mmr/ranked";
 import { calculateLpDelta } from "@/lib/mmr/calculate";
 import { getTierLabel } from "@/lib/mmr/tier";
 import { getChampionMap, refreshChampionMap } from "@/lib/riot/champions";
@@ -257,21 +257,13 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
         });
     }
 
-    const isPlaced = player ? (player.mayhemGames >= 10) : false;
-    
-    // 1. If player exists, is placed, and has a valid MMR: use rawMmr
-    // 2. Otherwise: fallback to the resolved rankSignalMmr
-    const finalRankSignalMmr = (player && isPlaced && player.rawMmr > 0) 
-        ? player.rawMmr 
-        : rankSignalMmr;
-
     await prisma.matchParticipant.create({
         data: {
         matchId: storedMatch.id,
         playerId: player?.id,
         playerRiotIdName,
         playerRiotIdTag,
-        rankSignalMmr: finalRankSignalMmr,
+        rankSignalMmr: rankSignalMmr,
         team: participant.teamId,
         win: participant.win,
         championId: participant.championId,

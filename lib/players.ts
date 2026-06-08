@@ -327,7 +327,7 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
                 playerRiotIdName: part.playerRiotIdName ?? part.player?.riotIdName ?? null,
                 playerRiotIdTag: part.playerRiotIdTag ?? part.player?.riotIdTag ?? null,
                 rankSignalMmr: part.rankSignalMmr ?? null,
-                rankLabelAtMatch: part.rankSignalMmr !== null
+                rankLabelAtMatch: (part.rankSignalMmr !== null && part.rankSignalMmr > 0)
                   ? getTierLabel(part.rankSignalMmr).label
                   : "Unranked",
                 spell1Id: part.spell1Id,
