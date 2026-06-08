@@ -329,11 +329,7 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
                 rankSignalMmr: part.rankSignalMmr ?? null,
                 rankLabelAtMatch: part.rankSignalMmr !== null
                   ? getTierLabel(part.rankSignalMmr).label
-                  : (part.player 
-                      ? (part.player.soloDuoTier 
-                          ? `${part.player.soloDuoTier.charAt(0).toUpperCase() + part.player.soloDuoTier.slice(1).toLowerCase()} ${part.player.soloDuoDivision ?? ""}` 
-                          : "Unranked")
-                      : "Unknown rank"),
+                  : "Unranked",
                 spell1Id: part.spell1Id,
                 spell2Id: part.spell2Id,
                 itemsJson: part.itemsJson,

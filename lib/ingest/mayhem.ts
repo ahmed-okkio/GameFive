@@ -258,7 +258,12 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
     }
 
     const isPlaced = player ? (player.mayhemGames >= 10) : false;
-    const finalRankSignalMmr = isPlaced ? (player?.rawMmr ?? rankSignalMmr) : null;
+    
+    // 1. If player exists, is placed, and has a valid MMR: use rawMmr
+    // 2. Otherwise: fallback to the resolved rankSignalMmr
+    const finalRankSignalMmr = (player && isPlaced && player.rawMmr > 0) 
+        ? player.rawMmr 
+        : rankSignalMmr;
 
     await prisma.matchParticipant.create({
         data: {
