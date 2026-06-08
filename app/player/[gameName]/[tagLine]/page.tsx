@@ -2,7 +2,8 @@ import { ProfileClient, StatusResponse } from "@/components/ProfileClient";
 import { getPlayerProfile } from "@/lib/players";
 import { appConfig } from "@/lib/config";
 import { getLatestDDragonVersion } from "@/lib/riot/ddragon";
-import type { Metadata } from "next";
+import { PageLoader } from "@/components/Loading";
+import { Suspense } from "react";
 
 type PageProps = {
   params: Promise<{
@@ -13,17 +14,8 @@ type PageProps = {
 
 export const revalidate = 0;
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { gameName, tagLine } = await params;
-  const riotId = `${decodeURIComponent(gameName)}#${decodeURIComponent(tagLine)}`;
-
-  return {
-    title: `${riotId} | GameFive`
-  };
-}
-
-export default async function PlayerPage({ params }: PageProps) {
-  const { gameName, tagLine } = await params;
+// The data-fetching component
+async function PlayerProfileLoader({ gameName, tagLine }: { gameName: string, tagLine: string }) {
   const decodedGameName = decodeURIComponent(gameName);
   const decodedTagLine = decodeURIComponent(tagLine);
   
@@ -123,4 +115,14 @@ export default async function PlayerPage({ params }: PageProps) {
             maintenanceMode={appConfig.maintenanceMode} 
             initialVersion={ddragonVersion}
          />;
+}
+
+export default async function PlayerPage({ params }: PageProps) {
+  const { gameName, tagLine } = await params;
+  
+  return (
+    <Suspense fallback={<PageLoader text="Loading profile..." />}>
+      <PlayerProfileLoader gameName={gameName} tagLine={tagLine} />
+    </Suspense>
+  );
 }

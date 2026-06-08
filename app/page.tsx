@@ -6,6 +6,8 @@ import { ArrowUpRight } from "lucide-react";
 import { getTierLabel } from "@/lib/mmr/tier";
 import { DEFAULT_DDRAGON_VERSION, getLatestDDragonVersion, getProfileIconUrl } from "@/lib/riot/ddragon";
 import { getChampionAssetMap } from "@/lib/riot/champions";
+import { Suspense } from "react";
+import { PageLoader } from "@/components/Loading";
 
 type MatchParticipant = {
   id: string;
@@ -39,7 +41,7 @@ type MatchParticipant = {
   };
 };
 
-export default async function HomePage() {
+async function HomeLoader() {
   const latestVersion = await getLatestDDragonVersion().catch(() => DEFAULT_DDRAGON_VERSION);
   const championAssets = await getChampionAssetMap();
 
@@ -82,25 +84,7 @@ export default async function HomePage() {
   ]);
 
   return (
-    <section className="mx-auto min-h-[calc(100vh-170px)] max-w-6xl px-4 py-8 sm:py-12">
-      <div className="grid gap-8">
-        <div className=" min-w-0">
-          <p className="mb-3 inline-flex rounded border border-gold/40 bg-gold/10 px-3 py-1 text-sm font-semibold text-gold">
-            EUW Mayhem tracker
-          </p>
-          <h1 className="font-display max-w-4xl text-4xl font-black leading-tight text-white sm:text-6xl">
-            GameFive
-          </h1>
-          <p className="mt-3 max-w-2xl text-base leading-7 text-stone-300 sm:lg">
-            Search a Riot ID to view Mayhem MMR, recent games, champion stats, and lobby performance.
-          </p>
-
-          <div className="mt-7 w-full rounded-lg border border-line bg-panel p-4 shadow-2xl shadow-black/20 sm:p-5">
-            <SearchForm />
-          </div>
-        </div>
-      </div>
-
+    <div className="grid gap-8">
       <div className="mt-8 space-y-8">
         <section className="rounded-lg border border-line bg-panel shadow-xl shadow-black/20 overflow-hidden">
           <div className="flex items-center justify-between border-b border-line px-4 py-4 sm:px-5">
@@ -133,7 +117,6 @@ export default async function HomePage() {
                   augmentsJson: participant.augmentsJson
                 },
                 ddragonVersion: latestVersion,
-                // Pass both name and tag so MatchRow can navigate to the player profile
                 player: participant.player
                   ? {
                       name: participant.player.riotIdName,
@@ -212,6 +195,33 @@ export default async function HomePage() {
           </div>
         </section>
       </div>
+    </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <section className="mx-auto min-h-[calc(100vh-170px)] max-w-6xl px-4 py-8 sm:py-12">
+      <div className="grid gap-8">
+        <div className=" min-w-0">
+          <p className="mb-3 inline-flex rounded border border-gold/40 bg-gold/10 px-3 py-1 text-sm font-semibold text-gold">
+            EUW Mayhem tracker
+          </p>
+          <h1 className="font-display max-w-4xl text-4xl font-black leading-tight text-white sm:text-6xl">
+            GameFive
+          </h1>
+          <p className="mt-3 max-w-2xl text-base leading-7 text-stone-300 sm:lg">
+            Search a Riot ID to view Mayhem MMR, recent games, champion stats, and lobby performance.
+          </p>
+
+          <div className="mt-7 w-full rounded-lg border border-line bg-panel p-4 shadow-2xl shadow-black/20 sm:p-5">
+            <SearchForm />
+          </div>
+        </div>
+      </div>
+      <Suspense fallback={<PageLoader text="Loading recent games and leaderboard..." />}>
+        <HomeLoader />
+      </Suspense>
     </section>
   );
 }
