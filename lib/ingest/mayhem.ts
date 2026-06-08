@@ -133,7 +133,6 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
       }
 
       if (player) {
-          player = await hydrateRankedSignals(player);
           playerRows.set(participant.puuid, player);
           playerRankSignals.set(participant.puuid, player.rawMmr);
       } else if (participant.puuid === payload.uploaderPuuid) {
@@ -154,7 +153,7 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
 
   payload.participants.forEach(p => {
       const m = playerRankSignals.get(p.puuid);
-      if (m !== null && m !== undefined) {
+      if (m !== null && m !== undefined && m > 0) {
           if (p.teamId === 100) team100Ranked.push(m);
           else if (p.teamId === 200) team200Ranked.push(m);
       }
