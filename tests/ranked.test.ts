@@ -92,10 +92,10 @@ describe("calculateLpDelta", () => {
       win: false
     });
     // diff = 1500 - 1800 = -300
-    // adjustment = (-300 / 600) * 0.3 = -0.15
-    // factor = 1 - 0.15 = 0.85
-    // lp = 20 * 0.85 = 17
-    expect(delta).toBe(17);
+    // adjustment = (-300 / 1000) * 0.3 = -0.09
+    // factor = 1 - 0.09 = 0.91
+    // lp = 20 * 0.91 = 18.2 -> rounded to 18
+    expect(delta).toBe(18);
   });
 
   it("clamps opponent factor", () => {

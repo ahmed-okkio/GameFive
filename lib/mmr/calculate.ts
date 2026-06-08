@@ -35,8 +35,10 @@ export function calculateLpDelta(input: LpDeltaInput): number {
       ? (opposingTeam - myTeam) // Winning against stronger team
       : (myTeam - opposingTeam); // Losing against weaker team
 
-    // Linear scaling: 600 MMR difference = 0.3 factor shift
-    const adjustment = (diff / 600) * 0.3;
+    // Win: 600 MMR difference = 0.3 factor shift
+    // Loss: 1000 MMR difference = 0.3 factor shift
+    const divisor = input.win ? 600 : 1000;
+    const adjustment = (diff / divisor) * 0.3;
     
     // Apply adjustment and clamp to 0.7 - 1.3 range
     opponentFactor = Math.min(1.3, Math.max(0.7, 1 + adjustment));
