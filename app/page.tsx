@@ -148,7 +148,7 @@ async function HomeLoader() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-left min-w-[500px]">
+            <table className="w-full border-collapse text-left">
               <thead className="bg-black/20 text-xs uppercase tracking-widest text-stone-500">
                 <tr>
                   <th className="px-4 py-3 sm:px-5 w-12">#</th>
