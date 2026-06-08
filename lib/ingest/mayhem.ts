@@ -257,13 +257,16 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
         });
     }
 
+    const isPlaced = player ? (player.mayhemGames >= 10) : false;
+    const finalRankSignalMmr = isPlaced ? (player?.rawMmr ?? rankSignalMmr) : null;
+
     await prisma.matchParticipant.create({
         data: {
         matchId: storedMatch.id,
         playerId: player?.id,
         playerRiotIdName,
         playerRiotIdTag,
-        rankSignalMmr,
+        rankSignalMmr: finalRankSignalMmr,
         team: participant.teamId,
         win: participant.win,
         championId: participant.championId,
@@ -278,7 +281,7 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
         healingShare: 0,
         performanceScore: 0,
         lpDelta: participantLpDelta,
-        isPlacement: player ? !player.isPlaced : false,
+        isPlacement: player ? (player.mayhemGames < 10) : true,
         itemsJson: participant.items,
         augmentsJson: participant.augments,
         spell1Id: participant.spell1Id,

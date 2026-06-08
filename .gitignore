@@ -8,6 +8,7 @@ coverage
 *.tsbuildinfo
 prisma/dev.db
 publish/*
+reports/*
 
 # Logs and build artifacts
 *.log
@@ -15,4 +16,4 @@ companion/bin/
 companion/obj/
 .DS_Store
 Thumbs.db
-scripts/ingest-from-log.ts
+scripts/*

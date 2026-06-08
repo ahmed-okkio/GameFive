@@ -32,6 +32,7 @@ export async function calculateAndStoreProfile(player: Player) {
             data: {
                 isPlaced: true,
                 rawMmr: startingMmr,
+                baselineMmr: startingMmr,
                 currentLp: Math.round(startingMmr % 100),
                 mayhemGames: mayhemGamesCount,
                 lastGameTier: tier.tier,
