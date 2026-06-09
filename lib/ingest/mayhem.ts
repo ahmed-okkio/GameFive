@@ -266,6 +266,12 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
         });
     }
 
+    // Move rank resolution before participant creation to ensure rankData is available
+    let rankData: { mmr: number, tier: string | null, lp: number | null } | null = null;
+    if (!player) {
+        rankData = await resolveRank(playerRiotIdName ?? "Unknown", playerRiotIdTag ?? "EUW");
+    }
+
     await prisma.matchParticipant.create({
         data: {
         matchId: storedMatch.id,
@@ -273,8 +279,8 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
         playerRiotIdName,
         playerRiotIdTag,
         rankSignalMmr: rankSignalMmr,
-        rankTier: player?.soloDuoTier || player?.flexTier || null,
-        leaguePoints: player?.currentLp || null,
+        rankTier: player ? null : (rankData?.tier ?? null),
+        leaguePoints: player ? null : (rankData?.lp ?? null),
         team: participant.teamId,
         win: participant.win,
         championId: participant.championId,

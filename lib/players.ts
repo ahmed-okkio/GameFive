@@ -260,11 +260,18 @@ export type PlayerProfile =
       }>;
     };
 
-export function formatRankLabel(rankTier: string | null, leaguePoints: number | null, rankSignalMmr: number | null): string {
+export function formatRankLabel(rankTier: string | null, leaguePoints: number | null, rankSignalMmr: number | null, playerRawMmr: number | null | undefined, isPlayer: boolean): string {
+    // 1. If player (registered in DB), prioritize rawMmr (most accurate)
+    if (isPlayer && playerRawMmr && playerRawMmr > 0) {
+        return getTierLabel(playerRawMmr).label;
+    }
+    
+    // 2. Not a player (unregistered), use rankTier for Master+
     if (rankTier && ["MASTER", "GRANDMASTER", "CHALLENGER"].includes(rankTier.toUpperCase())) {
         return `${rankTier.charAt(0).toUpperCase() + rankTier.slice(1).toLowerCase()} ${leaguePoints ?? 0} LP`;
     }
     
+    // 3. Fallback for others
     if (rankSignalMmr !== null && rankSignalMmr > 0) {
         return getTierLabel(rankSignalMmr).label;
     }
@@ -347,7 +354,7 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
                 rankSignalMmr: part.rankSignalMmr ?? null,
                 rankTier: part.rankTier,
                 leaguePoints: part.leaguePoints,
-                rankLabelAtMatch: formatRankLabel(part.rankTier, part.leaguePoints, part.rankSignalMmr),
+                rankLabelAtMatch: formatRankLabel(part.rankTier, part.leaguePoints, part.rankSignalMmr, part.player?.rawMmr, !!part.player),
                 spell1Id: part.spell1Id,
                 spell2Id: part.spell2Id,
                 itemsJson: part.itemsJson,
