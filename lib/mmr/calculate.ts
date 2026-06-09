@@ -37,7 +37,7 @@ export function calculateLpDelta(input: LpDeltaInput): number {
 
     // Win: 600 MMR difference = 0.3 factor shift
     // Loss: 1000 MMR difference = 0.3 factor shift
-    const divisor = input.win ? 600 : 1000;
+    const divisor = input.win ? 1000 : 1500;
     const adjustment = (diff / divisor) * 0.3;
     
     // Apply adjustment and clamp to 0.7 - 1.3 range
