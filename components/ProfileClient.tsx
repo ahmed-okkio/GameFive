@@ -623,7 +623,7 @@ useEffect(() => {
                           return (
                           <div
                             key={teamId}
-                            className={`min-w-[720px] p-3 ${teamId === 100 ? 'bg-blue-950/10' : 'bg-red-950/10'}`}
+                            className={`min-w-[720px] p-3 ${teamId === 100 ? 'bg-blue-950/20' : 'bg-red-950/20'}`}
                           >
                             <div className={`flex justify-center items-center gap-2 px-4 py-2 border-b border-line/50 text-[11px] font-normal text-stone-400 mb-2`}>
                               <span className="uppercase tracking-widest">{teamId === 100 ? "Blue" : "Red"} Team Average Rank</span>
