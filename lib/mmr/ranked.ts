@@ -26,7 +26,8 @@ export const DEFAULT_MEDIAN_MMR = 1500;
 
 export function rankedToMmr(
   tier: string | null | undefined,
-  division: string | null | undefined
+  division: string | null | undefined,
+  lp: number | null | undefined = 0
 ): number | null {
   if (!tier) {
     return null;
@@ -39,11 +40,13 @@ export function rankedToMmr(
     return null;
   }
 
-  if (normalizedTier === "MASTER" || normalizedTier === "GRANDMASTER" || normalizedTier === "CHALLENGER") {
-    return base;
+  const lpValue = lp ?? 0;
+
+  if (["MASTER", "GRANDMASTER", "CHALLENGER"].includes(normalizedTier)) {
+    return TIER_BASE["MASTER"] + lpValue;
   }
 
-  return base + (DIVISION_OFFSET[division?.toUpperCase() ?? "IV"] ?? 0);
+  return base + (DIVISION_OFFSET[division?.toUpperCase() ?? "IV"] ?? 0) + lpValue;
 }
 
 export function bestRankedMmr(

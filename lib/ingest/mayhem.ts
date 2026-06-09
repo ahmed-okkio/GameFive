@@ -5,7 +5,7 @@ import { rankedToMmr } from "@/lib/mmr/ranked";
 import { calculateLpDelta } from "@/lib/mmr/calculate";
 import { getTierLabel } from "@/lib/mmr/tier";
 import { getChampionMap, refreshChampionMap } from "@/lib/riot/champions";
-import { getPlayerByPuuid, upsertPlayer, hydrateRankedSignals } from "@/lib/players";
+import { getPlayerByPuuid, upsertPlayer } from "@/lib/players";
 import { riotClient } from "@/lib/riot/client";
 import { fetchOpggHistoricalRank } from "@/lib/riot/opgg";
 
@@ -58,7 +58,7 @@ function isMayhemPayload(payload: CompanionMatchPayload) {
   return payload.queueId === 2400 || payload.gameMode?.toUpperCase() === "KIWI";
 }
 
-async function resolveRank(name: string, tag: string): Promise<number | null> {
+async function resolveRank(name: string, tag: string): Promise<{ mmr: number, tier: string | null, lp: number | null } | null> {
     try {
         // A: Resolve to public PUUID first
         const account = await riotClient.getAccountByRiotId(name, tag);
@@ -68,13 +68,23 @@ async function resolveRank(name: string, tag: string): Promise<number | null> {
             const leagues = await riotClient.getLeagueEntriesByPuuid(account.puuid);
             const solo = leagues.find(l => l.queueType === "RANKED_SOLO_5x5");
             const flex = leagues.find(l => l.queueType === "RANKED_FLEX_SR");
-            const mmr = Math.max(rankedToMmr(solo?.tier, solo?.rank) || 0, rankedToMmr(flex?.tier, flex?.rank) || 0);
-            if (mmr > 0) return mmr;
+            
+            const soloMmr = solo ? (rankedToMmr(solo.tier, solo.rank, solo.leaguePoints) ?? 0) : 0;
+            const flexMmr = flex ? (rankedToMmr(flex.tier, flex.rank, flex.leaguePoints) ?? 0) : 0;
+            
+            const entry = soloMmr >= flexMmr ? solo : flex;
+            const mmr = Math.max(soloMmr, flexMmr);
+            
+            if (mmr > 0 && entry) return { mmr, tier: entry.tier, lp: entry.leaguePoints };
         }
 
         // C: Fallback to OP.GG
         const hist = await fetchOpggHistoricalRank("euw", name, tag);
-        if (hist) return rankedToMmr(hist.tier, hist.division) ?? null;
+        if (hist) return { 
+            mmr: rankedToMmr(hist.tier, hist.division, hist.lp ?? 0) ?? 0, 
+            tier: hist.tier, 
+            lp: hist.lp 
+        };
     } catch (e) {
         console.warn(`Failed to resolve rank for ${name}#${tag}`, e);
     }
@@ -141,8 +151,8 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
           playerRankSignals.set(participant.puuid, player.rawMmr);
       } else {
           // Non-uploader, not in DB - resolve without persisting
-          const rankMmr = await resolveRank(name, tag);
-          playerRankSignals.set(participant.puuid, rankMmr);
+          const rankData = await resolveRank(name, tag);
+          playerRankSignals.set(participant.puuid, rankData ? rankData.mmr : null);
       }
   }));
   console.log(`[Ingest] Players resolved.`);
@@ -263,6 +273,8 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
         playerRiotIdName,
         playerRiotIdTag,
         rankSignalMmr: rankSignalMmr,
+        rankTier: player?.soloDuoTier || player?.flexTier || null,
+        leaguePoints: player?.currentLp || null,
         team: participant.teamId,
         win: participant.win,
         championId: participant.championId,

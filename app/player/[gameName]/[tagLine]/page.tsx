@@ -3,7 +3,7 @@ import { getPlayerProfile } from "@/lib/players";
 import { appConfig } from "@/lib/config";
 import { getLatestDDragonVersion } from "@/lib/riot/ddragon";
 import { PageLoader } from "@/components/Loading";
-import { Suspense } from "react";
+import React, { Suspense } from "react";
 
 type PageProps = {
   params: Promise<{
@@ -64,7 +64,9 @@ async function PlayerProfileLoader({ gameName, tagLine }: { gameName: string, ta
               match: {
                   gameDate: m.match.gameDate.toISOString(),
                   durationSeconds: m.match.durationSeconds,
-              participants: m.match.participants.map(part => ({
+                  team100AvgMmr: m.match.team100AvgMmr,
+                  team200AvgMmr: m.match.team200AvgMmr,
+                  participants: m.match.participants.map(part => ({
                       id: part.id,
                       championId: part.championId,
                       championName: part.championName,
@@ -84,6 +86,8 @@ async function PlayerProfileLoader({ gameName, tagLine }: { gameName: string, ta
                       playerRiotIdTag: part.playerRiotIdTag,
                       rankSignalMmr: part.rankSignalMmr,
                       rankLabelAtMatch: part.rankLabelAtMatch,
+                      rankTier: part.rankTier,
+                      leaguePoints: part.leaguePoints,
                       spell1Id: part.spell1Id,
                       spell2Id: part.spell2Id,
                       itemsJson: part.itemsJson,

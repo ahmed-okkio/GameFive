@@ -2,7 +2,7 @@
 
 import { ExternalLink, RefreshCw } from "lucide-react";
 import Image from "next/image";
-import { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { ProgressScreen } from "@/components/ProgressScreen";
 import { getLatestDDragonVersion, getProfileIconUrl } from "@/lib/riot/ddragon";
@@ -10,6 +10,7 @@ import { StatBar } from "@/components/StatBar";
 import { LoadoutRow } from "@/components/LoadoutRow";
 import { ChampionAvatar } from "@/components/ChampionAvatar";
 import { MatchRow } from "@/components/MatchRow";
+import { getTierLabel } from "@/lib/mmr/tier";
 
 type ProfileJobSnapshot = {
   status: string;
@@ -55,6 +56,8 @@ export type StatusResponse =
         match: {
           gameDate: string;
           durationSeconds: number;
+          team100AvgMmr: number | null;
+          team200AvgMmr: number | null;
           participants: Array<{
             id: string;
             championId: number;
@@ -72,6 +75,8 @@ export type StatusResponse =
             playerRiotIdTag: string | null;
             rankSignalMmr: number | null;
             rankLabelAtMatch: string;
+            rankTier: string | null;
+            leaguePoints: number | null;
             spell1Id: number | null;
             spell2Id: number | null;
             itemsJson: unknown;
@@ -168,8 +173,6 @@ useEffect(() => {
     const el = document.getElementById(`match-${matchParam}`);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "center" });
-    } else {
-      const allMatchEls = document.querySelectorAll("[id^='match-']");
     }
   }, 300);
 }, [status]);
@@ -532,8 +535,8 @@ useEffect(() => {
                           {formatKda(champion.kills, champion.deaths, champion.assists)}:1
                         </div>
                       </div>
-                    ))}
-                  </div>
+                      ))}
+                      </div>
                 </div>
               </div>
             </div>
@@ -615,17 +618,17 @@ useEffect(() => {
 
                     {isExpanded && (
                       <div className="overflow-x-auto border-t border-line/70 bg-black/10 rounded-b-lg">
-                        {[100, 200].map((teamId) => (
+                        {[100, 200].map((teamId) => {
+                          const avgMmr = teamId === 100 ? match.match.team100AvgMmr : match.match.team200AvgMmr;
+                          return (
                           <div
                             key={teamId}
-                            className={`${
-                              teamId ===
-                              (viewedParticipant?.team ??
-                                match.match.participants.find((p) => p.win === match.win)?.team)
-                                ? "bg-white/[0.03]"
-                                : "bg-black/10"
-                            } min-w-[720px] p-3`}
+                            className={`min-w-[720px] p-3 ${teamId === 100 ? 'bg-blue-950/10' : 'bg-red-950/10'}`}
                           >
+                            <div className={`flex justify-center items-center gap-2 px-4 py-2 border-b border-line/50 text-[11px] font-normal text-stone-400 mb-2`}>
+                              <span className="uppercase tracking-widest">{teamId === 100 ? "Blue" : "Red"} Team Average Rank</span>
+                              <span className="font-bold text-stone-200 uppercase tracking-widest">{avgMmr ? getTierLabel(avgMmr).label.toUpperCase() : "Unranked"}</span>
+                            </div>
                             <div className="grid grid-cols-[160px_70px_60px_1fr_80px] items-center gap-2 px-3 pb-1 text-[10px] uppercase tracking-widest text-stone-500">
                               <span>Player</span>
                               <span className="text-center">KDA</span>
@@ -739,9 +742,10 @@ useEffect(() => {
                                     />
                                   </div>
                                 </div>
-                              ))}
-                          </div>
-                        ))}
+                                ))}
+                                </div>
+                                );
+                                })}
                       </div>
                     )}
                   </div>

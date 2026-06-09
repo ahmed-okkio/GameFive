@@ -218,6 +218,8 @@ export type PlayerProfile =
         match: {
           gameDate: Date;
           durationSeconds: number;
+          team100AvgMmr: number | null;
+          team200AvgMmr: number | null;
         participants: Array<{
             id: string;
             championId: number;
@@ -235,6 +237,8 @@ export type PlayerProfile =
             playerRiotIdTag: string | null;
             rankSignalMmr: number | null;
             rankLabelAtMatch: string;
+            rankTier: string | null;
+            leaguePoints: number | null;
             spell1Id: number | null;
             spell2Id: number | null;
             itemsJson: unknown;
@@ -255,6 +259,18 @@ export type PlayerProfile =
         healing: number;
       }>;
     };
+
+export function formatRankLabel(rankTier: string | null, leaguePoints: number | null, rankSignalMmr: number | null): string {
+    if (rankTier && ["MASTER", "GRANDMASTER", "CHALLENGER"].includes(rankTier.toUpperCase())) {
+        return `${rankTier.charAt(0).toUpperCase() + rankTier.slice(1).toLowerCase()} ${leaguePoints ?? 0} LP`;
+    }
+    
+    if (rankSignalMmr !== null && rankSignalMmr > 0) {
+        return getTierLabel(rankSignalMmr).label;
+    }
+    
+    return "Unranked";
+}
 
 export async function getPlayerProfile(gameName: string, tagLine: string): Promise<PlayerProfile> {
   const player = await ensurePlayerExists(gameName, tagLine);
@@ -308,6 +324,8 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
         match: {
             gameDate: p.match.gameDate,
             durationSeconds: p.match.durationSeconds,
+            team100AvgMmr: p.match.team100AvgMmr,
+            team200AvgMmr: p.match.team200AvgMmr,
             participants: p.match.participants.map(part => ({
                 id: part.id,
                 championId: part.championId,
@@ -327,9 +345,9 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
                 playerRiotIdName: part.playerRiotIdName ?? part.player?.riotIdName ?? null,
                 playerRiotIdTag: part.playerRiotIdTag ?? part.player?.riotIdTag ?? null,
                 rankSignalMmr: part.rankSignalMmr ?? null,
-                rankLabelAtMatch: (part.rankSignalMmr !== null && part.rankSignalMmr > 0)
-                  ? getTierLabel(part.rankSignalMmr).label
-                  : "Unranked",
+                rankTier: part.rankTier,
+                leaguePoints: part.leaguePoints,
+                rankLabelAtMatch: formatRankLabel(part.rankTier, part.leaguePoints, part.rankSignalMmr),
                 spell1Id: part.spell1Id,
                 spell2Id: part.spell2Id,
                 itemsJson: part.itemsJson,

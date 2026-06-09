@@ -70,6 +70,8 @@ model MatchParticipant {
   playerRiotIdName   String?  @map("player_riot_id_name")
   playerRiotIdTag    String?  @map("player_riot_id_tag")
   rankSignalMmr      Float?   @map("rank_signal_mmr")
+  rankTier           String?  @map("rank_tier")
+  leaguePoints       Int?     @map("league_points")
   team               Int
   win                Boolean
   championId         Int      @map("champion_id")
