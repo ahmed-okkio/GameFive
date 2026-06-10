@@ -1,7 +1,7 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import augmentMap from "@/lib/riot/augment-map.json";
+import { getAugmentInfo } from "@/lib/riot/augment-service";
 
 type AugmentBadgeProps = {
   augmentId: number;
@@ -10,15 +10,14 @@ type AugmentBadgeProps = {
 
 export function AugmentBadge({ augmentId, augmentName }: AugmentBadgeProps) {
   const [hasError, setHasError] = useState(false);
-  
-  const augmentPath = (augmentMap as Record<string, string>)[augmentId.toString()];
-  
-  const cleanPath = augmentPath 
-    ? augmentPath.replace("/lol-game-data/assets/ASSETS/", "assets/").toLowerCase()
-    : null;
-    
-  const iconPath = cleanPath 
-    ? `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/${cleanPath}` 
+  const [info, setInfo] = useState<{ path: string, name: string } | null>(null);
+
+  useEffect(() => {
+    getAugmentInfo(augmentId).then(setInfo);
+  }, [augmentId]);
+
+  const iconPath = info 
+    ? `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/${info.path}` 
     : null;
 
   if (hasError || !iconPath) {
@@ -35,12 +34,12 @@ export function AugmentBadge({ augmentId, augmentName }: AugmentBadgeProps) {
   return (
     <Image 
       src={iconPath} 
-      alt={augmentName} 
+      alt={info?.name || augmentName} 
       width={32}
       height={32}
       className="h-full w-full rounded-full border border-gold/30 bg-black/40"
       onError={() => setHasError(true)}
-      title={augmentName}
+      title={info?.name || augmentName}
     />
   );
 }

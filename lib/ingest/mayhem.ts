@@ -96,7 +96,7 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
     return { accepted: false, duplicate: false, reason: "not_mayhem" };
   }
 
-  if (payload.gameDuration < 180) {
+  if (payload.gameDuration < 240) {
       console.log(`[Ingest] Skipping match ${payload.gameId} because it is a remake (duration: ${payload.gameDuration}s)`);
       return { accepted: false, duplicate: false, reason: "remake" };
   }
