@@ -1,5 +1,11 @@
 import augmentMap from "@/lib/riot/augment-map.json";
 
+interface CDAugment {
+    id: number;
+    nameTRA: string;
+    augmentSmallIconPath: string;
+}
+
 // Cache for dynamically fetched augments
 let remoteAugmentCache: Record<string, { name: string; iconPath: string }> | null = null;
 
@@ -11,7 +17,7 @@ export async function getAugmentInfo(id: number) {
     if (localPath) {
         return { 
             path: localPath.replace("/lol-game-data/assets/ASSETS/", "assets/").toLowerCase(),
-            name: "Unknown Augment" // You might want to map names too if needed
+            name: "Unknown Augment" 
         };
     }
 
@@ -20,9 +26,9 @@ export async function getAugmentInfo(id: number) {
         try {
             const resp = await fetch("https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/cherry-augments.json");
             if (resp.ok) {
-                const data = await resp.json();
-                remoteAugmentCache = data.reduce((acc: any, aug: any) => {
-                    acc[aug.id] = { name: aug.nameTRA, iconPath: aug.augmentSmallIconPath };
+                const data: CDAugment[] = await resp.json();
+                remoteAugmentCache = data.reduce((acc: Record<string, { name: string; iconPath: string }>, aug: CDAugment) => {
+                    acc[aug.id.toString()] = { name: aug.nameTRA, iconPath: aug.augmentSmallIconPath };
                     return acc;
                 }, {});
             }
