@@ -15,7 +15,7 @@ export function calculatePlacementMmr(input: PlacementInput): number {
 }
 
 export type LpDeltaInput = {
-  playerCurrentMmr: number;
+  individualPlayerMmr: number;
   myTeamAvgMmr: number | null;
   opposingTeamAvgMmr: number | null;
   lobbyAvgFallback: number | null;
@@ -24,28 +24,39 @@ export type LpDeltaInput = {
 };
 
 export function calculateLpDelta(input: LpDeltaInput): number {
+  if (input.individualPlayerMmr === input.myTeamAvgMmr) {
+      console.warn("calculateLpDelta: individualPlayerMmr equals myTeamAvgMmr. Is this intended?");
+  }
+
   const BASE_LP = 20;
-  
+
   const myTeam = input.myTeamAvgMmr ?? input.lobbyAvgFallback;
   const opposingTeam = input.opposingTeamAvgMmr ?? input.lobbyAvgFallback;
 
   let opponentFactor = 1.0;
   if (myTeam !== null && opposingTeam !== null) {
-    const diff = input.win 
-      ? (opposingTeam - myTeam) // Winning against stronger team
-      : (myTeam - opposingTeam); // Losing against weaker team
+    // 1. Blended disparity: 70% individual, 30% team
+    const individualDisparity = input.individualPlayerMmr - opposingTeam;
+    const teamDisparity = myTeam - opposingTeam;
+    const disparity = 0.7 * individualDisparity + 0.3 * teamDisparity;
+
+    // For a WIN: 
+    // If we are stronger (positive disparity), we gain LESS LP -> subtract disparity
+    // For a LOSS:
+    // If we are stronger (positive disparity), we lose MORE LP -> add disparity
+    const sign = input.win ? -1 : 1;
 
     // Win: 600 MMR difference = 0.3 factor shift
     // Loss: 1000 MMR difference = 0.3 factor shift
-    const divisor = input.win ? 1000 : 1500;
-    const adjustment = (diff / divisor) * 0.3;
-    
+    const divisor = input.win ? 600 : 1000;
+    const adjustment = (sign * disparity / divisor) * 0.3;
+
     // Apply adjustment and clamp to 0.7 - 1.3 range
     opponentFactor = Math.min(1.3, Math.max(0.7, 1 + adjustment));
   }
-  
+
   const streakMultiplier = 1 + (0.05 * Math.min(input.consecutiveStreak, 5));
-  
+
   let delta = BASE_LP * opponentFactor * streakMultiplier;
 
   // Apply bias:
@@ -56,6 +67,6 @@ export function calculateLpDelta(input: LpDeltaInput): number {
     // For losses, ensure the penalty is no more than 25 (if we were losing more)
     delta = Math.min(25, delta);
   }
-  
+
   return Math.round(delta);
 }

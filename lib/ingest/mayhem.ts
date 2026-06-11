@@ -241,7 +241,7 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
         const opposingTeamAvgMmr = participant.teamId === 100 ? team200Avg : team100Avg;
 
         const delta = calculateLpDelta({
-            playerCurrentMmr: player.rawMmr,
+            individualPlayerMmr: player.rawMmr,
             myTeamAvgMmr,
             opposingTeamAvgMmr,
             lobbyAvgFallback: lobbyAvgMmr,
