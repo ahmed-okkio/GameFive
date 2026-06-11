@@ -70,7 +70,7 @@ async function HomeLoader() {
         playerId: { not: null },
         match: { gameMode: "MAYHEM" }
       },
-      take: 3,
+      take: 5,
       orderBy: { match: { gameDate: "desc" } },
       include: {
         player: true,

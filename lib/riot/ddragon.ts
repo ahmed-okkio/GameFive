@@ -1,11 +1,22 @@
 export const DEFAULT_DDRAGON_VERSION = "16.1.1";
 
 export async function getLatestDDragonVersion(): Promise<string> {
-  const response = await fetch("https://ddragon.leagueoflegends.com/api/versions.json", {
-    next: { revalidate: 3600 } // Cache for 1 hour
-  });
-  const versions = await response.json();
-  return versions[0];
+  try {
+    const response = await fetch("https://ddragon.leagueoflegends.com/api/versions.json", {
+      next: { revalidate: 3600 }
+    });
+
+    if (!response.ok) {
+        console.error(`DDragon version fetch failed: ${response.status} ${response.statusText}`);
+        return DEFAULT_DDRAGON_VERSION;
+    }
+
+    const versions = await response.json();
+    return versions[0];
+  } catch (error) {
+    console.error("Error fetching DDragon version:", error);
+    return DEFAULT_DDRAGON_VERSION;
+  }
 }
 
 export function getProfileIconUrl(iconId: number, version: string) {
