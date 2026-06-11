@@ -138,7 +138,7 @@ export function ProfileClient({
   maintenanceMode,
   initialVersion
 }: ProfileClientProps) {
-  const [status, setStatus] = useState<StatusResponse | null>(initialStatus ?? null);
+  const [status] = useState<StatusResponse | null>(initialStatus ?? null);
   const [tab, setTab] = useState("matches");
   const [expandedMatchId, setExpandedMatchId] = useState<string | null>(null);
   const [matchesToDisplay, setMatchesToDisplay] = useState(20);
