@@ -243,6 +243,7 @@ export type PlayerProfile =
             spell2Id: number | null;
             itemsJson: unknown;
             augmentsJson: unknown;
+            consecutiveStreak: number;
             }>
         };
       }>;
@@ -296,6 +297,20 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
   const displayedMmr = Math.round(player.rawMmr);
   const tier = getTierLabel(displayedMmr);
   const championAssets = await getChampionAssetMap();
+
+  const streakMap = new Map<string, number>();
+  const pReversed = [...participants].reverse(); 
+  let runningStreak = 0;
+  for (const p of pReversed) {
+      if (p.win) {
+          if (runningStreak >= 0) runningStreak++;
+          else runningStreak = 1;
+      } else {
+          if (runningStreak <= 0) runningStreak--;
+          else runningStreak = -1;
+      }
+      streakMap.set(p.id, runningStreak);
+  }
 
   return {
     state: "ready",
@@ -358,7 +373,8 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
                 spell1Id: part.spell1Id,
                 spell2Id: part.spell2Id,
                 itemsJson: part.itemsJson,
-                augmentsJson: part.augmentsJson
+                augmentsJson: part.augmentsJson,
+                consecutiveStreak: part.playerId === player.id ? (streakMap.get(p.id) ?? 0) : 0
             }))
         }
     })),

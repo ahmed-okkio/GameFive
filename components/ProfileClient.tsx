@@ -81,6 +81,7 @@ export type StatusResponse =
             spell2Id: number | null;
             itemsJson: unknown;
             augmentsJson: unknown;
+            consecutiveStreak: number;
           }>;
         };
       }>;
@@ -643,14 +644,20 @@ export function ProfileClient({
                   match: {
                     gameDate: match.match.gameDate,
                     durationSeconds: match.match.durationSeconds,
+                    team100AvgMmr: match.match.team100AvgMmr,
+                    team200AvgMmr: match.match.team200AvgMmr
                   },
+                  individualPlayerMmr: viewedParticipant?.rankSignalMmr ?? 1500,
+                  myTeamAvgMmr: viewedParticipant?.team === 100 ? match.match.team100AvgMmr : match.match.team200AvgMmr,
+                  opposingTeamAvgMmr: viewedParticipant?.team === 100 ? match.match.team200AvgMmr : match.match.team100AvgMmr,
                   kp,
                   viewedParticipant: viewedParticipant
                     ? {
                         itemsJson: viewedParticipant.itemsJson,
                         spell1Id: viewedParticipant.spell1Id,
                         spell2Id: viewedParticipant.spell2Id,
-                        augmentsJson: viewedParticipant.augmentsJson
+                        augmentsJson: viewedParticipant.augmentsJson,
+                        consecutiveStreak: viewedParticipant.consecutiveStreak // Add this field
                       }
                     : undefined,
                   ddragonVersion: ddragonVersion
@@ -663,7 +670,7 @@ export function ProfileClient({
                   // id added here so the ?match= scroll target works
                   <div key={match.id} id={`match-${matchKey}`}>
                       <div onClick={() => setExpandedMatchId(isExpanded ? null : matchKey)}>
-                        <MatchRow match={matchData} />
+                        <MatchRow match={matchData} initiallyExpanded={isExpanded} />
                       </div>
 
                     {isExpanded && (

@@ -9,7 +9,8 @@ export const appConfig = {
   nextAuthSecret: process.env.NEXTAUTH_SECRET ?? "",
   companionIngestToken: process.env.COMPANION_INGEST_TOKEN ?? "dev-local-token",
   companionDownloadUrl: "https://github.com/ahmed-okkio/GameFive/releases/latest/download/GameFive.Companion.exe",
-  maintenanceMode: process.env.MAINTENANCE_MODE === "true"
+  maintenanceMode: process.env.MAINTENANCE_MODE === "true",
+  patchDate: new Date("2026-06-11T08:34:00Z") // Updated patch start
 };
 
 export function requireEnv(name: keyof typeof appConfig) {

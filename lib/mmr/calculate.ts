@@ -55,9 +55,11 @@ export function calculateLpDelta(input: LpDeltaInput): number {
     opponentFactor = Math.min(1.3, Math.max(0.7, 1 + adjustment));
   }
 
-  const streakMultiplier = 1 + (0.05 * Math.min(input.consecutiveStreak, 5));
+  const absStreak = Math.abs(input.consecutiveStreak);
+  const effectiveStreak = absStreak >= 3 ? Math.min(absStreak, 10) : 0;
+  const streakBonus = (effectiveStreak / 10) * 6;
 
-  let delta = BASE_LP * opponentFactor * streakMultiplier;
+  let delta = (BASE_LP * opponentFactor) + streakBonus;
 
   // Apply bias:
   if (input.win) {

@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import Image from "next/image";
 import { ChampionAvatar } from "@/components/ChampionAvatar";
 import { LoadoutRow } from "@/components/LoadoutRow";
+import { LpBreakdown } from "@/components/LpBreakdown";
+import { appConfig } from "@/lib/config";
 
 type MatchData = {
   id: string;
@@ -20,11 +22,14 @@ type MatchData = {
   match: {
     gameDate: string;
     durationSeconds: number;
+    team100AvgMmr?: number | null;
+    team200AvgMmr?: number | null;
   };
   player?: {
     name: string;
     tag?: string;
     profileIconUrl?: string | null;
+    rawMmr?: number;
   };
   kp?: number;
   viewedParticipant?: {
@@ -32,8 +37,12 @@ type MatchData = {
     spell1Id: number | null;
     spell2Id: number | null;
     augmentsJson: unknown;
+    consecutiveStreak?: number;
   } | null;
   ddragonVersion?: string | null;
+  individualPlayerMmr?: number;
+  myTeamAvgMmr?: number | null;
+  opposingTeamAvgMmr?: number | null;
 };
 
 function formatKda(kills: number, deaths: number, assists: number) {
@@ -55,9 +64,17 @@ function formatTimeAgo(dateValue: string) {
   return `${Math.floor(hours / 24)} days ago`;
 }
 
-export function MatchRow({ match }: { match: MatchData }) {
-  const [expanded, setExpanded] = useState(false);
+export function MatchRow({ match, initiallyExpanded = false }: { match: MatchData; initiallyExpanded?: boolean }) {
+  const [expanded, setExpanded] = useState(initiallyExpanded);
+  const [showLpBreakdown, setShowLpBreakdown] = useState(false);
   const router = useRouter();
+
+  // Sync with prop if it changes (for pre-expanded matches)
+  useEffect(() => {
+    if (initiallyExpanded) {
+        setExpanded(true);
+    }
+  }, [initiallyExpanded]);
 
   const isNavigable = Boolean(match.player?.name && match.player?.tag);
 
@@ -70,6 +87,8 @@ export function MatchRow({ match }: { match: MatchData }) {
       setExpanded(!expanded);
     }
   };
+
+  const isNewPatch = new Date(match.match.gameDate) >= appConfig.patchDate;
 
   return (
     <div
@@ -138,17 +157,58 @@ export function MatchRow({ match }: { match: MatchData }) {
               {match.kp !== undefined ? `· ${match.kp}% KP` : ""}
             </div>
           </div>
-          <div
-            className={`font-black text-right whitespace-nowrap ${
-              match.lpDelta >= 0 ? "text-sky-300" : "text-red-400"
-            }`}
-          >
-            {match.isPlacement ? "Placement" : `${match.lpDelta >= 0 ? "+" : ""}${match.lpDelta} LP`}
+          <div className="flex flex-col items-end">
+            <div
+              className={`font-black text-right whitespace-nowrap cursor-pointer hover:text-gold ${
+                match.lpDelta >= 0 ? "text-sky-300" : "text-red-400"
+              }`}
+            >
+              {match.isPlacement ? "Placement" : `${match.lpDelta >= 0 ? "+" : ""}${match.lpDelta} LP`}
+            </div>
           </div>
           {/* Only show chevron for non-navigable (profile page) rows */}
           {!isNavigable && (expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
         </div>
       </div>
+
+      {/* Expanded Section */}
+      {expanded && (
+        <div className="border-t border-line/10 bg-black/10">
+          <div className="px-3 py-1.5 flex items-center">
+            {!isNavigable && !match.isPlacement && (
+              <button
+                onClick={(e) => { e.stopPropagation(); setShowLpBreakdown(!showLpBreakdown); }}
+                className={`text-[9px] font-bold transition-all uppercase tracking-widest flex items-center gap-1.5 ${
+                  showLpBreakdown ? "text-gold" : "text-stone-500 hover:text-stone-300"
+                }`}
+              >
+                {showLpBreakdown ? "Hide Match Logic" : "View LP Breakdown"}
+              </button>
+            )}
+          </div>
+
+          {/* LP Breakdown Component */}
+          {showLpBreakdown && (
+            <div className="px-3 pb-3 animate-in fade-in slide-in-from-top-1 duration-200">
+                {isNewPatch ? (
+                  <LpBreakdown 
+                    individualPlayerMmr={match.individualPlayerMmr ?? 0}
+                    myTeamAvgMmr={match.myTeamAvgMmr ?? null}
+                    opposingTeamAvgMmr={match.opposingTeamAvgMmr ?? null}
+                    lobbyAvgFallback={null}
+                    consecutiveStreak={match.viewedParticipant?.consecutiveStreak ?? 0}
+                    win={match.win} 
+                    delta={match.lpDelta}
+                  />
+                ) : (
+                  <div className="bg-black/20 p-4 rounded-lg border border-line/50 text-xs text-stone-500 italic text-center">
+                    Detailed breakdown unavailable for games played before June 11th patch.
+                  </div>
+                )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

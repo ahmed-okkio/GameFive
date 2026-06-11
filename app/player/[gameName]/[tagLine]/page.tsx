@@ -91,7 +91,8 @@ async function PlayerProfileLoader({ gameName, tagLine }: { gameName: string, ta
                       spell1Id: part.spell1Id,
                       spell2Id: part.spell2Id,
                       itemsJson: part.itemsJson,
-                      augmentsJson: part.augmentsJson
+                      augmentsJson: part.augmentsJson,
+                      consecutiveStreak: part.consecutiveStreak
                   }))
               }
           })),
