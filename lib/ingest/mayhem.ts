@@ -2,7 +2,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import type { Player } from "@prisma/client";
 import { rankedToMmr } from "@/lib/mmr/ranked";
-import { calculateLpDelta } from "@/lib/mmr/calculate";
+import { calculateLpDelta, calculatePlacementMmr } from "@/lib/mmr/calculate";
 import { getTierLabel } from "@/lib/mmr/tier";
 import { getChampionMap, refreshChampionMap } from "@/lib/riot/champions";
 import { getPlayerByPuuid, upsertPlayer } from "@/lib/players";
@@ -199,7 +199,7 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
 
   // 4. Create match participants and update known players
   for (const participant of payload.participants) {
-    const player = playerRows.get(participant.puuid) ?? null;
+    let player = playerRows.get(participant.puuid) ?? null;
     console.log(`[Ingest] Processing participant ${participant.puuid}. Found in playerRows: ${!!player}`);
     if (player) console.log(`[Ingest] Player ${player.riotIdName} isPlaced: ${player.isPlaced}`);
 
@@ -223,7 +223,49 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
 
     // 3. Calculate LP delta only if player exists and is placed
     let participantLpDelta = 0;
-    if (player && player.isPlaced) {
+    
+    // Check if player should be placed now
+    let isPlaced = player?.isPlaced ?? false;
+    
+    if (player && !isPlaced && (player.mayhemGames + 1) >= 10) {
+        // Calculate initial MMR for placement
+        const allParticipantMatches = await prisma.matchParticipant.findMany({
+            where: { playerId: player.id, match: { gameMode: "MAYHEM" } },
+            include: { match: true }
+        });
+        const calculableMatches = allParticipantMatches.filter(p => p.match.lobbyAvgMmr !== null);
+        const placementLobbyAvgMmr = calculableMatches.length > 0 
+            ? calculableMatches.reduce((sum, p) => sum + (p.match.lobbyAvgMmr ?? 0), 0) / calculableMatches.length 
+            : null;
+        const wins = allParticipantMatches.filter(g => g.win).length + (participant.win ? 1 : 0);
+        
+        const startingMmr = calculatePlacementMmr({
+            mayhemWins: wins,
+            placementLobbyAvgMmr
+        });
+        
+        const tier = getTierLabel(startingMmr);
+        
+        // Update player to placed status
+        const updatedPlayer = await prisma.player.update({
+            where: { id: player.id },
+            data: {
+                isPlaced: true,
+                rawMmr: startingMmr,
+                baselineMmr: startingMmr,
+                currentLp: Math.round(startingMmr % 100),
+                lastGameTier: tier.label,
+                cacheUpdatedAt: new Date()
+            }
+        });
+        
+        // Refresh player object for subsequent calculations in this loop
+        player = updatedPlayer;
+        isPlaced = true;
+    }
+
+    if (player && isPlaced) {
+        // ... (rest of LP calculation logic)
         const last5Games = await prisma.matchParticipant.findMany({
             where: { playerId: player.id, match: { gameMode: "MAYHEM" } },
             include: { match: true },
@@ -261,6 +303,16 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
                 mayhemGames: { increment: 1 },
                 lastGameDate: new Date(payload.gameCreation),
                 lastGameTier: tier.label,
+                cacheUpdatedAt: new Date()
+            }
+        });
+    } else if (player) {
+        // Still in placement
+        await prisma.player.update({
+            where: { id: player.id },
+            data: {
+                mayhemGames: { increment: 1 },
+                lastGameDate: new Date(payload.gameCreation),
                 cacheUpdatedAt: new Date()
             }
         });
