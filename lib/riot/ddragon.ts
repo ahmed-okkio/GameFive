@@ -1,6 +1,7 @@
 export const DEFAULT_DDRAGON_VERSION = "16.1.1";
 
 export async function getLatestDDragonVersion(): Promise<string> {
+  console.log("getLatestDDragonVersion called");
   try {
     const response = await fetch("https://ddragon.leagueoflegends.com/api/versions.json", {
       next: { revalidate: 3600 }
