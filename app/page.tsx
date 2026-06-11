@@ -50,7 +50,7 @@ async function HomeLoader() {
     prisma.player.count({ where: { isPlaced: true } }),
     prisma.match.count({ where: { gameMode: "MAYHEM" } }),
     prisma.player.findMany({
-      take: 5,
+      take: 10,
       orderBy: { rawMmr: "desc" },
       select: {
         id: true,
