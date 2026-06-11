@@ -155,12 +155,6 @@ export function ProfileClient({
       getLatestDDragonVersion().then(setDdragonVersion).catch(() => {});
   }, []);
 
-  const [refreshState, setRefreshState] = useState<{
-    loading: boolean;
-    message: string | null;
-    error: string | null;
-  }>({ loading: false, message: null, error: null });
-
   useEffect(() => {
     if (!initialVersion) {
       getLatestDDragonVersion().then(setDdragonVersion);
@@ -227,32 +221,6 @@ export function ProfileClient({
     };
   }, [status, tab, pendingMatchId]);
   
-  async function refresh() {
-    setRefreshState({ loading: true, message: null, error: null });
-    try {
-      const response = await fetch(
-        `/api/players/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}/refresh`,
-        { method: "POST" }
-      );
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Refresh failed.");
-
-      const statusResponse = await fetch(
-        `/api/players/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}/status`,
-        { cache: "no-store" }
-      );
-      setStatus(await statusResponse.json());
-      setRefreshState({ loading: false, message: "Profile updated.", error: null });
-    } catch (err: unknown) {
-      setRefreshState({
-        loading: false,
-        message: null,
-        error: err instanceof Error ? err.message : "Refresh failed."
-      });
-    }
-  }
-
   const recentSummary = useMemo(() => {
     if (!status || status.state !== "ready") return null;
 
@@ -499,8 +467,6 @@ export function ProfileClient({
               </div>
             )}
           </div>
-
-          {/* Removed Refresh button */}
         </aside>
 
         <div className="min-w-0 rounded-lg border border-line bg-panel/95 p-3 shadow-xl shadow-black/20 sm:p-5">
