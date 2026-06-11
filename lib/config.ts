@@ -10,7 +10,7 @@ export const appConfig = {
   companionIngestToken: process.env.COMPANION_INGEST_TOKEN ?? "dev-local-token",
   companionDownloadUrl: "https://github.com/ahmed-okkio/GameFive/releases/latest/download/GameFive.Companion.exe",
   maintenanceMode: process.env.MAINTENANCE_MODE === "true",
-  patchDate: new Date("2026-06-11T08:34:00Z") // Updated patch start
+  patchDate: new Date("2026-06-11T20:52:50Z") // Sync with commit 988d731
 };
 
 export function requireEnv(name: keyof typeof appConfig) {
