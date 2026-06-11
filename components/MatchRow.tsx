@@ -159,7 +159,7 @@ export function MatchRow({ match, initiallyExpanded = false }: { match: MatchDat
           </div>
           <div className="flex flex-col items-end">
             <div
-              className={`font-black text-right whitespace-nowrap cursor-pointer hover:text-gold ${
+              className={`font-black text-right whitespace-nowrap ${
                 match.lpDelta >= 0 ? "text-sky-300" : "text-red-400"
               }`}
             >
