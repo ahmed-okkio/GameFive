@@ -597,7 +597,8 @@ useEffect(() => {
                   championImage: match.championImage,
                   match: {
                     gameDate: match.match.gameDate,
-                    durationSeconds: match.match.durationSeconds
+                    durationSeconds: match.match.durationSeconds,
+                    matchId: match.match.matchId
                   },
                   kp,
                   viewedParticipant: viewedParticipant
@@ -666,7 +667,7 @@ useEffect(() => {
 
                                       return isLinked ? (
                                         <Link
-                                          href={`/player/${encodeURIComponent(playerName!)}/${encodeURIComponent(playerTag!)}`}
+                                          href={`/player/${encodeURIComponent(playerName!)}/${encodeURIComponent(playerTag!)}?match=${matchKey}`}
                                           className="flex min-w-0 items-center gap-2 font-semibold text-white hover:text-gold"
                                         >
                                           <ChampionAvatar
