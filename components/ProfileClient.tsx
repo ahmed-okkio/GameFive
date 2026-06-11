@@ -146,6 +146,11 @@ export function ProfileClient({
     direction: "asc" | "desc";
   }>({ key: "games", direction: "desc" });
   const [ddragonVersion, setDdragonVersion] = useState<string | null>(initialVersion);
+  
+  useEffect(() => {
+      getLatestDDragonVersion().then(setDdragonVersion).catch(() => {});
+  }, []);
+
   const [refreshState, setRefreshState] = useState<{
     loading: boolean;
     message: string | null;
@@ -743,9 +748,9 @@ useEffect(() => {
                                   </div>
                                 </div>
                                 ))}
-                                </div>
-                                );
-                                })}
+                              </div>
+                          );
+                        })}
                       </div>
                     )}
                   </div>

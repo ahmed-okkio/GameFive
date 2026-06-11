@@ -8,6 +8,7 @@ internal sealed class LcuMonitor : IDisposable
     public readonly GameFiveUploader _uploader;
     private readonly CompanionLogger _logger;
     private LcuConnection? _connection;
+    private LcuService? _service;
     private readonly System.Timers.Timer _timer;
     private bool _wasRunning = false;
 
@@ -39,8 +40,7 @@ internal sealed class LcuMonitor : IDisposable
     public void Stop()
     {
         _timer.Stop();
-        _connection?.Dispose();
-        _connection = null;
+        CleanupConnection();
     }
 
     private void CheckLeagueProcess(object? sender, ElapsedEventArgs e)
@@ -73,6 +73,7 @@ internal sealed class LcuMonitor : IDisposable
                 {
                     _logger.Info($"Lockfile read successfully, attempting connection (attempt {i+1}/3)...");
                     var lcuConnection = new LcuConnection { Port = lockfile.Port, AuthToken = lockfile.AuthToken, Protocol = lockfile.Protocol };
+                    
                     var lcuService = new LcuService(lcuConnection, _logger, _uploader, (isConnected) => {
                         _logger.Info($"StatusChanged invoked: Connected={isConnected}");
                         StatusChanged?.Invoke(this, isConnected ? LcuStatus.Connected : LcuStatus.Disconnected);
@@ -81,7 +82,12 @@ internal sealed class LcuMonitor : IDisposable
                     if (await lcuService.ConnectAsync(CancellationToken.None))
                     {
                         _connection = lcuConnection;
+                        _service = lcuService;
                         return; // Success!
+                    }
+                    else 
+                    {
+                        lcuService.Dispose();
                     }
                 }
                 
@@ -94,7 +100,8 @@ internal sealed class LcuMonitor : IDisposable
 
     private void CleanupConnection()
     {
-        _connection?.Dispose();
+        _service?.Dispose();
+        _service = null;
         _connection = null;
         StatusChanged?.Invoke(this, LcuStatus.Disconnected);
     }

@@ -28,7 +28,7 @@ export function calculateLpDelta(input: LpDeltaInput): number {
       console.warn("calculateLpDelta: individualPlayerMmr equals myTeamAvgMmr. Is this intended?");
   }
 
-  const BASE_LP = 20;
+  const BASE_LP = 25;
 
   const myTeam = input.myTeamAvgMmr ?? input.lobbyAvgFallback;
   const opposingTeam = input.opposingTeamAvgMmr ?? input.lobbyAvgFallback;
@@ -38,7 +38,7 @@ export function calculateLpDelta(input: LpDeltaInput): number {
     // 1. Blended disparity: 70% individual, 30% team
     const individualDisparity = input.individualPlayerMmr - opposingTeam;
     const teamDisparity = myTeam - opposingTeam;
-    const disparity = 0.7 * individualDisparity + 0.3 * teamDisparity;
+    const disparity = 0.6 * individualDisparity + 0.4 * teamDisparity;
 
     // For a WIN: 
     // If we are stronger (positive disparity), we gain LESS LP -> subtract disparity
@@ -48,7 +48,7 @@ export function calculateLpDelta(input: LpDeltaInput): number {
 
     // Win: 600 MMR difference = 0.3 factor shift
     // Loss: 1000 MMR difference = 0.3 factor shift
-    const divisor = input.win ? 600 : 1000;
+    const divisor = 1000;
     const adjustment = (sign * disparity / divisor) * 0.3;
 
     // Apply adjustment and clamp to 0.7 - 1.3 range

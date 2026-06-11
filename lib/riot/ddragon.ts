@@ -1,4 +1,4 @@
-export const DEFAULT_DDRAGON_VERSION = "15.1.1";
+export const DEFAULT_DDRAGON_VERSION = "16.1.1";
 
 export async function getLatestDDragonVersion(): Promise<string> {
   const response = await fetch("https://ddragon.leagueoflegends.com/api/versions.json", {
