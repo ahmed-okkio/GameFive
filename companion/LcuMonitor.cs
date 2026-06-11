@@ -71,7 +71,8 @@ internal sealed class LcuMonitor : IDisposable
                 var lockfile = LcuLockfile.TryRead(_logger);
                 if (lockfile != null)
                 {
-                    _logger.Info($"Lockfile read successfully, attempting connection (attempt {i+1}/3)...");
+                    _logger.Info($"Lockfile read: Port={lockfile.Port}, Protocol={lockfile.Protocol}");
+                    
                     var lcuConnection = new LcuConnection { Port = lockfile.Port, AuthToken = lockfile.AuthToken, Protocol = lockfile.Protocol };
                     
                     var lcuService = new LcuService(lcuConnection, _logger, _uploader, (isConnected) => {
@@ -79,16 +80,26 @@ internal sealed class LcuMonitor : IDisposable
                         StatusChanged?.Invoke(this, isConnected ? LcuStatus.Connected : LcuStatus.Disconnected);
                     });
                     
-                    if (await lcuService.ConnectAsync(CancellationToken.None))
-                    {
-                        _connection = lcuConnection;
-                        _service = lcuService;
-                        return; // Success!
-                    }
-                    else 
-                    {
+                    try {
+                        if (await lcuService.ConnectAsync(CancellationToken.None))
+                        {
+                            _connection = lcuConnection;
+                            _service = lcuService;
+                            _logger.Info("LCU Service connected successfully.");
+                            return; // Success!
+                        }
+                        else 
+                        {
+                            _logger.Warn("LcuService returned false on ConnectAsync.");
+                            lcuService.Dispose();
+                        }
+                    } catch (Exception ex) {
+                        _logger.Error($"Exception during ConnectAsync: {ex.Message}", ex);
                         lcuService.Dispose();
                     }
+                }
+                else {
+                    _logger.Warn("LcuLockfile.TryRead returned null.");
                 }
                 
                 _logger.Warn($"Connection attempt {i+1} failed. Retrying in 5 seconds...");
@@ -103,6 +114,7 @@ internal sealed class LcuMonitor : IDisposable
         _service?.Dispose();
         _service = null;
         _connection = null;
+        _wasRunning = false; // Add this line
         StatusChanged?.Invoke(this, LcuStatus.Disconnected);
     }
 
