@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, RefreshCw } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
