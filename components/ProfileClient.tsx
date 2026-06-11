@@ -500,20 +500,7 @@ export function ProfileClient({
             )}
           </div>
 
-          <button
-            onClick={refresh}
-            disabled={refreshState.loading}
-            className="mt-6 w-full inline-flex items-center justify-center gap-2 rounded border border-line px-3 py-2 text-sm text-stone-200 hover:border-gold disabled:opacity-50"
-          >
-            <RefreshCw className={refreshState.loading ? "animate-spin" : ""} size={16} />
-            {refreshState.loading ? "Refreshing..." : "Refresh Profile"}
-          </button>
-          {refreshState.message && (
-            <p className="mt-3 text-xs text-jade">{refreshState.message}</p>
-          )}
-          {refreshState.error && (
-            <p className="mt-3 text-xs text-red-400">{refreshState.error}</p>
-          )}
+          {/* Removed Refresh button */}
         </aside>
 
         <div className="min-w-0 rounded-lg border border-line bg-panel/95 p-3 shadow-xl shadow-black/20 sm:p-5">
