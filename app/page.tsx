@@ -9,6 +9,8 @@ import { getChampionAssetMap } from "@/lib/riot/champions";
 import { Suspense } from "react";
 import { PageLoader } from "@/components/Loading";
 
+export const dynamic = "force-dynamic";
+
 type MatchParticipant = {
   id: string;
   matchId: string;
