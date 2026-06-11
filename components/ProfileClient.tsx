@@ -146,7 +146,10 @@ export function ProfileClient({
     direction: "asc" | "desc";
   }>({ key: "games", direction: "desc" });
   const [ddragonVersion, setDdragonVersion] = useState<string | null>(initialVersion);
-  
+
+  // Track if we have a pending scroll request from the URL
+  const [pendingMatchId, setPendingMatchId] = useState<string | null>(null);
+
   useEffect(() => {
       getLatestDDragonVersion().then(setDdragonVersion).catch(() => {});
   }, []);
@@ -163,29 +166,66 @@ export function ProfileClient({
     }
   }, [initialVersion]);
 
-// Read ?match= query param, expand and scroll once status is ready
-useEffect(() => {
-  if (!status || status.state !== "ready") return;
+  // When deep-linked, set pending scroll
+  useEffect(() => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("match")) {
+          setPendingMatchId(params.get("match"));
+      }
+  }, []);
 
-  const params = new URLSearchParams(window.location.search);
-  const matchParam = params.get("match");
+  // Execute scroll when tab becomes 'matches', or when document becomes visible
+  useEffect(() => {
+    const performScroll = () => {
+      if (!status || status.state !== "ready" || tab !== "matches" || !pendingMatchId) return false;
 
-  if (!matchParam) return;
+      const matchIndex = status.matches.findIndex(m => m.id === pendingMatchId);
+      if (matchIndex !== -1) {
+          // Expand matches until the target is visible
+          setMatchesToDisplay(Math.max(20, matchIndex + 1));
+          setExpandedMatchId(pendingMatchId);
+          
+          // Robust scroll retry loop using requestAnimationFrame
+          const startTime = Date.now();
+          const scrollIfFound = () => {
+            const el = document.getElementById(`match-${pendingMatchId}`);
+            if (el) {
+              el.scrollIntoView({ behavior: "smooth", block: "start" });
+              setPendingMatchId(null); // Clear pending scroll
+            } else if (Date.now() - startTime < 3000) {
+              requestAnimationFrame(scrollIfFound);
+            }
+          };
+          
+          requestAnimationFrame(scrollIfFound);
+          return true;
+      } else {
+          setPendingMatchId(null); // Match not found
+          return true;
+      }
+    };
 
-  // Find index of the requested match
-  const matchIndex = status.matches.findIndex(m => m.id === matchParam);
-  if (matchIndex !== -1) {
-      setMatchesToDisplay(Math.max(20, matchIndex + 1));
-      setExpandedMatchId(matchParam);
-  }
-
-  setTimeout(() => {
-    const el = document.getElementById(`match-${matchParam}`);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    // Try immediately
+    if (document.visibilityState === 'visible') {
+        performScroll();
     }
-  }, 300);
-}, [status]);
+
+    // Also try when tab gains visibility
+    const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible') {
+            if (performScroll()) {
+                document.removeEventListener('visibilitychange', handleVisibilityChange);
+            }
+        }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [status, tab, pendingMatchId]);
+  
   async function refresh() {
     setRefreshState({ loading: true, message: null, error: null });
     try {
@@ -603,7 +643,6 @@ useEffect(() => {
                   match: {
                     gameDate: match.match.gameDate,
                     durationSeconds: match.match.durationSeconds,
-                    matchId: match.match.matchId
                   },
                   kp,
                   viewedParticipant: viewedParticipant
