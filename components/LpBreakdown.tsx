@@ -114,7 +114,7 @@ export const LpBreakdown = ({
         <div className="flex justify-between text-stone-400">
           <span>{consecutiveStreak >= 0 ? 'Win Streak' : 'Loss Streak'} ({absStreak >= 3 ? (absStreak >= 10 ? '10 MAX' : absStreak) : 'None'})</span>
           <span className={streakContribution === 0 ? "text-stone-300" : (win ? "text-sky-300" : "text-red-400")}>
-            {streakContribution === 0 ? '+0' : (win ? `+${streakContribution}` : `-${streakContribution}`)} LP
+            {streakContribution === 0 ? '0 LP' : (win ? `+${streakContribution} LP` : `-${streakContribution} LP`)}
           </span>
         </div>
         <div className="flex justify-between text-stone-400 items-center group relative">
