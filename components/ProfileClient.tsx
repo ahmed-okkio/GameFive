@@ -172,7 +172,12 @@ useEffect(() => {
 
   if (!matchParam) return;
 
-  setExpandedMatchId(matchParam);
+  // Find index of the requested match
+  const matchIndex = status.matches.findIndex(m => m.id === matchParam);
+  if (matchIndex !== -1) {
+      setMatchesToDisplay(Math.max(20, matchIndex + 1));
+      setExpandedMatchId(matchParam);
+  }
 
   setTimeout(() => {
     const el = document.getElementById(`match-${matchParam}`);
