@@ -10,6 +10,7 @@ import { StatBar } from "@/components/StatBar";
 import { LoadoutRow } from "@/components/LoadoutRow";
 import { ChampionAvatar } from "@/components/ChampionAvatar";
 import { MatchRow } from "@/components/MatchRow";
+import { PerformanceBadge } from "@/components/PerformanceBadge";
 import { getTierLabel } from "@/lib/mmr/tier";
 
 type ProfileJobSnapshot = {
@@ -681,15 +682,18 @@ export function ProfileClient({
                                           />
                                           <span className="min-w-0">
                                             <span className="block truncate">{displayName}</span>
-                                            <span
-                                              className={`block truncate text-[11px] font-normal ${
-                                                rankAtMatch === "Unknown rank"
-                                                  ? "text-stone-500"
-                                                  : "text-gold/80"
-                                              }`}
-                                            >
-                                              {rankAtMatch}
-                                            </span>
+                                            <div className="flex items-center gap-1">
+                                              <span
+                                                className={`text-[11px] font-normal ${
+                                                  rankAtMatch === "Unknown rank"
+                                                    ? "text-stone-500"
+                                                    : "text-gold/80"
+                                                }`}
+                                              >
+                                                {rankAtMatch}
+                                              </span>
+                                              <PerformanceBadge place={5} />
+                                            </div>
                                           </span>
                                         </Link>
                                       ) : (
@@ -701,15 +705,18 @@ export function ProfileClient({
                                           />
                                           <span className="min-w-0">
                                             <span className="block truncate">{displayName}</span>
-                                            <span
-                                              className={`block truncate text-[11px] font-normal ${
-                                                rankAtMatch === "Unknown rank"
-                                                  ? "text-stone-500"
-                                                  : "text-gold/80"
-                                              }`}
-                                            >
-                                              {rankAtMatch}
-                                            </span>
+                                            <div className="flex items-center gap-1">
+                                              <span
+                                                className={`text-[11px] font-normal ${
+                                                  rankAtMatch === "Unknown rank"
+                                                    ? "text-stone-500"
+                                                    : "text-gold/80"
+                                                }`}
+                                              >
+                                                {rankAtMatch}
+                                              </span>
+                                              <PerformanceBadge place={1} />
+                                            </div>
                                           </span>
                                         </div>
                                       );
