@@ -46,7 +46,12 @@ export const companionMatchPayloadSchema = z.object({
         goldSpent: z.number().int().nonnegative().optional(),
         damageTaken: z.number().int().nonnegative().optional(),
         selfMitigated: z.number().int().nonnegative().optional(),
-        minionsKilled: z.number().int().nonnegative().optional()
+        minionsKilled: z.number().int().nonnegative().optional(),
+        doubleKills: z.number().int().nonnegative().optional(),
+        tripleKills: z.number().int().nonnegative().optional(),
+        quadraKills: z.number().int().nonnegative().optional(),
+        pentaKills: z.number().int().nonnegative().optional(),
+        totalUnitsHealed: z.number().int().nonnegative().optional()
       })
     )
     .min(1)
@@ -357,7 +362,12 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
         goldSpent: participant.goldSpent,
         damageTaken: participant.damageTaken,
         selfMitigated: participant.selfMitigated,
-        minionsKilled: participant.minionsKilled
+        minionsKilled: participant.minionsKilled,
+        doubleKills: participant.doubleKills,
+        tripleKills: participant.tripleKills,
+        quadraKills: participant.quadraKills,
+        pentaKills: participant.pentaKills,
+        totalUnitsHealed: participant.totalUnitsHealed
       }
     });
   }
