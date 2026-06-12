@@ -76,6 +76,9 @@ internal sealed class CompanionParticipantUpload
     [JsonPropertyName("totalHeal")]
     public int TotalHeal { get; set; }
 
+    [JsonPropertyName("totalTimeCrowdControlDealt")]
+    public int TotalTimeCrowdControlDealt { get; set; }
+
     [JsonPropertyName("goldEarned")]
     public int GoldEarned { get; set; }
 
@@ -105,4 +108,19 @@ internal sealed class CompanionParticipantUpload
 
     [JsonPropertyName("minionsKilled")]
     public int MinionsKilled { get; set; }
+
+    [JsonPropertyName("doubleKills")]
+    public int DoubleKills { get; set; }
+
+    [JsonPropertyName("tripleKills")]
+    public int TripleKills { get; set; }
+
+    [JsonPropertyName("quadraKills")]
+    public int QuadraKills { get; set; }
+
+    [JsonPropertyName("pentaKills")]
+    public int PentaKills { get; set; }
+
+    [JsonPropertyName("totalUnitsHealed")]
+    public int TotalUnitsHealed { get; set; }
 }

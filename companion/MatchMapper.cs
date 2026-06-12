@@ -40,6 +40,7 @@ internal static class MatchMapper
                     Assists = participant.Stats.Assists,
                     TotalDamageDealtToChampions = participant.Stats.TotalDamageDealtToChampions,
                     TotalHeal = participant.Stats.TotalHeal,
+                    TotalTimeCrowdControlDealt = participant.Stats.TotalTimeCrowdControlDealt,
                     GoldEarned = participant.Stats.GoldEarned,
                     Spell1Id = participant.Spell1Id,
                     Spell2Id = participant.Spell2Id,
@@ -48,6 +49,11 @@ internal static class MatchMapper
                     DamageTaken = participant.Stats.TotalDamageTaken,
                     SelfMitigated = participant.Stats.DamageSelfMitigated,
                     MinionsKilled = participant.Stats.TotalMinionsKilled,
+                    DoubleKills = participant.Stats.DoubleKills,
+                    TripleKills = participant.Stats.TripleKills,
+                    QuadraKills = participant.Stats.QuadraKills,
+                    PentaKills = participant.Stats.PentaKills,
+                    TotalUnitsHealed = participant.Stats.TotalUnitsHealed,
                     Items = new List<int>
                     {
                         participant.Stats.Item0,

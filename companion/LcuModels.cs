@@ -15,9 +15,6 @@ internal sealed class LcuSummoner
 
     [JsonPropertyName("tagLine")]
     public string? TagLine { get; set; }
-    
-    [JsonExtensionData]
-    public Dictionary<string, object>? ExtraData { get; set; }
 }
 
 internal sealed class LcuMatchHistoryResponse
@@ -115,6 +112,15 @@ internal sealed class LcuParticipantStats
     [JsonPropertyName("totalHeal")]
     public int TotalHeal { get; set; }
 
+    [JsonPropertyName("totalTimeCrowdControlDealt")]
+    public int TotalTimeCrowdControlDealt { get; set; }
+
+    [JsonPropertyName("totalDamageShieldedOnTeammates")]
+    public int TotalDamageShieldedOnTeammates { get; set; }
+
+    [JsonPropertyName("totalHealOnTeammates")]
+    public int TotalHealOnTeammates { get; set; }
+
     [JsonPropertyName("goldEarned")]
     public int GoldEarned { get; set; }
 
@@ -171,6 +177,21 @@ internal sealed class LcuParticipantStats
 
     [JsonPropertyName("totalMinionsKilled")]
     public int TotalMinionsKilled { get; set; }
+
+    [JsonPropertyName("doubleKills")]
+    public int DoubleKills { get; set; }
+
+    [JsonPropertyName("tripleKills")]
+    public int TripleKills { get; set; }
+
+    [JsonPropertyName("quadraKills")]
+    public int QuadraKills { get; set; }
+
+    [JsonPropertyName("pentaKills")]
+    public int PentaKills { get; set; }
+
+    [JsonPropertyName("totalUnitsHealed")]
+    public int TotalUnitsHealed { get; set; }
 }
 
 internal sealed class LcuParticipantIdentity
