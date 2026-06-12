@@ -8,6 +8,7 @@ import { getChampionMap, refreshChampionMap } from "@/lib/riot/champions";
 import { getPlayerByPuuid, upsertPlayer } from "@/lib/players";
 import { riotClient } from "@/lib/riot/client";
 import { fetchOpggHistoricalRank } from "@/lib/riot/opgg";
+import { scoreMatch } from "@/lib/mmr/performance-score";
 
 let championMapCache: Record<number, string> | null = null;
 
@@ -203,6 +204,39 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
   });
 
   // 4. Create match participants and update known players
+  
+  // Prepare participants for score calculation
+  const matchForScoring = {
+    participants: payload.participants.map(p => ({
+      participantId: p.participantId,
+      teamId: p.teamId,
+      stats: {
+        win: p.win,
+        kills: p.kills,
+        deaths: p.deaths,
+        assists: p.assists,
+        totalDamageDealtToChampions: p.totalDamageDealtToChampions,
+        totalDamageTaken: p.damageTaken ?? 0,
+        damageSelfMitigated: p.selfMitigated ?? 0,
+        totalHeal: p.totalHeal,
+        totalUnitsHealed: p.totalUnitsHealed ?? 0,
+        timeCCingOthers: 0, // Need to collect this in payload if available
+        goldEarned: p.goldEarned ?? 0,
+        champLevel: p.champLevel ?? 0,
+        doubleKills: p.doubleKills ?? 0,
+        tripleKills: p.tripleKills ?? 0,
+        quadraKills: p.quadraKills ?? 0,
+        pentaKills: p.pentaKills ?? 0,
+      }
+    })),
+    participantIdentities: payload.participants.map(p => ({
+      participantId: p.participantId,
+      player: { gameName: p.gameName ?? "Unknown" }
+    }))
+  };
+
+  const scores = scoreMatch(matchForScoring);
+
   for (const participant of payload.participants) {
     let player = playerRows.get(participant.puuid) ?? null;
     console.log(`[Ingest] Processing participant ${participant.puuid}. Found in playerRows: ${!!player}`);
@@ -329,6 +363,8 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
         rankData = await resolveRank(playerRiotIdName ?? "Unknown", playerRiotIdTag ?? "EUW");
     }
 
+    const participantScore = scores.find(s => s.participantId === participant.participantId)?.score ?? 0;
+
     await prisma.matchParticipant.create({
         data: {
         matchId: storedMatch.id,
@@ -350,7 +386,7 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
         killParticipation: 0,
         damageShare: 0,
         healingShare: 0,
-        performanceScore: 0,
+        performanceScore: participantScore,
         lpDelta: participantLpDelta,
         isPlacement: player ? (player.mayhemGames < 10) : true,
         itemsJson: participant.items,
