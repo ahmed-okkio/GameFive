@@ -244,6 +244,7 @@ export type PlayerProfile =
             itemsJson: unknown;
             augmentsJson: unknown;
             consecutiveStreak: number;
+            performanceScore: number;
             }>
         };
       }>;
@@ -369,6 +370,7 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
                 rankSignalMmr: part.rankSignalMmr ?? null,
                 rankTier: part.rankTier,
                 leaguePoints: part.leaguePoints,
+                performanceScore: part.performanceScore,
                 rankLabelAtMatch: formatRankLabel(part.rankTier, part.leaguePoints, part.rankSignalMmr, part.player?.rawMmr, !!part.player),
                 spell1Id: part.spell1Id,
                 spell2Id: part.spell2Id,

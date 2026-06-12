@@ -78,6 +78,7 @@ export type StatusResponse =
             rankLabelAtMatch: string;
             rankTier: string | null;
             leaguePoints: number | null;
+            performanceScore: number;
             spell1Id: number | null;
             spell2Id: number | null;
             itemsJson: unknown;
@@ -619,6 +620,16 @@ export function ProfileClient({
 
                 const matchKey = match.id;
                 const isExpanded = expandedMatchId === matchKey;
+                const matchParticipants = match.match.participants;
+                const sortedParticipants = [...matchParticipants].sort((a, b) => b.performanceScore - a.performanceScore);
+                
+                // Identify the losing team ID based on the team that has participants with win: false.
+                const losingTeamId = matchParticipants.find(p => !p.win)?.team ?? 0;
+                const losingTeamParticipants = matchParticipants.filter(p => p.team === losingTeamId && p.team !== 0);
+                const maxScoreLosingTeam = losingTeamParticipants.length > 0 ? Math.max(...losingTeamParticipants.map(p => p.performanceScore)) : -1;
+                
+                // Debug log
+                // console.log("Match:", match.id, "Losing Team:", losingTeamId, "Max Score:", maxScoreLosingTeam, "Participants:", matchParticipants.map(p => ({id: p.id, win: p.win, score: p.performanceScore, team: p.team})));
 
                 return (
                   // id added here so the ?match= scroll target works
@@ -647,9 +658,13 @@ export function ProfileClient({
                               <span className="text-left">Loadout</span>
                               <span className="text-right">Stats</span>
                             </div>
-                            {match.match.participants
+                            {matchParticipants
                               .filter((p) => p.team === teamId)
-                              .map((p) => (
+                              .map((p) => {
+                                console.log("Participant:", p.id, "Score:", p.performanceScore, "Win:", p.win, "Team:", p.team);
+                                const rank = sortedParticipants.findIndex(sp => sp.id === p.id) + 1;
+                                const isAce = !p.win && p.performanceScore === maxScoreLosingTeam;
+                                return (
                                 <div
                                   key={p.id}
                                   className="grid grid-cols-[160px_70px_60px_1fr_80px] items-center gap-2 rounded px-3 py-1.5 text-xs bg-black/20"
@@ -692,7 +707,9 @@ export function ProfileClient({
                                               >
                                                 {rankAtMatch}
                                               </span>
-                                              <PerformanceBadge place={5} />
+                                              {p.performanceScore > 0 && (
+                                                <PerformanceBadge place={rank} isAce={isAce} />
+                                              )}
                                             </div>
                                           </span>
                                         </Link>
@@ -715,7 +732,9 @@ export function ProfileClient({
                                               >
                                                 {rankAtMatch}
                                               </span>
-                                              <PerformanceBadge place={1} />
+                                              {p.performanceScore > 0 && (
+                                                <PerformanceBadge place={rank} isAce={isAce} />
+                                              )}
                                             </div>
                                           </span>
                                         </div>
@@ -726,7 +745,7 @@ export function ProfileClient({
                                     {p.kills}/{p.deaths}/{p.assists}
                                   </span>
                                   <span className="text-center font-mono text-stone-300 w-12">
-                                    {getKillParticipation(p, match.match.participants)}% KP
+                                    {getKillParticipation(p, matchParticipants)}% KP
                                   </span>
                                   <div className="flex justify-start min-w-0">
                                     <LoadoutRow
@@ -759,7 +778,8 @@ export function ProfileClient({
                                     />
                                   </div>
                                 </div>
-                                ))}
+                                );
+                              })}
                               </div>
                           );
                         })}
