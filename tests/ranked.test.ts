@@ -6,18 +6,26 @@ import { extractBestHistoricalRankFromOpggRsc } from "@/lib/riot/opgg";
 describe("MMR/LP Integer Integrity", () => {
   it("ensures LP delta results in a roundable value that behaves as an integer", () => {
     const delta = calculateLpDelta({
-      playerCurrentMmr: 1600,
+      individualPlayerMmr: 1600,
       myTeamAvgMmr: 1600,
       opposingTeamAvgMmr: 1700,
       lobbyAvgFallback: 1650,
       consecutiveStreak: 3,
       win: true
     });
-    // 20 * (1700/1600=1.0625) * (1 + 0.15 = 1.15) = 24.4375
-    // After Math.round() it should be 24
+    // BASE_LP = 25
+    // individualDisparity = 1600 - 1700 = -100
+    // teamDisparity = 1600 - 1700 = -100
+    // disparity = 0.6*(-100) + 0.4*(-100) = -100
+    // sign = -1 (win)
+    // adjustment = (-1 * -100 / 1000) * 0.3 = 0.03
+    // opponentFactor = 1 + 0.03 = 1.03
+    // streakContribution = (3 / 10) * 6 = 1.8
+    // delta = (25 * 1.03) + 1.8 = 25.75 + 1.8 = 27.55
+    // After Math.round() it should be 28
     const roundedDelta = Math.round(delta);
     expect(Number.isInteger(roundedDelta)).toBe(true);
-    expect(roundedDelta).toBe(24);
+    expect(roundedDelta).toBe(28);
   });
 });
 
@@ -44,72 +52,85 @@ describe("calculatePlacementMmr", () => {
 describe("calculateLpDelta", () => {
   it("calculates correct LP delta for a win", () => {
     const delta = calculateLpDelta({
-      playerCurrentMmr: 1600,
+      individualPlayerMmr: 1600,
       myTeamAvgMmr: 1600,
       opposingTeamAvgMmr: 1600,
       lobbyAvgFallback: 1600,
       consecutiveStreak: 0,
       win: true
     });
-    expect(delta).toBe(20); // base 20 * 1.0 * 1.0
+    expect(delta).toBe(25); // base 25 * 1.0 + 0
   });
 
   it("applies streak multiplier", () => {
     const delta = calculateLpDelta({
-      playerCurrentMmr: 1600,
+      individualPlayerMmr: 1600,
       myTeamAvgMmr: 1600,
       opposingTeamAvgMmr: 1600,
       lobbyAvgFallback: 1600,
       consecutiveStreak: 5,
       win: true
     });
-    expect(delta).toBe(25); // 20 * 1.0 * 1.25
+    // effectiveStreak = 5, streakBonus = (5/10)*6 = 3
+    // delta = 25 * 1.0 + 3 = 28
+    expect(delta).toBe(28);
   });
 
   it("handles team disparity", () => {
     const delta = calculateLpDelta({
-      playerCurrentMmr: 1600,
+      individualPlayerMmr: 1600,
       myTeamAvgMmr: 1500,
       opposingTeamAvgMmr: 1800,
       lobbyAvgFallback: 1650,
       consecutiveStreak: 0,
       win: true
     });
-    // diff = 1800 - 1500 = 300
-    // adjustment = (300 / 600) * 0.3 = 0.15
-    // factor = 1 + 0.15 = 1.15
-    // lp = 20 * 1.15 = 23
-    expect(delta).toBe(23);
+    // individualDisparity = 1600 - 1800 = -200
+    // teamDisparity = 1500 - 1800 = -300
+    // disparity = 0.6*(-200) + 0.4*(-300) = -120 - 120 = -240
+    // sign = -1 (win)
+    // adjustment = (-1 * -240 / 1000) * 0.3 = 0.24 * 0.3 = 0.072
+    // opponentFactor = 1 + 0.072 = 1.072
+    // delta = 25 * 1.072 = 26.8 -> rounded to 27
+    expect(delta).toBe(27);
   });
 
   it("handles team disparity (loss mitigation)", () => {
     const delta = calculateLpDelta({
-      playerCurrentMmr: 1600,
+      individualPlayerMmr: 1600,
       myTeamAvgMmr: 1500,
       opposingTeamAvgMmr: 1800,
       lobbyAvgFallback: 1650,
       consecutiveStreak: 0,
       win: false
     });
-    // diff = 1500 - 1800 = -300
-    // adjustment = (-300 / 1000) * 0.3 = -0.09
-    // factor = 1 - 0.09 = 0.91
-    // lp = 20 * 0.91 = 18.2 -> rounded to 18
-    expect(delta).toBe(18);
+    // individualDisparity = 1600 - 1800 = -200
+    // teamDisparity = 1500 - 1800 = -300
+    // disparity = -240
+    // sign = 1 (loss)
+    // adjustment = (1 * -240 / 1000) * 0.3 = -0.072
+    // opponentFactor = 1 - 0.072 = 0.928
+    // delta = 25 * 0.928 = 23.2 -> rounded to 23
+    expect(delta).toBe(23);
   });
 
   it("clamps opponent factor", () => {
     const delta = calculateLpDelta({
-      playerCurrentMmr: 1600,
+      individualPlayerMmr: 1600,
       myTeamAvgMmr: 1000,
       opposingTeamAvgMmr: 2000,
       lobbyAvgFallback: 1500,
       consecutiveStreak: 0,
       win: true
     });
-    // factor = 2000 / 1000 = 2.0 -> clamped to 1.3
-    // lp = 20 * 1.3 = 26
-    expect(delta).toBe(26);
+    // individualDisparity = 1600 - 2000 = -400
+    // teamDisparity = 1000 - 2000 = -1000
+    // disparity = 0.6*(-400) + 0.4*(-1000) = -240 - 400 = -640
+    // sign = -1 (win)
+    // adjustment = (-1 * -640 / 1000) * 0.3 = 0.64 * 0.3 = 0.192
+    // opponentFactor = 1.192
+    // delta = 25 * 1.192 = 29.8 -> rounded to 30
+    expect(delta).toBe(30);
   });
 });
 

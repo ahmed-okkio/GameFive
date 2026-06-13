@@ -9,6 +9,7 @@ type LpBreakdownProps = {
   consecutiveStreak: number;
   win: boolean;
   delta: number;
+  performanceRank?: number;
 };
 
 export const LpBreakdown = ({ 
@@ -18,7 +19,8 @@ export const LpBreakdown = ({
     lobbyAvgFallback,
     consecutiveStreak,
     win,
-    delta 
+    delta,
+    performanceRank
 }: LpBreakdownProps) => {
   const BASE_LP = 25;
   const myTeam = myTeamAvgMmr ?? lobbyAvgFallback ?? 1500;
@@ -28,6 +30,20 @@ export const LpBreakdown = ({
   const effectiveStreak = absStreak >= 3 ? Math.min(absStreak, 10) : 0;
   const streakContribution = Math.round((effectiveStreak / 10) * 6);
   const disparityContribution = Math.round(Math.abs(delta) - BASE_LP - streakContribution);
+
+  const getPerformanceAdjustment = (rank: number) => {
+    switch (rank) {
+      case 1: return 3;
+      case 2: return 2;
+      case 3: return 1;
+      case 8: return -1;
+      case 9: return -2;
+      case 10: return -3;
+      default: return 0;
+    }
+  };
+
+  const performanceAdjustment = performanceRank ? getPerformanceAdjustment(performanceRank) : 0;
 
   if (delta === 0) {
     return (
@@ -144,6 +160,25 @@ export const LpBreakdown = ({
                 ? (disparityContribution > 0 ? '+' : '') 
                 : (disparityContribution > 0 ? '-' : '+')
             )}{win ? disparityContribution : -disparityContribution} LP
+          </span>
+        </div>
+
+        <div className="flex justify-between text-stone-400/50 items-center group relative border-t border-line/20 pt-1 mt-1">
+          <span className="flex items-center gap-1">
+            Performance Adjustment
+            <Info size={12} className="text-stone-600 cursor-help" />
+            <div className="absolute left-0 bottom-full mb-2 w-72 p-3 bg-black border border-line rounded text-[10px] hidden group-hover:block z-10 space-y-3 opacity-100">
+              <p className="font-bold text-gold uppercase tracking-wider">
+                Performance Bonus
+              </p>
+              
+              <div className="space-y-1 text-stone-300 leading-relaxed">
+                <p>This is a hypothetical adjustment based on your performance rank (1-10) in this match. Performance-based LP modifiers are currently in development and do not affect your actual LP gains yet.</p>
+              </div>
+            </div>
+          </span>
+          <span className={`${performanceAdjustment === 0 ? "text-stone-300" : (performanceAdjustment > 0 ? "text-sky-300" : "text-red-400")} opacity-50`}>
+            {performanceAdjustment === 0 ? '0 LP' : (performanceAdjustment > 0 ? `+${performanceAdjustment} LP` : `${performanceAdjustment} LP`)}
           </span>
         </div>
       </div>

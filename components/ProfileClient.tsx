@@ -586,6 +586,10 @@ export function ProfileClient({
                   1
                 );
 
+                const matchParticipants = match.match.participants;
+                const sortedParticipants = [...matchParticipants].sort((a, b) => b.performanceScore - a.performanceScore);
+                const performanceRank = sortedParticipants.findIndex(p => p.id === viewedParticipant?.id) + 1;
+
                 const matchData = {
                   id: match.id,
                   win: match.win,
@@ -615,13 +619,12 @@ export function ProfileClient({
                         consecutiveStreak: viewedParticipant.consecutiveStreak // Add this field
                       }
                     : undefined,
-                  ddragonVersion: ddragonVersion
+                  ddragonVersion: ddragonVersion,
+                  performanceRank: performanceRank > 0 ? performanceRank : undefined
                 };
 
                 const matchKey = match.id;
                 const isExpanded = expandedMatchId === matchKey;
-                const matchParticipants = match.match.participants;
-                const sortedParticipants = [...matchParticipants].sort((a, b) => b.performanceScore - a.performanceScore);
                 
                 // Identify the losing team ID based on the team that has participants with win: false.
                 const losingTeamId = matchParticipants.find(p => !p.win)?.team ?? 0;
