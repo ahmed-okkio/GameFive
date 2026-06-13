@@ -8,7 +8,17 @@ import { Suspense } from "react";
 export const dynamic = "force-dynamic";
 
 async function LeaderboardLoader() {
+  const blacklist = await prisma.leaderboardBlacklist.findMany({
+    select: { playerId: true }
+  });
+  const blacklistedPlayerIds = new Set(blacklist.map(e => e.playerId));
+
   const players = await prisma.player.findMany({
+    where: {
+      id: {
+        notIn: Array.from(blacklistedPlayerIds)
+      }
+    },
     orderBy: [
       {
         rawMmr: "desc"

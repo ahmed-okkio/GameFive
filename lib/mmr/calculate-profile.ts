@@ -45,7 +45,7 @@ export async function calculateAndStoreProfile(player: Player) {
         });
 
         // Automatically add to leaderboard if they just became placed
-        await prisma.friendsLeaderboard.upsert({
+        await prisma.leaderboardBlacklist.upsert({
           where: { playerId: player.id },
           update: {},
           create: {

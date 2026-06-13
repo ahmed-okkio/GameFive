@@ -40,7 +40,7 @@ model Player {
   createdAt             DateTime           @default(now()) @map("created_at")
   updatedAt             DateTime           @updatedAt @map("updated_at")
   participants          MatchParticipant[]
-  leaderboardEntries    FriendsLeaderboard[]
+  leaderboardEntries    LeaderboardBlacklist[]
 
   @@unique([riotIdName, riotIdTag])
   @@map("players")
@@ -112,7 +112,7 @@ model MatchParticipant {
   @@map("match_participants")
   }
 
-model FriendsLeaderboard {
+model LeaderboardBlacklist {
   id           String   @id @default(uuid())
   playerId     String   @map("player_id")
   addedBy      String   @map("added_by")
@@ -121,7 +121,7 @@ model FriendsLeaderboard {
   player       Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
 
   @@unique([playerId])
-  @@map("friends_leaderboard")
+  @@map("leaderboard_blacklist")
 }
 
 

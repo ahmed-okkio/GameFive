@@ -110,7 +110,8 @@ export function AdminPanel() {
       </div>
       <div className="mt-6">
         <div className="rounded border border-line bg-black/20 p-4">
-          <h2 className="font-bold text-white">Leaderboard</h2>
+          <h2 className="font-bold text-white">Blacklist</h2>
+          <p className="text-xs text-stone-400 mt-1">Players added here will be hidden from the public leaderboard.</p>
           <form onSubmit={addPlayer} className="mt-3 flex gap-2">
             <input
               value={riotId}
@@ -128,7 +129,7 @@ export function AdminPanel() {
                   {entry.player.riotIdName}#{entry.player.riotIdTag}
                 </span>
                 <button onClick={() => removeEntry(entry.id)} className="text-ember">
-                  Remove
+                  Un-blacklist
                 </button>
               </div>
             ))}

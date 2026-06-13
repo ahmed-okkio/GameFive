@@ -10,7 +10,7 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const entries = await prisma.friendsLeaderboard.findMany({
+  const entries = await prisma.leaderboardBlacklist.findMany({
     include: {
       player: true
     },
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "playerId or riotId is required" }, { status: 400 });
   }
 
-  const entry = await prisma.friendsLeaderboard.upsert({
+  const entry = await prisma.leaderboardBlacklist.upsert({
     where: { playerId },
     create: {
       playerId,
@@ -92,7 +92,7 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "id is required" }, { status: 400 });
   }
 
-  await prisma.friendsLeaderboard.delete({
+  await prisma.leaderboardBlacklist.delete({
     where: { id }
   });
 
