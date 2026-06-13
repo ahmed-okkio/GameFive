@@ -588,10 +588,7 @@ export function ProfileClient({
 
                 const matchParticipants = match.match.participants;
                 const sortedParticipants = [...matchParticipants].sort((a, b) => b.performanceScore - a.performanceScore);
-                
-                const teamParticipants = matchParticipants.filter(p => p.team === viewedParticipant?.team);
-                const sortedTeamParticipants = [...teamParticipants].sort((a, b) => b.performanceScore - a.performanceScore);
-                const performanceTeamRank = sortedTeamParticipants.findIndex(p => p.id === viewedParticipant?.id) + 1;
+                const performanceRank = sortedParticipants.findIndex(p => p.id === viewedParticipant?.id) + 1;
 
                 const matchData = {
                   id: match.id,
@@ -623,7 +620,7 @@ export function ProfileClient({
                       }
                     : undefined,
                   ddragonVersion: ddragonVersion,
-                  performanceTeamRank: performanceTeamRank > 0 ? performanceTeamRank : undefined
+                  performanceRank: performanceRank > 0 ? performanceRank : undefined
                 };
 
                 const matchKey = match.id;

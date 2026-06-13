@@ -9,7 +9,7 @@ type LpBreakdownProps = {
   consecutiveStreak: number;
   win: boolean;
   delta: number;
-  performanceTeamRank?: number;
+  performanceRank?: number;
 };
 
 export const LpBreakdown = ({ 
@@ -20,30 +20,46 @@ export const LpBreakdown = ({
     consecutiveStreak,
     win,
     delta,
-    performanceTeamRank
+    performanceRank
 }: LpBreakdownProps) => {
   const BASE_LP = 25;
   const myTeam = myTeamAvgMmr ?? lobbyAvgFallback ?? 1500;
   const opposingTeam = opposingTeamAvgMmr ?? lobbyAvgFallback ?? 1500;
 
+  // 1. Mirror Server-Side Disparity Logic
+  const individualDisparity = individualPlayerMmr - opposingTeam;
+  const teamDisparity = myTeam - opposingTeam;
+  const blendedDisparity = 0.6 * individualDisparity + 0.4 * teamDisparity;
+  
+  const sign = win ? -1 : 1;
+  const adjustment = (sign * blendedDisparity / 1000) * 0.3;
+  const opponentFactor = Math.min(1.3, Math.max(0.7, 1 + adjustment));
+  
+  const rawDifficultyContribution = Math.round(BASE_LP * (opponentFactor - 1));
+
+  // 2. Mirror Server-Side Streak Logic
   const absStreak = Math.abs(consecutiveStreak);
   const effectiveStreak = absStreak >= 3 ? Math.min(absStreak, 10) : 0;
-  const streakContribution = Math.round((effectiveStreak / 10) * 6);
-  const disparityContribution = Math.round(Math.abs(delta) - BASE_LP - streakContribution);
+  const streakBonus = (effectiveStreak / 10) * 6;
+  const rawStreakContribution = Math.round(streakBonus);
 
-  const getPerformanceAdjustment = (rank: number, isWin: boolean) => {
-    if (!isWin) return 0;
+  // 3. Final Comparison for Cap/Rounding Adjustments
+  // Server logic: delta = round(BASE_LP * opponentFactor + streakBonus)
+  const expectedAbsDelta = Math.round(BASE_LP * opponentFactor + streakBonus);
+  const actualAbsDelta = Math.abs(delta);
+  const externalAdjustment = actualAbsDelta - expectedAbsDelta;
+
+  const getPerformanceAdjustment = (rank: number) => {
     switch (rank) {
       case 1: return 2;
       case 2: return 1;
-      case 3: return 0;
-      case 4: return -1;
-      case 5: return -2;
+      case 9: return -1;
+      case 10: return -2;
       default: return 0;
     }
   };
 
-  const performanceAdjustment = performanceTeamRank ? getPerformanceAdjustment(performanceTeamRank, win) : 0;
+  const performanceAdjustment = performanceRank ? getPerformanceAdjustment(performanceRank) : 0;
 
   if (delta === 0) {
     return (
@@ -54,65 +70,38 @@ export const LpBreakdown = ({
   }
 
   const getDifficultySentence = () => {
-    const individualGap = individualPlayerMmr - opposingTeam;
-    const teamGap = myTeam - opposingTeam;
     const buffer = 50;
+    const isIndivHigher = individualDisparity > buffer;
+    const isIndivLower = individualDisparity < -buffer;
+    const isTeamHigher = teamDisparity > buffer;
+    const isTeamLower = teamDisparity < -buffer;
 
-    const isIndivHigher = individualGap > buffer;
-    const isIndivLower = individualGap < -buffer;
-    const isTeamHigher = teamGap > buffer;
-    const isTeamLower = teamGap < -buffer;
+    const isFavored = blendedDisparity > buffer;
+    const isUnderdog = blendedDisparity < -buffer;
 
-    // Handle the "Zero Adjustment" cases first with specific explanations
-    if (disparityContribution === 0) {
-      if (isIndivHigher && isTeamLower) return "Your higher individual rank was balanced by your team's underdog status.";
-      if (isIndivLower && isTeamHigher) return "Your lower individual rank was balanced by your team's favored status.";
-      if (isIndivHigher || isTeamHigher) return "The lobby was slightly easier than average, but not enough to reduce your LP.";
-      if (isIndivLower || isTeamLower) return "The lobby was slightly harder than average, but not enough to grant bonus LP.";
-      return "The lobby skill levels were closely matched, so no adjustment was applied.";
+    if (!isFavored && !isUnderdog) {
+      return "The lobby skill levels were closely matched, so no significant adjustment was applied.";
     }
 
-    // Determine State for non-zero adjustments
-    if (isIndivHigher && isTeamHigher) {
-      return win 
-        ? "You and your team were both favored in this lobby, resulting in reduced LP gains."
-        : "You and your team were both favored in this lobby, resulting in a heavier LP penalty.";
-    }
-    if (isIndivLower && isTeamLower) {
+    if (isFavored) {
+      if (isIndivHigher && isTeamHigher) {
+        return win 
+          ? "You and your team were both favored in this lobby, resulting in reduced LP gains."
+          : "You and your team were both favored in this lobby, resulting in a heavier LP penalty.";
+      }
       return win
-        ? "You were personally outranked in an underdog team, granting you substantial bonus LP."
-        : "You were personally outranked in an underdog team, resulting in a smaller LP penalty.";
-    }
-    if (isIndivHigher && isTeamLower) {
-      return "As the highest-ranked player on an underdog team, your skill gap reduced your personal win bonus.";
-    }
-    if (isIndivLower && isTeamHigher) {
+        ? "You were favored to win this match, resulting in reduced LP gains."
+        : "You were favored to win this match, resulting in a heavier LP penalty.";
+    } else {
+      if (isIndivLower && isTeamLower) {
+        return win
+          ? "You were personally outranked in an underdog team, granting you substantial bonus LP."
+          : "You were personally outranked in an underdog team, resulting in a smaller LP penalty.";
+      }
       return win
-        ? "While your team was favored, your own lower rank compared to opponents provided a personal LP boost."
-        : "While your team was favored, your own lower rank helped mitigate the team's loss penalty.";
+        ? "You were the underdog in this lobby, granting you a bonus LP adjustment."
+        : "You were the underdog in this lobby, resulting in a smaller LP penalty.";
     }
-    if (isIndivHigher) {
-      return win
-        ? "You were ranked higher than the lobby average, resulting in a personal LP reduction."
-        : "You were ranked higher than the lobby average, resulting in a heavier LP penalty.";
-    }
-    if (isIndivLower) {
-      return win
-        ? "You earned extra LP for competing against a lobby ranked higher than your individual position."
-        : "Your lower rank compared to the lobby average resulted in a smaller LP penalty.";
-    }
-    if (isTeamHigher) {
-      return win
-        ? "Your team was favored to win this match, resulting in a small LP reduction."
-        : "Your team was favored to win this match, resulting in a slightly heavier loss penalty.";
-    }
-    if (isTeamLower) {
-      return win
-        ? "Your team was the underdog in this lobby, granting you a small LP bonus."
-        : "Your team was the underdog in this lobby, resulting in a smaller LP penalty.";
-    }
-
-    return "This match was perfectly balanced for your rank, resulting in standard LP gains.";
   };
 
   return (
@@ -127,12 +116,16 @@ export const LpBreakdown = ({
           <span>Base LP</span>
           <span className="text-stone-200">{win ? '' : '-'}{BASE_LP}</span>
         </div>
-        <div className="flex justify-between text-stone-400">
-          <span>{consecutiveStreak >= 0 ? 'Win Streak' : 'Loss Streak'} ({absStreak >= 3 ? (absStreak >= 10 ? '10 MAX' : absStreak) : 'None'})</span>
-          <span className={streakContribution === 0 ? "text-stone-300" : (win ? "text-sky-300" : "text-red-400")}>
-            {streakContribution === 0 ? '0 LP' : (win ? `+${streakContribution} LP` : `-${streakContribution} LP`)}
-          </span>
-        </div>
+        
+        {rawStreakContribution !== 0 && (
+          <div className="flex justify-between text-stone-400">
+            <span>{consecutiveStreak >= 0 ? 'Win Streak' : 'Loss Streak'} ({absStreak >= 10 ? '10 MAX' : absStreak})</span>
+            <span className={win ? "text-sky-300" : "text-red-400"}>
+              {win ? '+' : '-'}{rawStreakContribution} LP
+            </span>
+          </div>
+        )}
+
         <div className="flex justify-between text-stone-400 items-center group relative">
           <span className="flex items-center gap-1">
             Match Difficulty
@@ -148,41 +141,64 @@ export const LpBreakdown = ({
             </div>
           </span>
           <span className={
-            disparityContribution === 0 
+            rawDifficultyContribution === 0 
               ? "text-stone-300" 
               : (win 
-                  ? (disparityContribution > 0 ? "text-sky-300" : "text-red-400")
-                  : (disparityContribution > 0 ? "text-red-400" : "text-sky-300")
+                  ? (rawDifficultyContribution > 0 ? "text-sky-300" : "text-red-400")
+                  : (rawDifficultyContribution > 0 ? "text-red-400" : "text-sky-300")
                 )
           }>
-            {disparityContribution === 0 ? '' : (
+            {rawDifficultyContribution === 0 ? '0 LP' : (
               win 
-                ? (disparityContribution > 0 ? '+' : '') 
-                : (disparityContribution > 0 ? '-' : '+')
-            )}{win ? disparityContribution : -disparityContribution} LP
+                ? (rawDifficultyContribution > 0 ? `+${rawDifficultyContribution}` : `${rawDifficultyContribution}`) 
+                : (rawDifficultyContribution > 0 ? `-${rawDifficultyContribution}` : `+${Math.abs(rawDifficultyContribution)}`)
+            )} LP
           </span>
         </div>
 
-        {win && (
-          <div className="flex justify-between text-stone-400/50 items-center group relative border-t border-line/20 pt-1 mt-1">
+        {externalAdjustment !== 0 && (
+          <div className="flex justify-between text-stone-400 items-center group relative">
             <span className="flex items-center gap-1">
-              Performance Adjustment
+              System Adjustment
               <Info size={12} className="text-stone-600 cursor-help" />
-              <div className="absolute left-0 bottom-full mb-2 w-72 p-3 bg-black border border-line rounded text-[10px] hidden group-hover:block z-10 space-y-3 opacity-100">
+              <div className="absolute left-0 bottom-full mb-2 w-72 p-3 bg-black border border-line rounded text-[10px] hidden group-hover:block z-10 space-y-3">
                 <p className="font-bold text-gold uppercase tracking-wider">
-                  Performance Bonus
+                  System Adjustment
                 </p>
                 
                 <div className="space-y-1 text-stone-300 leading-relaxed">
-                  <p>This is a hypothetical adjustment based on your performance rank (1-5) within the winning team. Performance-based LP modifiers are currently in development and do not affect your actual LP gains yet.</p>
+                  <p>
+                    {externalAdjustment > 0 
+                      ? "A small positive adjustment was applied by the system." 
+                      : "A cap was hit or a negative adjustment was applied by the system (e.g. max 25 LP loss)."}
+                  </p>
                 </div>
               </div>
             </span>
-            <span className={`${performanceAdjustment === 0 ? "text-stone-300" : (performanceAdjustment > 0 ? "text-sky-300" : "text-red-400")} opacity-50`}>
-              {performanceAdjustment === 0 ? '0 LP' : (performanceAdjustment > 0 ? `+${performanceAdjustment} LP` : `${performanceAdjustment} LP`)}
+            <span className={externalAdjustment > 0 ? "text-sky-300" : "text-red-400"}>
+              {externalAdjustment > 0 ? '+' : ''}{externalAdjustment} LP
             </span>
           </div>
         )}
+
+        <div className="flex justify-between text-stone-400/50 items-center group relative border-t border-line/20 pt-1 mt-1">
+          <span className="flex items-center gap-1">
+            Performance Adjustment
+            <Info size={12} className="text-stone-600 cursor-help" />
+            <div className="absolute left-0 bottom-full mb-2 w-72 p-3 bg-black border border-line rounded text-[10px] hidden group-hover:block z-10 space-y-3 opacity-100">
+              <p className="font-bold text-gold uppercase tracking-wider">
+                Performance Bonus
+              </p>
+              
+              <div className="space-y-1 text-stone-300 leading-relaxed">
+                <p>This is a hypothetical adjustment based on your performance rank (1-10) in this match lobby. Performance-based LP modifiers are currently in development and do not affect your actual LP gains yet.</p>
+              </div>
+            </div>
+          </span>
+          <span className={`${performanceAdjustment === 0 ? "text-stone-300" : (performanceAdjustment > 0 ? "text-sky-300" : "text-red-400")} opacity-50`}>
+            {performanceAdjustment === 0 ? '0 LP' : (performanceAdjustment > 0 ? `+${performanceAdjustment} LP` : `${performanceAdjustment} LP`)}
+          </span>
+        </div>
       </div>
     </div>
   );

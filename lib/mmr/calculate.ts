@@ -67,7 +67,7 @@ export function calculateLpDelta(input: LpDeltaInput): number {
     delta = Math.max(16, delta);
   } else {
     // For losses, ensure the penalty is no more than 25 (if we were losing more)
-    delta = Math.min(25, delta);
+    delta = Math.min(30, delta);
   }
 
   return Math.round(delta);

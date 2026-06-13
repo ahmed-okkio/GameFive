@@ -43,7 +43,7 @@ type MatchData = {
   individualPlayerMmr?: number;
   myTeamAvgMmr?: number | null;
   opposingTeamAvgMmr?: number | null;
-  performanceTeamRank?: number;
+  performanceRank?: number;
 };
 
 function formatKda(kills: number, deaths: number, assists: number) {
@@ -200,7 +200,7 @@ export function MatchRow({ match, initiallyExpanded = false }: { match: MatchDat
                     consecutiveStreak={match.viewedParticipant?.consecutiveStreak ?? 0}
                     win={match.win} 
                     delta={match.lpDelta}
-                    performanceTeamRank={match.performanceTeamRank}
+                    performanceRank={match.performanceRank}
                   />
                 ) : (
                   <div className="bg-black/20 p-4 rounded-lg border border-line/50 text-xs text-stone-500 italic text-center">
