@@ -43,12 +43,6 @@ export const LpBreakdown = ({
   const streakBonus = (effectiveStreak / 10) * 6;
   const rawStreakContribution = Math.round(streakBonus);
 
-  // 3. Final Comparison for Cap/Rounding Adjustments
-  // Server logic: delta = round(BASE_LP * opponentFactor + streakBonus)
-  const expectedAbsDelta = Math.round(BASE_LP * opponentFactor + streakBonus);
-  const actualAbsDelta = Math.abs(delta);
-  const externalAdjustment = actualAbsDelta - expectedAbsDelta;
-
   const getPerformanceAdjustment = (rank: number) => {
     switch (rank) {
       case 1: return 2;
@@ -155,31 +149,6 @@ export const LpBreakdown = ({
             )} LP
           </span>
         </div>
-
-        {externalAdjustment !== 0 && (
-          <div className="flex justify-between text-stone-400 items-center group relative">
-            <span className="flex items-center gap-1">
-              System Adjustment
-              <Info size={12} className="text-stone-600 cursor-help" />
-              <div className="absolute left-0 bottom-full mb-2 w-72 p-3 bg-black border border-line rounded text-[10px] hidden group-hover:block z-10 space-y-3">
-                <p className="font-bold text-gold uppercase tracking-wider">
-                  System Adjustment
-                </p>
-                
-                <div className="space-y-1 text-stone-300 leading-relaxed">
-                  <p>
-                    {externalAdjustment > 0 
-                      ? "A small positive adjustment was applied by the system." 
-                      : "A cap was hit or a negative adjustment was applied by the system (e.g. max 25 LP loss)."}
-                  </p>
-                </div>
-              </div>
-            </span>
-            <span className={externalAdjustment > 0 ? "text-sky-300" : "text-red-400"}>
-              {externalAdjustment > 0 ? '+' : ''}{externalAdjustment} LP
-            </span>
-          </div>
-        )}
 
         <div className="flex justify-between text-stone-400/50 items-center group relative border-t border-line/20 pt-1 mt-1">
           <span className="flex items-center gap-1">
