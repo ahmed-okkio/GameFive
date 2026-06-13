@@ -588,7 +588,10 @@ export function ProfileClient({
 
                 const matchParticipants = match.match.participants;
                 const sortedParticipants = [...matchParticipants].sort((a, b) => b.performanceScore - a.performanceScore);
-                const performanceRank = sortedParticipants.findIndex(p => p.id === viewedParticipant?.id) + 1;
+                
+                const teamParticipants = matchParticipants.filter(p => p.team === viewedParticipant?.team);
+                const sortedTeamParticipants = [...teamParticipants].sort((a, b) => b.performanceScore - a.performanceScore);
+                const performanceTeamRank = sortedTeamParticipants.findIndex(p => p.id === viewedParticipant?.id) + 1;
 
                 const matchData = {
                   id: match.id,
@@ -620,7 +623,7 @@ export function ProfileClient({
                       }
                     : undefined,
                   ddragonVersion: ddragonVersion,
-                  performanceRank: performanceRank > 0 ? performanceRank : undefined
+                  performanceTeamRank: performanceTeamRank > 0 ? performanceTeamRank : undefined
                 };
 
                 const matchKey = match.id;
@@ -665,7 +668,7 @@ export function ProfileClient({
                               .filter((p) => p.team === teamId)
                               .map((p) => {
                                 console.log("Participant:", p.id, "Score:", p.performanceScore, "Win:", p.win, "Team:", p.team);
-                                const rank = sortedParticipants.findIndex(sp => sp.id === p.id) + 1;
+                                const rank = sortedParticipants.findIndex((sp: { id: string }) => sp.id === p.id) + 1;
                                 const isAce = !p.win && p.performanceScore === maxScoreLosingTeam;
                                 return (
                                 <div

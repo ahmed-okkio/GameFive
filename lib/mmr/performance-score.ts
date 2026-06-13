@@ -58,17 +58,17 @@ export interface PlayerScore {
 }
 
 const WEIGHTS = {
-  damage: 0.4,
+  damage: 0.35, // reduced from 0.4
   impact: 0.35 - 0.05, // 0.30 — kills + 0.25*assists
-  killParticipation: 0.1,
+  killParticipation: 0.15, // increased from 0.1
   economy: 0.05,
   deaths: 0.1, // subtracted
-  utilityBonus: 0.25, // per σ above the +1σ threshold
+  utilityBonus: 0.45, // increased from 0.25 - per σ above the +1σ threshold
   tankBonus: 0.15,
   bonusThreshold: 1.0,
   scale: 18, // perf σ → score points
   clutchCap: 6,
-  assistValue: 0.25, // a kill ≈ 4 assists
+  assistValue: 0.50, // increased from 0.25 - 1 kill = 2 assists
   zCap: 2.5,
 } as const;
 
@@ -135,9 +135,10 @@ export function scoreMatch(match: Match): PlayerScore[] {
   );
   // Healing gated by how many distinct teammates were healed: pure
   // self-sustain (lifesteal) counts ~0, healing 4+ allies counts in full.
+  // We use a floor of 0.2 multiplier even if units is 0, just in case data is missing.
   const zHeal = robustZ(
     players.map(
-      (p) => p.stats.totalHeal * Math.min(1, (p.stats.totalUnitsHealed - 1) / 3),
+      (p) => p.stats.totalHeal * Math.max(0.2, Math.min(1, (p.stats.totalUnitsHealed - 1) / 3)),
     ),
   );
   const zCc = robustZ(players.map((p) => p.stats.timeCCingOthers));
@@ -159,13 +160,18 @@ export function scoreMatch(match: Match): PlayerScore[] {
         0.5 * s.doubleKills + 1.5 * s.tripleKills + 3 * s.quadraKills + 5 * s.pentaKills,
       );
 
+      // Support Gate: Amplify utility and KP rewards if Kills < 25% of Assists
+      const isSupportLeaning = s.kills < 0.25 * s.assists;
+      const utilityMultiplier = isSupportLeaning ? 3.0 : 1.0;
+      const kpMultiplier = isSupportLeaning ? 3.0 : 1.0;
+
       const perf =
         WEIGHTS.damage * zDamage[i] +
         WEIGHTS.impact * zImpact[i] +
-        WEIGHTS.killParticipation * zKp[i] +
+        WEIGHTS.killParticipation * kpMultiplier * zKp[i] +
         WEIGHTS.economy * economy -
         WEIGHTS.deaths * zDeaths[i] +
-        specialistBonus;
+        (specialistBonus * utilityMultiplier);
 
       const score = clamp(50 + WEIGHTS.scale * perf + clutch, 0, 100);
 
