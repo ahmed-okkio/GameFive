@@ -61,14 +61,5 @@ export function calculateLpDelta(input: LpDeltaInput): number {
 
   let delta = (BASE_LP * opponentFactor) + streakBonus;
 
-  // Apply bias:
-  if (input.win) {
-    // For wins, ensure the gain is at least 16 (if we were gaining less)
-    delta = Math.max(16, delta);
-  } else {
-    // For losses, ensure the penalty is no more than 25 (if we were losing more)
-    delta = Math.min(30, delta);
-  }
-
   return Math.round(delta);
 }
