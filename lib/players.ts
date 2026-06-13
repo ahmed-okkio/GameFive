@@ -292,7 +292,7 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
     where: { playerId: player.id, match: { gameMode: "MAYHEM" } },
     include: { match: { include: { participants: { include: { player: true } } } } },
     orderBy: { match: { gameDate: "desc" } },
-    take: 100
+    take: 500
   });
 
   const displayedMmr = Math.round(player.rawMmr);
