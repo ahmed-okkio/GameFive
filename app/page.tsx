@@ -26,10 +26,6 @@ export default function Page() {
           </p>
 
           <p>
-            In the coming days, we will provide further information regarding the timeline for the cessation of services and the transition process.
-          </p>
-
-          <p>
             Thank you for being part of this chapter.
           </p>
 
