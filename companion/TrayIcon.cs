@@ -61,10 +61,6 @@ internal sealed class TrayIcon : IDisposable
                 
                 if (summoner != null)
                 {
-                    _logger.Info($"Summoner found: DisplayName='{summoner.DisplayName}', GameName='{summoner.GameName}', TagLine='{summoner.TagLine}'");
-                    if (summoner.ExtraData != null) {
-                         _logger.Info($"ExtraData: {string.Join(", ", summoner.ExtraData.Select(kvp => $"{kvp.Key}={kvp.Value}"))}");
-                    }
 
                     if (!string.IsNullOrWhiteSpace(summoner.GameName) && !string.IsNullOrWhiteSpace(summoner.TagLine))
                     {

@@ -33,4 +33,18 @@ internal static class StartupRegistration
             logger.Error("Failed to register startup entry.", ex);
         }
     }
+
+    public static void Unregister(CompanionLogger logger)
+    {
+        try
+        {
+            using var key = Registry.CurrentUser.OpenSubKey(RunKeyPath, writable: true);
+            key?.DeleteValue(ValueName, false);
+            logger.Info("Startup registration removed.");
+        }
+        catch (Exception ex)
+        {
+            logger.Error("Failed to remove startup entry.", ex);
+        }
+    }
 }
