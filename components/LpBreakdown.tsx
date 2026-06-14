@@ -34,8 +34,6 @@ export const LpBreakdown = ({
   const sign = win ? -1 : 1;
   const adjustment = (sign * blendedDisparity / 1000) * 0.3;
   const opponentFactor = Math.min(1.3, Math.max(0.7, 1 + adjustment));
-  
-  const rawDifficultyContribution = Math.round(BASE_LP * (opponentFactor - 1));
 
   // 2. Mirror Server-Side Streak Logic
   const absStreak = Math.abs(consecutiveStreak);
@@ -64,8 +62,6 @@ export const LpBreakdown = ({
   };
 
   const perfData = performanceRank ? getPerformanceAdjustment(performanceRank) : { delta: 0, color: "text-stone-300" };
-
-  const performanceAdjustment = perfData.delta;
 
   if (delta === 0) {
     return (
