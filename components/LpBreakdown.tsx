@@ -31,10 +31,6 @@ export const LpBreakdown = ({
   const teamDisparity = myTeam - opposingTeam;
   const blendedDisparity = 0.6 * individualDisparity + 0.4 * teamDisparity;
   
-  const sign = win ? -1 : 1;
-  const adjustment = (sign * blendedDisparity / 1000) * 0.3;
-  const opponentFactor = Math.min(1.3, Math.max(0.7, 1 + adjustment));
-
   // 2. Mirror Server-Side Streak Logic
   const absStreak = Math.abs(consecutiveStreak);
   const effectiveStreak = absStreak >= 3 ? Math.min(absStreak, 10) : 0;
