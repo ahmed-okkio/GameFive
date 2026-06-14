@@ -44,6 +44,7 @@ type MatchData = {
   myTeamAvgMmr?: number | null;
   opposingTeamAvgMmr?: number | null;
   performanceRank?: number;
+  context?: 'home' | 'profile';
 };
 
 function formatKda(kills: number, deaths: number, assists: number) {
@@ -68,6 +69,7 @@ function formatTimeAgo(dateValue: string) {
 export function MatchRow({ match, initiallyExpanded = false }: { match: MatchData; initiallyExpanded?: boolean }) {
   const [expanded, setExpanded] = useState(initiallyExpanded);
   const [showLpBreakdown, setShowLpBreakdown] = useState(false);
+  const [copied, setCopied] = useState(false);
   const router = useRouter();
 
   // Sync with prop if it changes (for pre-expanded matches)
@@ -80,26 +82,35 @@ export function MatchRow({ match, initiallyExpanded = false }: { match: MatchDat
   const isNavigable = Boolean(match.player?.name && match.player?.tag);
 
   const handleRowClick = () => {
-    if (isNavigable) {
+    // If in profile view, toggle expansion regardless of navigability
+    if (match.context === 'profile') {
+      setExpanded(!expanded);
+    } else if (isNavigable) {
       router.push(
         `/player/${encodeURIComponent(match.player!.name)}/${encodeURIComponent(match.player!.tag!)}?match=${match.id}`
       );
-    } else {
-      setExpanded(!expanded);
     }
+  };
+  
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = `${window.location.origin}/player/${encodeURIComponent(match.player?.name ?? 'Unknown')}/${encodeURIComponent(match.player?.tag ?? 'Unknown')}?match=${match.id}`;
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const isNewPatch = new Date(match.match.gameDate) >= appConfig.patchDate;
 
   return (
     <div
-      className={`overflow-hidden ${match.player ? "" : "rounded-lg border"} ${
+      onClick={handleRowClick}
+      className={`overflow-hidden cursor-pointer ${match.context === 'profile' ? "rounded-lg border" : ""} ${
         match.win ? "border-sky-500/30 bg-sky-950/20" : "border-red-500/30 bg-red-950/20"
       }`}
     >
       <div
-        className={`flex flex-col gap-3 p-3 text-sm md:flex-row md:items-center md:justify-between cursor-pointer hover:bg-black/20`}
-        onClick={handleRowClick}
+        className={`flex flex-col gap-3 p-3 text-sm md:flex-row md:items-center md:justify-between hover:bg-black/20`}
       >
         <div className="flex min-w-0 items-center gap-3">
           {match.player?.profileIconUrl && (
@@ -167,25 +178,44 @@ export function MatchRow({ match, initiallyExpanded = false }: { match: MatchDat
               {match.isPlacement ? "Placement" : `${match.lpDelta >= 0 ? "+" : ""}${match.lpDelta} LP`}
             </div>
           </div>
-          {/* Only show chevron for non-navigable (profile page) rows */}
-          {!isNavigable && (expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
+          {/* Only show chevron if in profile view */}
+          {match.context === 'profile' && (expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
         </div>
       </div>
 
       {/* Expanded Section */}
       {expanded && (
-        <div className="border-t border-line/10 bg-black/10">
-          <div className="px-3 py-1.5 flex items-center">
-            {!isNavigable && !match.isPlacement && (
+        <div className={``}>
+          <div className="px-3 py-1.5 flex items-center justify-between gap-4">
+            {match.context === 'profile' && !match.isPlacement && (
               <button
                 onClick={(e) => { e.stopPropagation(); setShowLpBreakdown(!showLpBreakdown); }}
-                className={`text-[9px] font-bold transition-all uppercase tracking-widest flex items-center gap-1.5 ${
+                className={`text-[9px] font-bold transition-all uppercase tracking-widest flex items-center gap-1.5 !shadow-none ${
                   showLpBreakdown ? "text-gold" : "text-stone-500 hover:text-stone-300"
                 }`}
               >
-                {showLpBreakdown ? "Hide Match Logic" : "View LP Breakdown"}
+                {showLpBreakdown ? "Hide LP Breakdown" : "View LP Breakdown"}
               </button>
             )}
+            
+            <button
+              onClick={handleCopy}
+              className={`text-[9px] font-bold transition-all uppercase tracking-widest flex items-center gap-1.5 !shadow-none ${
+                  copied ? "text-green-400" : "text-stone-500 hover:text-stone-300"
+              }`}
+            >
+              {copied ? (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                  Copy Link
+                </>
+              )}
+            </button>
           </div>
 
           {/* LP Breakdown Component */}

@@ -43,17 +43,29 @@ export const LpBreakdown = ({
   const streakBonus = (effectiveStreak / 10) * 6;
   const rawStreakContribution = Math.round(streakBonus);
 
+  // 3. Ensure Math Adds Up
+  // Because the server might have rounded (Base + Difficulty + Streak) as a whole, 
+  // or rounded components individually, we adjust the difficulty component 
+  // in the UI to ensure the displayed math always sums perfectly to the 'delta' prop.
+  
+  // For simplicity in the UI display logic below, we'll just use the raw values 
+  // and handle the rounding error adjustment specifically on the difficulty line.
+  const expectedDifficultyContribution = delta - (win ? BASE_LP : -BASE_LP) - (win ? rawStreakContribution : -rawStreakContribution);
+  const displayDifficultyContribution = win ? expectedDifficultyContribution : Math.abs(expectedDifficultyContribution);
+
   const getPerformanceAdjustment = (rank: number) => {
     switch (rank) {
-      case 1: return 2;
-      case 2: return 1;
-      case 9: return -1;
-      case 10: return -2;
-      default: return 0;
+      case 1: return { delta: 2, color: "text-[#b6983e]" }; // MVP (Gold-ish)
+      case 2: return { delta: 1, color: "text-[#C0C0C0]" }; // Silver
+      case 9: return { delta: -1, color: "text-[#804A00]" }; // Deep Bronze
+      case 10: return { delta: -2, color: "text-[#7A2E2E]" }; // Darker, Redder Bronze
+      default: return { delta: 0, color: "text-stone-300" }; // Iron/Default
     }
   };
 
-  const performanceAdjustment = performanceRank ? getPerformanceAdjustment(performanceRank) : 0;
+  const perfData = performanceRank ? getPerformanceAdjustment(performanceRank) : { delta: 0, color: "text-stone-300" };
+
+  const performanceAdjustment = perfData.delta;
 
   if (delta === 0) {
     return (
@@ -99,7 +111,7 @@ export const LpBreakdown = ({
   };
 
   return (
-    <div className="bg-black/40 p-4 rounded-lg border border-line text-xs space-y-3 mt-2">
+    <div className="p-4 rounded-lg border border-line text-xs space-y-3 mt-2">
       <div className="flex justify-between border-b border-line pb-2 mb-2">
         <span className="font-bold text-stone-200">LP Calculation Breakdown</span>
         <span className="font-bold text-gold">{delta > 0 ? '+' : ''}{delta} LP</span>
@@ -135,17 +147,17 @@ export const LpBreakdown = ({
             </div>
           </span>
           <span className={
-            rawDifficultyContribution === 0 
+            displayDifficultyContribution === 0 
               ? "text-stone-300" 
               : (win 
-                  ? (rawDifficultyContribution > 0 ? "text-sky-300" : "text-red-400")
-                  : (rawDifficultyContribution > 0 ? "text-red-400" : "text-sky-300")
+                  ? (displayDifficultyContribution > 0 ? "text-sky-300" : "text-red-400")
+                  : (displayDifficultyContribution > 0 ? "text-red-400" : "text-sky-300")
                 )
           }>
-            {rawDifficultyContribution === 0 ? '0 LP' : (
+            {displayDifficultyContribution === 0 ? '0 LP' : (
               win 
-                ? (rawDifficultyContribution > 0 ? `+${rawDifficultyContribution}` : `${rawDifficultyContribution}`) 
-                : (rawDifficultyContribution > 0 ? `-${rawDifficultyContribution}` : `+${Math.abs(rawDifficultyContribution)}`)
+                ? (displayDifficultyContribution > 0 ? `+${displayDifficultyContribution}` : `${displayDifficultyContribution}`) 
+                : (displayDifficultyContribution > 0 ? `-${displayDifficultyContribution}` : `+${Math.abs(displayDifficultyContribution)}`)
             )} LP
           </span>
         </div>
@@ -164,8 +176,8 @@ export const LpBreakdown = ({
               </div>
             </div>
           </span>
-          <span className={`${performanceAdjustment === 0 ? "text-stone-300" : (performanceAdjustment > 0 ? "text-sky-300" : "text-red-400")} opacity-50`}>
-            {performanceAdjustment === 0 ? '0 LP' : (performanceAdjustment > 0 ? `+${performanceAdjustment} LP` : `${performanceAdjustment} LP`)}
+          <span className={`${perfData.color} opacity-50`}>
+            {perfData.delta === 0 ? '0 LP' : (perfData.delta > 0 ? `+${perfData.delta} LP` : `${perfData.delta} LP`)}
           </span>
         </div>
       </div>

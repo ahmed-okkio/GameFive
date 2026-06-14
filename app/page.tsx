@@ -127,7 +127,8 @@ async function HomeLoader() {
                         ? getProfileIconUrl(participant.player.profileIconId, latestVersion)
                         : undefined
                     }
-                  : undefined
+                  : undefined,
+                context: 'home' as const
               };
               return <MatchRow key={participant.id} match={matchData} />;
             })}

@@ -370,7 +370,7 @@ export function ProfileClient({
   };
 
   return (
-    <section className="mx-auto max-w-6xl px-3 py-6 sm:px-4 sm:py-8">
+    <section className="mx-auto max-w-[76rem] px-3 py-6 sm:px-4 sm:py-8">
       <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
         <aside className="rounded-lg border border-line bg-panel/95 p-5 shadow-xl shadow-black/20">
           <div className="flex flex-col items-center text-center">
@@ -600,6 +600,10 @@ export function ProfileClient({
                   isPlacement: match.isPlacement,
                   championName: match.championName,
                   championImage: match.championImage,
+                  player: {
+                    name: viewedParticipant?.player?.riotIdName ?? "Unknown",
+                    tag: viewedParticipant?.player?.riotIdTag ?? "Unknown"
+                  },
                   match: {
                     gameDate: match.match.gameDate,
                     durationSeconds: match.match.durationSeconds,
@@ -620,7 +624,8 @@ export function ProfileClient({
                       }
                     : undefined,
                   ddragonVersion: ddragonVersion,
-                  performanceRank: performanceRank > 0 ? performanceRank : undefined
+                  performanceRank: performanceRank > 0 ? performanceRank : undefined,
+                  context: 'profile' as const
                 };
 
                 const matchKey = match.id;
@@ -631,8 +636,6 @@ export function ProfileClient({
                 const losingTeamParticipants = matchParticipants.filter(p => p.team === losingTeamId && p.team !== 0);
                 const maxScoreLosingTeam = losingTeamParticipants.length > 0 ? Math.max(...losingTeamParticipants.map(p => p.performanceScore)) : -1;
                 
-                // Debug log
-                // console.log("Match:", match.id, "Losing Team:", losingTeamId, "Max Score:", maxScoreLosingTeam, "Participants:", matchParticipants.map(p => ({id: p.id, win: p.win, score: p.performanceScore, team: p.team})));
 
                 return (
                   // id added here so the ?match= scroll target works
@@ -654,8 +657,9 @@ export function ProfileClient({
                               <span className="uppercase tracking-widest">{teamId === 100 ? "Blue" : "Red"} Team Average Rank</span>
                               <span className="font-bold text-stone-200 uppercase tracking-widest">{avgMmr ? getTierLabel(avgMmr).label.toUpperCase() : "Unranked"}</span>
                             </div>
-                            <div className="grid grid-cols-[160px_70px_60px_1fr_80px] items-center gap-2 px-3 pb-1 text-[10px] uppercase tracking-widest text-stone-500">
+                            <div className="grid grid-cols-[160px_40px_70px_60px_1fr_80px] items-center gap-2 px-3 pb-1 text-[10px] uppercase tracking-widest text-stone-500">
                               <span>Player</span>
+                              <span className="text-center">Place</span>
                               <span className="text-center">KDA</span>
                               <span className="text-center">KP %</span>
                               <span className="text-left">Loadout</span>
@@ -664,13 +668,12 @@ export function ProfileClient({
                             {matchParticipants
                               .filter((p) => p.team === teamId)
                               .map((p) => {
-                                console.log("Participant:", p.id, "Score:", p.performanceScore, "Win:", p.win, "Team:", p.team);
                                 const rank = sortedParticipants.findIndex((sp: { id: string }) => sp.id === p.id) + 1;
                                 const isAce = !p.win && p.performanceScore === maxScoreLosingTeam;
                                 return (
                                 <div
                                   key={p.id}
-                                  className="grid grid-cols-[160px_70px_60px_1fr_80px] items-center gap-2 rounded px-3 py-1.5 text-xs bg-black/20"
+                                  className="grid grid-cols-[160px_40px_70px_60px_1fr_80px] items-center gap-2 rounded px-3 py-1.5 text-xs bg-black/20"
                                 >
                                   <div className="font-bold text-white truncate text-[11px] flex items-center gap-2 min-w-0">
                                     {(() => {
@@ -700,20 +703,7 @@ export function ProfileClient({
                                           />
                                           <span className="min-w-0">
                                             <span className="block truncate">{displayName}</span>
-                                            <div className="flex items-center gap-1">
-                                              <span
-                                                className={`text-[11px] font-normal ${
-                                                  rankAtMatch === "Unknown rank"
-                                                    ? "text-stone-500"
-                                                    : "text-gold/80"
-                                                }`}
-                                              >
-                                                {rankAtMatch}
-                                              </span>
-                                              {p.performanceScore > 0 && (
-                                                <PerformanceBadge place={rank} isAce={isAce} />
-                                              )}
-                                            </div>
+                                            <div className="text-[11px] font-normal text-gold/80">{rankAtMatch}</div>
                                           </span>
                                         </Link>
                                       ) : (
@@ -725,29 +715,21 @@ export function ProfileClient({
                                           />
                                           <span className="min-w-0">
                                             <span className="block truncate">{displayName}</span>
-                                            <div className="flex items-center gap-1">
-                                              <span
-                                                className={`text-[11px] font-normal ${
-                                                  rankAtMatch === "Unknown rank"
-                                                    ? "text-stone-500"
-                                                    : "text-gold/80"
-                                                }`}
-                                              >
-                                                {rankAtMatch}
-                                              </span>
-                                              {p.performanceScore > 0 && (
-                                                <PerformanceBadge place={rank} isAce={isAce} />
-                                              )}
-                                            </div>
+                                            <div className="text-[11px] font-normal text-gold/80">{rankAtMatch}</div>
                                           </span>
                                         </div>
                                       );
                                     })()}
                                   </div>
-                                  <span className="text-center font-mono text-stone-300 w-12">
+                                  <div className="flex items-center justify-center">
+                                      {p.performanceScore > 0 && (
+                                        <PerformanceBadge place={rank} isAce={isAce} />
+                                      )}
+                                  </div>
+                                  <span className="block text-center font-mono text-stone-300">
                                     {p.kills}/{p.deaths}/{p.assists}
                                   </span>
-                                  <span className="text-center font-mono text-stone-300 w-12">
+                                  <span className="block text-center font-mono text-stone-300">
                                     {getKillParticipation(p, matchParticipants)}% KP
                                   </span>
                                   <div className="flex justify-start min-w-0">

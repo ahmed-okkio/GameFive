@@ -59,7 +59,8 @@ export function calculateLpDelta(input: LpDeltaInput): number {
   const effectiveStreak = absStreak >= 3 ? Math.min(absStreak, 10) : 0;
   const streakBonus = (effectiveStreak / 10) * 6;
 
-  const delta = (BASE_LP * opponentFactor) + streakBonus;
+  const difficultyAdjustment = Math.round(BASE_LP * (opponentFactor - 1));
+  const streakAdjustment = Math.round(streakBonus);
 
-  return Math.round(delta);
+  return BASE_LP + difficultyAdjustment + streakAdjustment;
 }

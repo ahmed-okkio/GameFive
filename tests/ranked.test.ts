@@ -27,6 +27,45 @@ describe("MMR/LP Integer Integrity", () => {
     expect(Number.isInteger(roundedDelta)).toBe(true);
     expect(roundedDelta).toBe(28);
   });
+
+  it("reproduces the rounding error where components don't sum to total", () => {
+    // This test case matches the user's reported scenario:
+    // Total LP: +26
+    // Base: 25
+    // Streak (6): +4
+    // Difficulty: -2
+    // Sum = 27 (Discrepancy!)
+    
+    const delta = calculateLpDelta({
+      individualPlayerMmr: 1320,
+      myTeamAvgMmr: 1320,
+      opposingTeamAvgMmr: 1000,
+      lobbyAvgFallback: 1160,
+      consecutiveStreak: 6,
+      win: true
+    });
+    
+    // disparity = 0.6*(320) + 0.4*(320) = 320
+    // adjustment = (-1 * 320 / 1000) * 0.3 = -0.096
+    // opponentFactor = 0.904
+    // streakBonus = (6/10)*6 = 3.6
+    // delta_raw = 25 * 0.904 + 3.6 = 22.6 + 3.6 = 26.2
+    // Math.round(26.2) is no longer used.
+    // Base = 25
+    // difficultyAdjustment = round(25 * (0.904 - 1)) = round(-2.4) = -2
+    // streakAdjustment = round(3.6) = 4
+    // delta = 25 - 2 + 4 = 27
+    
+    expect(delta).toBe(27);
+
+    // Component calculation (as done in UI)
+    const difficultyAdjustment = Math.round(25 * (0.904 - 1)); // -2
+    const streakAdjustment = Math.round(3.6); // 4
+    const base = 25;
+    
+    const sum = base + difficultyAdjustment + streakAdjustment;
+    expect(sum).toBe(delta); // Should now match perfectly!
+  });
 });
 
 describe("calculatePlacementMmr", () => {

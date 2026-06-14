@@ -158,7 +158,6 @@ export async function hydrateRankedSignals(player: Player): Promise<Player> {
 
 export async function ensurePlayerExists(gameName: string, tagLine: string): Promise<Player | null> {
     try {
-        console.log(`Ensuring player ${gameName}#${tagLine} exists in DB (Official Riot Casing)...`);
         const account = await riotClient.getAccountByRiotId(gameName, tagLine);
         if (account) {
             const summoner = await riotClient.getSummonerByPuuid(account.puuid);
