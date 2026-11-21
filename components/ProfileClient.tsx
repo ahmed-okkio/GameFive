@@ -34,10 +34,6 @@ export type StatusResponse =
         riotIdTag: string;
         isPlaced: boolean;
         profileIconId: number | null;
-        promoFromTier: string | null;
-        promoToTier: string | null;
-        promoWins: number;
-        promoLosses: number;
       };
       mmr: { currentLp: number; mayhemGames: number };
       tier: { label: string; tier: string };
@@ -350,15 +346,10 @@ export function ProfileClient({
     );
   }
 
-  const promoLabel =
-    status.player.promoFromTier && status.player.promoToTier
-      ? `${status.player.promoFromTier} I PROMO (${status.player.promoWins}W ${status.player.promoLosses}L)`
-      : null;
-
   const rankLabel = maintenanceMode
     ? "Under Maintenance"
     : status.player.isPlaced
-    ? (promoLabel ?? status.tier.label)
+    ? status.tier.label
     : status.mmr.mayhemGames > 0
     ? "Placements"
     : "Unranked";

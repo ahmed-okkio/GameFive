@@ -42,11 +42,7 @@ async function LeaderboardLoader() {
       </thead>
       <tbody>
         {players.map((player, index) => {
-          const promoLabel =
-            player.promoFromTier && player.promoToTier
-              ? `${player.promoFromTier} I PROMO (${player.promoWins}W ${player.promoLosses}L)`
-              : null;
-          const tier = appConfig.maintenanceMode ? "Under Maintenance" : (player.isPlaced ? (promoLabel ?? getTierLabel(player.rawMmr).label) : "Unranked");
+          const tier = appConfig.maintenanceMode ? "Under Maintenance" : (player.isPlaced ? getTierLabel(player.rawMmr).label : "Unranked");
 
           return (
             <tr key={player.id} className="border-t border-line">

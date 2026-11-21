@@ -60,11 +60,7 @@ async function HomeLoader() {
         riotIdTag: true,
         rawMmr: true,
         currentLp: true,
-        isPlaced: true,
-        promoFromTier: true,
-        promoToTier: true,
-        promoWins: true,
-        promoLosses: true
+        isPlaced: true
       }
     }),
     prisma.matchParticipant.findMany({
@@ -162,12 +158,8 @@ async function HomeLoader() {
               </thead>
               <tbody>
                 {topPlayers.map((player, index) => {
-                  const promoLabel =
-                    player.promoFromTier && player.promoToTier
-                      ? `${player.promoFromTier} I PROMO (${player.promoWins}W ${player.promoLosses}L)`
-                      : null;
                   const rankLabel = player.isPlaced
-                    ? (promoLabel ?? getTierLabel(player.rawMmr).label)
+                    ? getTierLabel(player.rawMmr).label
                     : "Unranked";
 
                   return (
