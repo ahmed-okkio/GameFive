@@ -121,7 +121,7 @@ public class CompanionWorker : BackgroundService
         StartupRegistration.Unregister(_logger);
 
         // 3. One toast linking to the Ceremony.
-        var ceremonyUrl = CompanionRules.ResolveUrl(CompanionConfig.ServerBaseUrl, status.CeremonyUrl);
+        var ceremonyUrl = string.IsNullOrWhiteSpace(status.CeremonyUrl) ? CompanionConfig.ServerBaseUrl : status.CeremonyUrl;
         trayIcon.ShowToast("Mayhem Week is over", "Click to watch the Ceremony. The Companion is removing itself.",
             () => Process.Start(new ProcessStartInfo(ceremonyUrl) { UseShellExecute = true }));
         // shortcut: the toast only reacts to clicks while we are alive; 60 s is the window before we delete ourselves.

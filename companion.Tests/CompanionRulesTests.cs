@@ -94,15 +94,6 @@ public class CompanionRulesFixTests
         }
     }
 
-    [Theory]
-    [InlineData("/api/companion/login?token=abc", "https://game-five-kohl.vercel.app/api/companion/login?token=abc")]
-    [InlineData("https://other.example/x", "https://other.example/x")]
-    [InlineData("/", "https://game-five-kohl.vercel.app/")]
-    [InlineData(null, "https://game-five-kohl.vercel.app/")]
-    [InlineData("", "https://game-five-kohl.vercel.app/")]
-    public void UrlsResolveAgainstServerBase(string? url, string expected) =>
-        Assert.Equal(expected, CompanionRules.ResolveUrl("https://game-five-kohl.vercel.app/", url));
-
     [Fact]
     public void StatusWithNullsDoesNotRetireOrForceUpdate()
     {

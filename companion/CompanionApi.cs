@@ -88,7 +88,7 @@ internal sealed class CompanionApi
     public async Task OpenAsEntrantAsync(string? puuid, string redirect)
     {
         var url = puuid is null ? null : await LoginLinkAsync(puuid, redirect, CancellationToken.None);
-        url = CompanionRules.ResolveUrl(CompanionConfig.ServerBaseUrl, url ?? redirect);
+        url ??= new Uri(_http.BaseAddress!, redirect).ToString();
         Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
     }
 

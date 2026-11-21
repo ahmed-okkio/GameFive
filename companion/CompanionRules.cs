@@ -39,13 +39,6 @@ internal static class CompanionRules
 
     public static string GmtDay(DateTimeOffset now) => now.UtcDateTime.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
-    // Server urls (login links, inbox items, ceremonyUrl) may be relative; anything unusable falls back to the site home.
-    public static string ResolveUrl(string baseUrl, string? url)
-    {
-        var home = new Uri(baseUrl);
-        return (Uri.TryCreate(home, url ?? "", out var resolved) ? resolved : home).ToString();
-    }
-
     // Deletes the exe and AppData after we exit. The working directory must be outside AppData,
     // or cmd's own cwd keeps the folder alive and rd leaves it behind.
     public static ProcessStartInfo RetireCleanup(string? exePath, string appDataDirectory, string tempDirectory) => new()
