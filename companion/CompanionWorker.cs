@@ -128,16 +128,7 @@ public class CompanionWorker : BackgroundService
         await Task.Delay(TimeSpan.FromSeconds(60), CancellationToken.None);
 
         // 4. Delete the exe and AppData once this process has exited.
-        var exePath = Environment.ProcessPath;
-        var command = $"/c timeout /t 2 > NUL & del /f /q \"{exePath}\" & rd /s /q \"{_appPaths.AppDataDirectory}\"";
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = "cmd.exe",
-            Arguments = command,
-            WindowStyle = ProcessWindowStyle.Hidden,
-            CreateNoWindow = true,
-            UseShellExecute = false
-        });
+        Process.Start(CompanionRules.RetireCleanup(Environment.ProcessPath, _appPaths.AppDataDirectory, Path.GetTempPath()));
         _logger.Info("Retired; cleanup scheduled. Exiting.");
         trayIcon.Dispose();
         Environment.Exit(0);

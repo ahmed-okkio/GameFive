@@ -121,6 +121,7 @@ del ""%~f0""
                 Arguments = $"/c \"{batchPath}\"",
                 CreateNoWindow = true,
                 UseShellExecute = false,
+                WorkingDirectory = Path.GetTempPath(), // keep the relaunched copy's cwd out of the install folder
                 WindowStyle = ProcessWindowStyle.Hidden
             };
 

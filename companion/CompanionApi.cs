@@ -72,7 +72,10 @@ internal sealed class CompanionApi
     {
         try
         {
-            return await _http.GetFromJsonAsync<CompanionStatus>("api/companion/status", ct);
+            // A server that accepts but never answers must not hold startup for HttpClient's 100 s default.
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            timeout.CancelAfter(TimeSpan.FromSeconds(15));
+            return await _http.GetFromJsonAsync<CompanionStatus>("api/companion/status", timeout.Token);
         }
         catch (Exception ex)
         {

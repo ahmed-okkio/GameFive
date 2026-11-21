@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.Globalization;
+
 namespace GameFive.Companion;
 
 // Pure decision logic, kept free of WinForms/LCU so the test project can compile it on its own.
@@ -34,7 +37,19 @@ internal static class CompanionRules
     public static bool NeedsBriefing(string? lastBriefingGmtDay, DateTimeOffset now) =>
         lastBriefingGmtDay != GmtDay(now);
 
-    public static string GmtDay(DateTimeOffset now) => now.UtcDateTime.ToString("yyyy-MM-dd");
+    public static string GmtDay(DateTimeOffset now) => now.UtcDateTime.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+    // Deletes the exe and AppData after we exit. The working directory must be outside AppData,
+    // or cmd's own cwd keeps the folder alive and rd leaves it behind.
+    public static ProcessStartInfo RetireCleanup(string? exePath, string appDataDirectory, string tempDirectory) => new()
+    {
+        FileName = "cmd.exe",
+        Arguments = $"/c timeout /t 2 > NUL & del /f /q \"{exePath}\" & rd /s /q \"{appDataDirectory}\"",
+        WorkingDirectory = tempDirectory,
+        WindowStyle = ProcessWindowStyle.Hidden,
+        CreateNoWindow = true,
+        UseShellExecute = false
+    };
 
     // Only an explicit retire: true retires; a failed or unreadable status call is null.
     public static bool ShouldRetire(CompanionStatus? status) => status?.Retire == true;
