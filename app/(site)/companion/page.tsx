@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
-import type { Player } from "@prisma/client";
 import Link from "next/link";
+import { getPlayerSession } from "@/lib/companion";
 import { appConfig } from "@/lib/config";
 import { lastGameEndedAt } from "@/lib/entrants";
 import { D, Frame, H2, LogoMark, Steps, caps, downloadButton, focus, quiet, tilt, winEdge } from "../ui";
 import { StatusLine } from "./StatusLine";
 
 export const metadata: Metadata = { title: "The Companion | GameFive" };
-
-// TODO(M3): getPlayerSession()
-const loggedInEntrant = async (): Promise<Player | null> => null;
 
 const states = [
   { on: true, title: "Connected", body: "League is open and the Companion sees it. Mayhem games will upload." },
@@ -18,7 +15,7 @@ const states = [
 
 // What the Companion is, how to install it, and what state yours is in.
 export default async function CompanionPage() {
-  const entrant = await loggedInEntrant();
+  const entrant = await getPlayerSession();
   const lastGameAt = entrant && (await lastGameEndedAt(entrant.id));
   return (
     <>

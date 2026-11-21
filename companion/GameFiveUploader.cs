@@ -1,4 +1,3 @@
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
@@ -20,11 +19,14 @@ internal sealed class GameFiveUploader : IDisposable
     private DateTimeOffset _nextRetryAt = DateTimeOffset.MinValue;
     private bool _uploadsDisabled;
 
+    // Raised after the server accepts an upload, so the inbox is polled right after it.
+    public event Action? Uploaded;
+
     public GameFiveUploader(UploadQueue queue, CompanionLogger logger, HttpMessageHandler? handler = null)
     {
         _queue = queue;
         _logger = logger;
-        _httpClient = handler != null ? new HttpClient(handler) : new HttpClient();
+        _httpClient = CompanionConfig.CreateServerClient(handler);
     }
 
     public async Task FlushAsync(CancellationToken cancellationToken)
@@ -97,13 +99,11 @@ internal sealed class GameFiveUploader : IDisposable
 
         try
         {
-            var url = new Uri(new Uri(CompanionConfig.ServerBaseUrl.TrimEnd('/') + "/"), "api/ingest/match");
             var json = JsonSerializer.Serialize(upload, JsonOptions);
-            using var request = new HttpRequestMessage(HttpMethod.Post, url)
+            using var request = new HttpRequestMessage(HttpMethod.Post, "api/ingest/match")
             {
                 Content = new StringContent(json, Encoding.UTF8, "application/json")
             };
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", CompanionConfig.AuthToken);
 
             using var response = await _httpClient.SendAsync(request, cancellationToken);
             var body = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -124,6 +124,7 @@ internal sealed class GameFiveUploader : IDisposable
             }
 
             _logger.Info($"Mayhem upload accepted. gameId={upload.GameId}, body={body}");
+            Uploaded?.Invoke();
             return true;
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)

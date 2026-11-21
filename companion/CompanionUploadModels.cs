@@ -16,6 +16,9 @@ internal sealed class CompanionMatchUpload
     [JsonPropertyName("queueId")]
     public int QueueId { get; set; }
 
+    [JsonPropertyName("gameType")]
+    public string? GameType { get; set; }
+
     [JsonPropertyName("gameMode")]
     public string? GameMode { get; set; }
 
@@ -33,6 +36,12 @@ internal sealed class CompanionMatchUpload
 
     [JsonPropertyName("participants")]
     public List<CompanionParticipantUpload> Participants { get; set; } = [];
+
+    // The uploader's own `localPlayer.stats` from /lol-end-of-game/v1/eog-stats-block, forwarded raw
+    // (keys like TOTAL_HEAL_ON_TEAMMATES). Only the live path has it; the tray backfill omits it.
+    [JsonPropertyName("endOfGameStats")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public System.Text.Json.JsonElement? EndOfGameStats { get; set; }
 }
 
 internal sealed class CompanionParticipantUpload

@@ -29,7 +29,7 @@ internal static class MatchUploaderService
             {
                 foreach (var match in matchHistory.Games.Items.Take(matchLimit))
                 {
-                    if (match.QueueId == 2400) // Mayhem queue
+                    if (MatchMapper.IsMayhem(match))
                     {
                         logger.Info($"Fetching details for match {match.GameId}...");
                         var fullMatch = await client.TryGetMatchDetailsAsync(match.GameId, CancellationToken.None);

@@ -10,6 +10,7 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["tests/**/*.test.ts"],
-    fileParallelism: false // DB test files share one local database and truncate it
+    // DB test files share one local database and truncate it.
+    fileParallelism: false
   }
 });
