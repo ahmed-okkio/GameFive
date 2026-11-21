@@ -1,7 +1,6 @@
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
 
 namespace GameFive.Companion;
 
@@ -10,27 +9,47 @@ internal sealed class TrayIcon : IDisposable
     private readonly CompanionLogger _logger;
     private readonly LcuMonitor _monitor;
     private readonly UpdateManager _updateManager;
+    private readonly CompanionApi _api;
+    private readonly ManualResetEventSlim _ready = new();
     private NotifyIcon? _notifyIcon;
     private ContextMenuStrip? _menu;
+    private ToolStripItem? _statusItem;
     private System.Windows.Forms.Timer? _timer;
     private ApplicationContext? _context;
-    private string _currentText = "GameFive: Initializing...";
+    private SynchronizationContext? _ui;
+    private Action? _onBalloonClick;
     private bool _isConnected = false;
     private readonly object _lock = new();
 
-    public TrayIcon(CompanionLogger logger, LcuMonitor monitor, UpdateManager updateManager)
+    public TrayIcon(CompanionLogger logger, LcuMonitor monitor, UpdateManager updateManager, CompanionApi api)
     {
         _logger = logger;
         _monitor = monitor;
         _updateManager = updateManager;
+        _api = api;
     }
+
+    private static string StatusText(bool connected) =>
+        $"GameFive {CompanionConfig.Version}: {(connected ? "Connected" : "Disconnected")}";
 
     public void SetConnected(bool isConnected)
     {
         lock (_lock) {
             _isConnected = isConnected;
-            _currentText = isConnected ? "GameFive: Connected" : "GameFive: Disconnected";
         }
+    }
+
+    // Thread-safe; one balloon at a time, a click runs onClick.
+    public void ShowToast(string title, string body, Action onClick)
+    {
+        if (!_ready.Wait(TimeSpan.FromSeconds(30)) || _ui is null) return;
+        _ui.Post(_ =>
+        {
+            if (_notifyIcon is null) return;
+            _onBalloonClick = onClick;
+            // ShowBalloonTip rejects empty text.
+            _notifyIcon.ShowBalloonTip(10000, title, string.IsNullOrWhiteSpace(body) ? " " : body, ToolTipIcon.None);
+        }, null);
     }
 
     private void OpenLog()
@@ -42,49 +61,10 @@ internal sealed class TrayIcon : IDisposable
         }
     }
 
-    private void OpenWeb()
-    {
-        string url = "https://game-five-kohl.vercel.app/";
-        
-        if (_isConnected)
-        {
-            // Try to fetch summoner info
-            var lockfile = LcuLockfile.TryRead(_logger);
-            if (lockfile != null)
-            {
-                var connection = new LcuConnection { Port = lockfile.Port, AuthToken = lockfile.AuthToken, Protocol = lockfile.Protocol };
-                using var client = new LcuClient(connection, _logger);
-                
-                // Need to run this synchronously or handle it
-                // Since this is a button click handler, we can block or run as task
-                var summoner = Task.Run(async () => await client.GetCurrentSummonerAsync(CancellationToken.None)).GetAwaiter().GetResult();
-                
-                if (summoner != null)
-                {
-
-                    if (!string.IsNullOrWhiteSpace(summoner.GameName) && !string.IsNullOrWhiteSpace(summoner.TagLine))
-                    {
-                        url = $"https://game-five-kohl.vercel.app/player/{summoner.GameName}/{summoner.TagLine}";
-                    }
-                    else if (!string.IsNullOrWhiteSpace(summoner.DisplayName) && summoner.DisplayName.Contains('#'))
-                    {
-                        var parts = summoner.DisplayName.Split('#');
-                        if (parts.Length == 2)
-                        {
-                            url = $"https://game-five-kohl.vercel.app/player/{parts[0]}/{parts[1]}";
-                        }
-                    }
-                }
-            }
-        }
-        
-        Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-    }
-
     public void Run()
     {
         _logger.Info("Tray icon loop starting.");
-        
+
         var assembly = System.Reflection.Assembly.GetExecutingAssembly();
         using var connectedStream = assembly.GetManifestResourceStream("GameFive.Companion.connected.ico");
         using var disconnectedStream = assembly.GetManifestResourceStream("GameFive.Companion.disconnected.ico");
@@ -95,15 +75,21 @@ internal sealed class TrayIcon : IDisposable
         _notifyIcon = new NotifyIcon
         {
             Icon = disconnectedIcon,
-            Text = _currentText,
+            Text = StatusText(false),
             Visible = true
+        };
+        _notifyIcon.BalloonTipClicked += (_, _) =>
+        {
+            var onClick = _onBalloonClick;
+            _onBalloonClick = null;
+            onClick?.Invoke();
         };
 
         _menu = new ContextMenuStrip();
-        var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "Unknown";
-        _menu.Items.Add($"Version: {version}", null, null).Enabled = false;
-        _menu.Items.Add("Reconnect", null, (_, _) => _monitor.Reconnect());
-        _menu.Items.Add("Open GameFive", null, (_, _) => OpenWeb());
+        _ui = SynchronizationContext.Current; // installed by the first WinForms control above
+        _statusItem = _menu.Items.Add(StatusText(false), null, null);
+        _statusItem.Enabled = false;
+        _menu.Items.Add("Open Mayhem Week", null, (_, _) => _ = _api.OpenAsEntrantAsync(_monitor.Puuid, "/"));
         _menu.Items.Add("Upload recent games", null, async (_, _) => {
             var lockfile = LcuLockfile.TryRead(_logger);
             if (lockfile != null) {
@@ -111,8 +97,8 @@ internal sealed class TrayIcon : IDisposable
                 await MatchUploaderService.UploadRecentMatchesAsync(connection, _monitor._uploader, CompanionConfig.DiagnosticMatchLimit, _logger);
             }
         });
-        _menu.Items.Add("Open Log", null, (_, _) => OpenLog());
         _menu.Items.Add("Check for updates", null, (_, _) => _ = _updateManager.CheckForUpdatesAsync(CancellationToken.None));
+        _menu.Items.Add("Open log", null, (_, _) => OpenLog());
         _menu.Items.Add("Exit", null, (_, _) => {
             Application.Exit();
             Environment.Exit(0);
@@ -122,13 +108,15 @@ internal sealed class TrayIcon : IDisposable
 
         _context = new ApplicationContext();
 
-        // UI Timer: Updates the text and icon on the UI thread every 500ms
+        // UI Timer: Updates the status text and icon on the UI thread every 500ms
         _timer = new System.Windows.Forms.Timer { Interval = 500 };
         _timer.Tick += (s, e) => {
             lock (_lock) {
                 if (_notifyIcon != null) {
-                    if (_notifyIcon.Text != _currentText) {
-                        _notifyIcon.Text = _currentText;
+                    var text = StatusText(_isConnected);
+                    if (_notifyIcon.Text != text) {
+                        _notifyIcon.Text = text;
+                        _statusItem.Text = text;
                     }
                     var expectedIcon = _isConnected ? connectedIcon : disconnectedIcon;
                     if (_notifyIcon.Icon != expectedIcon) {
@@ -138,6 +126,7 @@ internal sealed class TrayIcon : IDisposable
             }
         };
         _timer.Start();
+        _ready.Set();
 
         Application.Run(_context);
     }

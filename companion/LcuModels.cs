@@ -43,6 +43,9 @@ internal sealed class LcuGame
     [JsonPropertyName("queueId")]
     public int QueueId { get; set; }
 
+    [JsonPropertyName("gameType")]
+    public string? GameType { get; set; }
+
     [JsonPropertyName("gameMode")]
     public string? GameMode { get; set; }
 

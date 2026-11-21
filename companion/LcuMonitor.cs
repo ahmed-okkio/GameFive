@@ -7,34 +7,44 @@ internal sealed class LcuMonitor : IDisposable
 {
     public readonly GameFiveUploader _uploader;
     private readonly CompanionLogger _logger;
-    private LcuConnection? _connection;
+    private readonly CompanionApi _api;
+    private readonly AppPaths _paths;
+    private readonly Action<string, string, Action> _showToast;
     private LcuService? _service;
     private readonly System.Timers.Timer _timer;
     private bool _wasRunning = false;
 
     public event EventHandler<LcuStatus>? StatusChanged;
 
-    public LcuMonitor(CompanionLogger logger, GameFiveUploader uploader)
+    public LcuMonitor(CompanionLogger logger, GameFiveUploader uploader, CompanionApi api, AppPaths paths, Action<string, string, Action> showToast)
     {
         _logger = logger;
         _uploader = uploader;
-        
+        _api = api;
+        _paths = paths;
+        _showToast = showToast;
+        _uploader.Uploaded += () => _ = _service?.PollInboxAsync();
+
         _timer = new System.Timers.Timer(5000);
         _timer.Elapsed += CheckLeagueProcess;
+    }
+
+    // The connected Entrant's PUUID, or null while the client is closed or not logged in.
+    public string? Puuid => _service?.Puuid;
+
+    // Null when the client is not connected (or the call fails), which allows an update.
+    public async Task<string?> GetGameflowPhaseAsync()
+    {
+        var service = _service;
+        if (service is null) return null;
+        try { return await service.GetGameflowPhaseAsync(); }
+        catch (Exception) { return null; }
     }
 
     public void Start()
     {
         _logger.Info("Starting polling monitor for LeagueClient.exe...");
         _timer.Start();
-    }
-
-    public void Reconnect()
-    {
-        _logger.Info("Manual reconnect requested.");
-        CleanupConnection();
-        // Force a fresh check
-        CheckLeagueProcess(null, null!);
     }
 
     public void Stop()
@@ -72,36 +82,36 @@ internal sealed class LcuMonitor : IDisposable
                 if (lockfile != null)
                 {
                     _logger.Info($"Lockfile read: Port={lockfile.Port}, Protocol={lockfile.Protocol}");
-                    
+
                     var lcuConnection = new LcuConnection { Port = lockfile.Port, AuthToken = lockfile.AuthToken, Protocol = lockfile.Protocol };
-                    
-                    var lcuService = new LcuService(lcuConnection, _logger, _uploader, (isConnected) => {
+
+                    var lcuService = new LcuService(lcuConnection, _logger, _uploader, _api, _paths, _showToast, (isConnected) => {
                         _logger.Info($"StatusChanged invoked: Connected={isConnected}");
                         StatusChanged?.Invoke(this, isConnected ? LcuStatus.Connected : LcuStatus.Disconnected);
                     });
-                    
+
+                    // Set before connecting: ConnectAsync only returns once the socket closes.
+                    _service = lcuService;
                     try {
-                        if (await lcuService.ConnectAsync(CancellationToken.None))
+                        if (await lcuService.ConnectAsync())
                         {
-                            _connection = lcuConnection;
-                            _service = lcuService;
-                            _logger.Info("LCU Service connected successfully.");
-                            return; // Success!
+                            _logger.Info("LCU Service session ended.");
+                            return;
                         }
-                        else 
+                        else
                         {
                             _logger.Warn("LcuService returned false on ConnectAsync.");
-                            lcuService.Dispose();
                         }
                     } catch (Exception ex) {
                         _logger.Error($"Exception during ConnectAsync: {ex.Message}", ex);
-                        lcuService.Dispose();
                     }
+                    if (_service == lcuService) _service = null;
+                    lcuService.Dispose();
                 }
                 else {
                     _logger.Warn("LcuLockfile.TryRead returned null.");
                 }
-                
+
                 _logger.Warn($"Connection attempt {i+1} failed. Retrying in 5 seconds...");
                 await Task.Delay(5000);
             }
@@ -113,8 +123,7 @@ internal sealed class LcuMonitor : IDisposable
     {
         _service?.Dispose();
         _service = null;
-        _connection = null;
-        _wasRunning = false; // Add this line
+        _wasRunning = false;
         StatusChanged?.Invoke(this, LcuStatus.Disconnected);
     }
 

@@ -36,6 +36,10 @@ internal sealed class LcuClient : IDisposable
         return await GetJsonAsync<LcuSummoner>("/lol-summoner/v1/current-summoner", cancellationToken);
     }
 
+    // Returns a bare JSON string such as "ChampSelect" or "InProgress".
+    public Task<string?> GetGameflowPhaseAsync(CancellationToken cancellationToken) =>
+        GetJsonAsync<string>("/lol-gameflow/v1/gameflow-phase", cancellationToken);
+
     public async Task<LcuMatchHistoryResponse?> GetMatchHistoryAsync(string puuid, CancellationToken cancellationToken)
     {
         return await GetJsonAsync<LcuMatchHistoryResponse>(
