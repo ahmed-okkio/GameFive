@@ -24,10 +24,6 @@ model Player {
   baselineMmr           Float?             @map("baseline_mmr")
   currentLp             Int                @default(0) @map("current_lp")
   isPlaced              Boolean            @default(false) @map("is_placed")
-  promoFromTier         String?            @map("promo_from_tier")
-  promoToTier           String?            @map("promo_to_tier")
-  promoWins             Int                @default(0) @map("promo_wins")
-  promoLosses           Int                @default(0) @map("promo_losses")
   historicalTier        String?            @map("historical_tier")
   historicalDivision    String?            @map("historical_division")
   enrichmentDepth       Int                @default(0) @map("enrichment_depth")
@@ -37,12 +33,15 @@ model Player {
   lastGameTier          String?            @map("last_game_tier")
   cacheUpdatedAt        DateTime?          @map("cache_updated_at")
   manualRefreshAt       DateTime?          @map("manual_refresh_at")
+  registeredAt          DateTime?          @map("registered_at")
+  removedAt             DateTime?          @map("removed_at")
+  companionVersion      String?            @map("companion_version")
   createdAt             DateTime           @default(now()) @map("created_at")
   updatedAt             DateTime           @updatedAt @map("updated_at")
   participants          MatchParticipant[]
   leaderboardEntries    LeaderboardBlacklist[]
 
-  @@unique([riotIdName, riotIdTag])
+  @@index([puuid])
   @@map("players")
 }
 
@@ -51,12 +50,14 @@ model Match {
   matchId          String             @unique @map("match_id")
   gameMode         String             @map("game_mode")
   gameDate         DateTime           @map("game_date")
+  gameEndedAt      DateTime?          @map("game_ended_at")
   durationSeconds  Int                @map("duration_seconds")
   queueId          Int                @map("queue_id")
   lobbyAvgMmr      Float?             @map("lobby_avg_mmr")
   team100AvgMmr    Int?               @map("team_100_avg_mmr")
   team200AvgMmr    Int?               @map("team_200_avg_mmr")
   teamsJson        Json?              @map("teams_json")
+  rawPayload       Json?              @map("raw_payload")
   createdAt        DateTime           @default(now()) @map("created_at")
   participants     MatchParticipant[]
 
@@ -92,6 +93,7 @@ model MatchParticipant {
   isPlacement        Boolean  @default(false) @map("is_placement")
   itemsJson          Json?    @map("items_json")
   augmentsJson       Json?    @map("augments_json")
+  endOfGameStats     Json?    @map("end_of_game_stats")
   spell1Id           Int?     @map("spell1_id")
   spell2Id           Int?     @map("spell2_id")
   champLevel         Int?     @map("champ_level")

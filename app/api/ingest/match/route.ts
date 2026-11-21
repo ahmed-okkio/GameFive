@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const body = await request.json();
+  const body = await request.json().catch(() => null);
   const payload = companionMatchPayloadSchema.safeParse(body);
 
   if (!payload.success) {
@@ -27,7 +27,11 @@ export async function POST(request: Request) {
     );
   }
 
-  const result = await ingestCompanionMayhemMatch(payload.data);
-
-  return NextResponse.json(result);
+  try {
+    return NextResponse.json(await ingestCompanionMayhemMatch(payload.data));
+  } catch (error) {
+    // Nothing was saved (single transaction); the Companion's offline queue retries on 5xx.
+    console.error("[Ingest] Failed to store match", error);
+    return NextResponse.json({ error: "Failed to store match" }, { status: 500 });
+  }
 }

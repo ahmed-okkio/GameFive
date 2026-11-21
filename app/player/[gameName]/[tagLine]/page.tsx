@@ -34,11 +34,7 @@ async function PlayerProfileLoader({ gameName, tagLine }: { gameName: string, ta
             riotIdName: profile.player.riotIdName,
             riotIdTag: profile.player.riotIdTag,
             isPlaced: profile.player.isPlaced,
-            profileIconId: profile.player.profileIconId,
-            promoFromTier: profile.player.promoFromTier,
-            promoToTier: profile.player.promoToTier,
-            promoWins: profile.player.promoWins,
-            promoLosses: profile.player.promoLosses
+            profileIconId: profile.player.profileIconId
           },
           mmr: {
             rawMmr: Math.round(profile.mmr.rawMmr),

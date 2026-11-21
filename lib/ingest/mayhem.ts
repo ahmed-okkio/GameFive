@@ -1,58 +1,30 @@
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import type { Player } from "@prisma/client";
-import { rankedToMmr } from "@/lib/mmr/ranked";
-import { calculateLpDelta, calculatePlacementMmr } from "@/lib/mmr/calculate";
-import { getTierLabel } from "@/lib/mmr/tier";
-import { getChampionMap, refreshChampionMap } from "@/lib/riot/champions";
-import { getPlayerByPuuid, upsertPlayer } from "@/lib/players";
-import { riotClient } from "@/lib/riot/client";
-import { fetchOpggHistoricalRank } from "@/lib/riot/opgg";
+import { findPlayerByPuuid, isEntrant } from "@/lib/entrants";
 import { scoreMatch } from "@/lib/mmr/performance-score";
 
-let championMapCache: Record<number, string> | null = null;
+const MAYHEM_QUEUE_ID = 2400;
+const MAYHEM_GAME_TYPE = "MATCHED_GAME";
+const REMAKE_SECONDS = 240;
 
-export const companionMatchPayloadSchema = z.object({
-  source: z.literal("lcu"),
+// Only identity fields are validated; everything else is optional, unlimited and kept as sent (looseObject).
+export const companionMatchPayloadSchema = z.looseObject({
   uploaderPuuid: z.string().min(1),
   gameId: z.number().int().positive(),
   queueId: z.number().int(),
-  gameMode: z.string().nullable().optional(),
-  mapId: z.number().int().nullable().optional(),
+  gameType: z.string(),
   gameCreation: z.number().int().positive(),
   gameDuration: z.number().int().nonnegative(),
-  teams: z.array(z.record(z.string(), z.any())).optional(),
+  // The uploader's own end-of-game stats block, read by the Companion when the game ends.
+  endOfGameStats: z.record(z.string(), z.unknown()).nullish(),
   participants: z
     .array(
-      z.object({
+      z.looseObject({
         puuid: z.string().min(1),
-        gameName: z.string().nullable().optional(),
-        tagLine: z.string().nullable().optional(),
-        summonerName: z.string().nullable().optional(),
-        participantId: z.number().int(),
         teamId: z.number().int(),
         championId: z.number().int(),
-        win: z.boolean(),
-        kills: z.number().int().nonnegative(),
-        deaths: z.number().int().nonnegative(),
-        assists: z.number().int().nonnegative(),
-        totalDamageDealtToChampions: z.number().int().nonnegative(),
-        totalHeal: z.number().int().nonnegative(),
-        goldEarned: z.number().int().nonnegative().optional(),
-        spell1Id: z.number().int().nullable().optional(),
-        spell2Id: z.number().int().nullable().optional(),
-        items: z.array(z.number().int().nonnegative()).max(7).optional(),
-        augments: z.array(z.number().int().nonnegative()).max(6).optional(),
-        champLevel: z.number().int().nonnegative().optional(),
-        goldSpent: z.number().int().nonnegative().optional(),
-        damageTaken: z.number().int().nonnegative().optional(),
-        selfMitigated: z.number().int().nonnegative().optional(),
-        minionsKilled: z.number().int().nonnegative().optional(),
-        doubleKills: z.number().int().nonnegative().optional(),
-        tripleKills: z.number().int().nonnegative().optional(),
-        quadraKills: z.number().int().nonnegative().optional(),
-        pentaKills: z.number().int().nonnegative().optional(),
-        totalUnitsHealed: z.number().int().nonnegative().optional()
+        win: z.boolean()
       })
     )
     .min(1)
@@ -60,353 +32,170 @@ export const companionMatchPayloadSchema = z.object({
 
 export type CompanionMatchPayload = z.infer<typeof companionMatchPayloadSchema>;
 
-function isMayhemPayload(payload: CompanionMatchPayload) {
-  return payload.queueId === 2400 || payload.gameMode?.toUpperCase() === "KIWI";
+export type IngestStatus = "stored" | "duplicate" | "not_mayhem" | "remake" | "not_entrant";
+
+function int(value: unknown) {
+  return Number.isSafeInteger(value) ? (value as number) : undefined;
 }
 
-async function resolveRank(name: string, tag: string): Promise<{ mmr: number, tier: string | null, lp: number | null } | null> {
-    try {
-        // A: Resolve to public PUUID first
-        const account = await riotClient.getAccountByRiotId(name, tag);
+function round(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) ? Math.round(value) : undefined;
+}
 
-        // B: If account found, try to fetch ranked entries
-        if (account) {
-            const leagues = await riotClient.getLeagueEntriesByPuuid(account.puuid);
-            const solo = leagues.find(l => l.queueType === "RANKED_SOLO_5x5");
-            const flex = leagues.find(l => l.queueType === "RANKED_FLEX_SR");
-            
-            const soloMmr = solo ? (rankedToMmr(solo.tier, solo.rank, solo.leaguePoints) ?? 0) : 0;
-            const flexMmr = flex ? (rankedToMmr(flex.tier, flex.rank, flex.leaguePoints) ?? 0) : 0;
-            
-            const entry = soloMmr >= flexMmr ? solo : flex;
-            const mmr = Math.max(soloMmr, flexMmr);
-            
-            if (mmr > 0 && entry) return { mmr, tier: entry.tier, lp: entry.leaguePoints };
-        }
+function str(value: unknown) {
+  return typeof value === "string" && value.length > 0 ? value : undefined;
+}
 
-        // C: Fallback to OP.GG
-        const hist = await fetchOpggHistoricalRank("euw", name, tag);
-        if (hist) return { 
-            mmr: rankedToMmr(hist.tier, hist.division, hist.lp ?? 0) ?? 0, 
-            tier: hist.tier, 
-            lp: hist.lp 
-        };
-    } catch (e) {
-        console.warn(`Failed to resolve rank for ${name}#${tag}`, e);
-    }
-    return null;
+function result(status: IngestStatus, matchId?: string) {
+  return { status, accepted: status === "stored" || status === "duplicate", duplicate: status === "duplicate", matchId };
 }
 
 export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload) {
-  if (!isMayhemPayload(payload)) {
-    return { accepted: false, duplicate: false, reason: "not_mayhem" };
+  if (payload.queueId !== MAYHEM_QUEUE_ID || payload.gameType !== MAYHEM_GAME_TYPE) {
+    return result("not_mayhem");
   }
 
-  if (payload.gameDuration < 240) {
-      console.log(`[Ingest] Skipping match ${payload.gameId} because it is a remake (duration: ${payload.gameDuration}s)`);
-      return { accepted: false, duplicate: false, reason: "remake" };
+  if (payload.gameDuration < REMAKE_SECONDS) {
+    return result("remake");
+  }
+
+  const uploader = await findPlayerByPuuid(payload.uploaderPuuid);
+  if (!isEntrant(uploader)) {
+    return result("not_entrant");
   }
 
   const matchId = `LCU_${payload.gameId}`;
-  console.log(`[Ingest] Starting match ${matchId}`);
-
-  const existingMatch = await prisma.match.findUnique({ where: { matchId } });
-  if (existingMatch) {
-    console.log(`[Ingest] Match ${matchId} already exists, skipping.`);
-    return { accepted: true, duplicate: true, matchId };
+  if (await prisma.match.findUnique({ where: { matchId }, select: { id: true } })) {
+    return result("duplicate", matchId);
   }
 
-  const playerRows = new Map<string, Player>();
-  const playerRankSignals = new Map<string, number | null>();
-  
-  if (!championMapCache) {
-      championMapCache = await getChampionMap();
+  // Identity is the PUUID only: participants attach to existing rows by PUUID, never by Riot name.
+  const knownPlayers = await prisma.player.findMany({
+    where: { puuid: { in: payload.participants.map((p) => p.puuid) } },
+    orderBy: { createdAt: "asc" }
+  });
+  const playerByPuuid = new Map<string, (typeof knownPlayers)[number]>();
+  for (const player of knownPlayers) {
+    if (player.puuid && !playerByPuuid.has(player.puuid)) playerByPuuid.set(player.puuid, player);
   }
 
-  // 1. Resolve ALL players in parallel
-  console.log(`[Ingest] Resolving ${payload.participants.length} players...`);
-  await Promise.all(payload.participants.map(async (participant) => {
-      const name = participant.gameName ?? participant.summonerName ?? "Unknown";
-      const tag = participant.tagLine ?? "EUW";
+  const gameDate = new Date(payload.gameCreation);
+  const gameEndedAt = new Date(payload.gameCreation + payload.gameDuration * 1000);
+  const eog = payload.endOfGameStats ?? null;
 
-      // Try lookup by Name/Tag first
-      let player = await prisma.player.findFirst({
-          where: { riotIdName: name, riotIdTag: tag }
-      });
+  type Participant = (typeof payload.participants)[number] & Record<string, unknown>;
+  const participants = payload.participants.map((p: Participant, index) => ({
+    ...p,
+    participantId: int(p.participantId) ?? index + 1,
+    gameName: str(p.gameName) ?? str(p.summonerName),
+    tagLine: str(p.tagLine),
+    isUploader: p.puuid === payload.uploaderPuuid
+  }) as Participant & { participantId: number; gameName?: string; tagLine?: string; isUploader: boolean });
 
-      // Fallback lookup by PUUID
-      if (!player) {
-          player = await getPlayerByPuuid(participant.puuid);
-      }
-
-      // Self-heal: If found but PUUID is missing/mismatched, update it
-      if (player && participant.puuid && player.puuid !== participant.puuid) {
-          player = await prisma.player.update({
-              where: { id: player.id },
-              data: { puuid: participant.puuid }
-          });
-          console.log(`[Ingest] Updated PUUID for ${name}#${tag}`);
-      }
-
-      if (player) {
-          playerRows.set(participant.puuid, player);
-          playerRankSignals.set(participant.puuid, player.rawMmr);
-      } else if (participant.puuid === payload.uploaderPuuid) {
-          const player = await upsertPlayer(name, tag, participant.puuid);
-          playerRows.set(participant.puuid, player);
-          playerRankSignals.set(participant.puuid, player.rawMmr);
-      } else {
-          // Non-uploader, not in DB - resolve without persisting
-          const rankData = await resolveRank(name, tag);
-          playerRankSignals.set(participant.puuid, rankData ? rankData.mmr : null);
-      }
-  }));
-  console.log(`[Ingest] Players resolved.`);
-
-  // 2. Calculate Team Average MMRs
-  const team100Ranked: number[] = [];
-  const team200Ranked: number[] = [];
-
-  payload.participants.forEach(p => {
-      const m = playerRankSignals.get(p.puuid);
-      if (m !== null && m !== undefined && m > 0) {
-          if (p.teamId === 100) team100Ranked.push(m);
-          else if (p.teamId === 200) team200Ranked.push(m);
-      }
-  });
-
-  const allRanked = [...team100Ranked, ...team200Ranked];
-  const lobbyAvgMmr = allRanked.length > 0
-      ? allRanked.reduce((sum, pMmr) => sum + pMmr, 0) / allRanked.length
-      : null;
-
-  const team100Avg = team100Ranked.length > 0
-      ? team100Ranked.reduce((a, b) => a + b, 0) / team100Ranked.length
-      : lobbyAvgMmr;
-
-  const team200Avg = team200Ranked.length > 0
-      ? team200Ranked.reduce((a, b) => a + b, 0) / team200Ranked.length
-      : lobbyAvgMmr;
-
-  // 3. Create the match
-  const storedMatch = await prisma.match.create({
-    data: {
-      matchId,
-      gameMode: "MAYHEM",
-      gameDate: new Date(payload.gameCreation),
-      durationSeconds: payload.gameDuration,
-      queueId: payload.queueId,
-      lobbyAvgMmr,
-      team100AvgMmr: team100Avg ? Math.round(team100Avg) : null,
-      team200AvgMmr: team200Avg ? Math.round(team200Avg) : null,
-      teamsJson: payload.teams ?? undefined
-    }
-  });
-
-  // 4. Create match participants and update known players
-  
-  // Prepare participants for score calculation
-  const matchForScoring = {
-    participants: payload.participants.map(p => ({
+  const scores = scoreMatch({
+    participants: participants.map((p) => ({
       participantId: p.participantId,
       teamId: p.teamId,
       stats: {
         win: p.win,
-        kills: p.kills,
-        deaths: p.deaths,
-        assists: p.assists,
-        totalDamageDealtToChampions: p.totalDamageDealtToChampions,
-        totalDamageTaken: p.damageTaken ?? 0,
-        damageSelfMitigated: p.selfMitigated ?? 0,
-        totalHeal: p.totalHeal,
-        totalUnitsHealed: p.totalUnitsHealed ?? 0,
-        timeCCingOthers: 0, // Need to collect this in payload if available
-        goldEarned: p.goldEarned ?? 0,
-        champLevel: p.champLevel ?? 0,
-        doubleKills: p.doubleKills ?? 0,
-        tripleKills: p.tripleKills ?? 0,
-        quadraKills: p.quadraKills ?? 0,
-        pentaKills: p.pentaKills ?? 0,
+        kills: int(p.kills) ?? 0,
+        deaths: int(p.deaths) ?? 0,
+        assists: int(p.assists) ?? 0,
+        totalDamageDealtToChampions: int(p.totalDamageDealtToChampions) ?? 0,
+        totalDamageTaken: int(p.damageTaken) ?? 0,
+        damageSelfMitigated: int(p.selfMitigated) ?? 0,
+        totalHeal: int(p.totalHeal) ?? 0,
+        totalUnitsHealed: int(p.totalUnitsHealed) ?? 0,
+        timeCCingOthers: 0,
+        goldEarned: int(p.goldEarned) ?? 0,
+        champLevel: int(p.champLevel) ?? 0,
+        doubleKills: int(p.doubleKills) ?? 0,
+        tripleKills: int(p.tripleKills) ?? 0,
+        quadraKills: int(p.quadraKills) ?? 0,
+        pentaKills: int(p.pentaKills) ?? 0
       }
     })),
-    participantIdentities: payload.participants.map(p => ({
+    participantIdentities: participants.map((p) => ({
       participantId: p.participantId,
       player: { gameName: p.gameName ?? "Unknown" }
     }))
-  };
+  });
 
-  const scores = scoreMatch(matchForScoring);
+  // Pick up Riot ID renames, but never let an old (backfilled) game overwrite a newer name.
+  const renames = participants.flatMap((p) => {
+    const player = playerByPuuid.get(p.puuid);
+    if (!player || !p.gameName || !p.tagLine || gameEndedAt <= player.updatedAt) return [];
+    if (player.riotIdName === p.gameName && player.riotIdTag === p.tagLine) return [];
+    return [prisma.player.update({ where: { id: player.id }, data: { riotIdName: p.gameName, riotIdTag: p.tagLine } })];
+  });
 
-  for (const participant of payload.participants) {
-    let player = playerRows.get(participant.puuid) ?? null;
-    console.log(`[Ingest] Processing participant ${participant.puuid}. Found in playerRows: ${!!player}`);
-    if (player) console.log(`[Ingest] Player ${player.riotIdName} isPlaced: ${player.isPlaced}`);
-
-    const rankSignalMmr = playerRankSignals.get(participant.puuid) ?? null;
-    const playerRiotIdName = player ? null : participant.gameName ?? participant.summonerName ?? null;
-    const playerRiotIdTag = player ? null : participant.tagLine ?? null;
-
-    // 1. Calculate stats for the match participant
-    if (!championMapCache[participant.championId]) {
-        championMapCache = await refreshChampionMap();
-    }
-    const championName = championMapCache[participant.championId] ?? `Champion ${participant.championId}`;
-
-    // 2. Update lastGameDate for all participants in DB
-    if (player) {
-        await prisma.player.update({
-            where: { id: player.id },
-            data: { lastGameDate: new Date(payload.gameCreation), cacheUpdatedAt: new Date() }
-        });
-    }
-
-    // 3. Calculate LP delta only if player exists and is placed
-    let participantLpDelta = 0;
-    
-    // Check if player should be placed now
-    let isPlaced = player?.isPlaced ?? false;
-    
-    if (player && !isPlaced && (player.mayhemGames + 1) >= 10) {
-        // Calculate initial MMR for placement
-        const allParticipantMatches = await prisma.matchParticipant.findMany({
-            where: { playerId: player.id, match: { gameMode: "MAYHEM" } },
-            include: { match: true }
-        });
-        const calculableMatches = allParticipantMatches.filter(p => p.match.lobbyAvgMmr !== null);
-        const placementLobbyAvgMmr = calculableMatches.length > 0 
-            ? calculableMatches.reduce((sum, p) => sum + (p.match.lobbyAvgMmr ?? 0), 0) / calculableMatches.length 
-            : null;
-        const wins = allParticipantMatches.filter(g => g.win).length + (participant.win ? 1 : 0);
-        
-        const startingMmr = calculatePlacementMmr({
-            mayhemWins: wins,
-            placementLobbyAvgMmr
-        });
-        
-        const tier = getTierLabel(startingMmr);
-        
-        // Update player to placed status
-        const updatedPlayer = await prisma.player.update({
-            where: { id: player.id },
-            data: {
-                isPlaced: true,
-                rawMmr: startingMmr,
-                baselineMmr: startingMmr,
-                currentLp: Math.round(startingMmr % 100),
-                lastGameTier: tier.label,
-                cacheUpdatedAt: new Date()
-            }
-        });
-        
-        // Refresh player object for subsequent calculations in this loop
-        player = updatedPlayer;
-        isPlaced = true;
-    }
-
-    if (player && isPlaced) {
-        // ... (rest of LP calculation logic)
-        const last5Games = await prisma.matchParticipant.findMany({
-            where: { playerId: player.id, match: { gameMode: "MAYHEM" } },
-            include: { match: true },
-            orderBy: { match: { gameDate: "desc" } },
-            take: 5
-        });
-        
-        let consecutiveStreak = 0;
-        for (const g of last5Games) {
-            if (g.win === participant.win) consecutiveStreak++;
-            else break;
-        }
-        
-        const myTeamAvgMmr = participant.teamId === 100 ? team100Avg : team200Avg;
-        const opposingTeamAvgMmr = participant.teamId === 100 ? team200Avg : team100Avg;
-
-        const delta = calculateLpDelta({
-            individualPlayerMmr: player.rawMmr,
-            myTeamAvgMmr,
-            opposingTeamAvgMmr,
-            lobbyAvgFallback: lobbyAvgMmr,
-            consecutiveStreak: consecutiveStreak,
-            win: participant.win
-        });
-        participantLpDelta = Math.round(participant.win ? delta : -delta);
-
-        const newMmr = player.rawMmr + participantLpDelta;
-        const tier = getTierLabel(newMmr);
-
-        await prisma.player.update({
-            where: { id: player.id },
-            data: {
-                rawMmr: newMmr,
-                currentLp: Math.round(newMmr % 100),
-                mayhemGames: { increment: 1 },
-                lastGameDate: new Date(payload.gameCreation),
-                lastGameTier: tier.label,
-                cacheUpdatedAt: new Date()
-            }
-        });
-    } else if (player) {
-        // Still in placement
-        await prisma.player.update({
-            where: { id: player.id },
-            data: {
-                mayhemGames: { increment: 1 },
-                lastGameDate: new Date(payload.gameCreation),
-                cacheUpdatedAt: new Date()
-            }
-        });
-    }
-
-    // Move rank resolution before participant creation to ensure rankData is available
-    let rankData: { mmr: number, tier: string | null, lp: number | null } | null = null;
-    if (!player) {
-        rankData = await resolveRank(playerRiotIdName ?? "Unknown", playerRiotIdTag ?? "EUW");
-    }
-
-    const participantScore = scores.find(s => s.participantId === participant.participantId)?.score ?? 0;
-
-    await prisma.matchParticipant.create({
-        data: {
-        matchId: storedMatch.id,
-        playerId: player?.id,
-        playerRiotIdName,
-        playerRiotIdTag,
-        rankSignalMmr: rankSignalMmr,
-        rankTier: player ? null : (rankData?.tier ?? null),
-        leaguePoints: player ? null : (rankData?.lp ?? null),
-        team: participant.teamId,
-        win: participant.win,
-        championId: participant.championId,
-        championName,
-        kills: participant.kills,
-        deaths: participant.deaths,
-        assists: participant.assists,
-        damageToChampions: participant.totalDamageDealtToChampions,
-        healingDone: participant.totalHeal,
-        killParticipation: 0,
-        damageShare: 0,
-        healingShare: 0,
-        performanceScore: participantScore,
-        lpDelta: participantLpDelta,
-        isPlacement: player ? (player.mayhemGames < 10) : true,
-        itemsJson: participant.items,
-        augmentsJson: participant.augments,
-        spell1Id: participant.spell1Id,
-        spell2Id: participant.spell2Id,
-        champLevel: participant.champLevel,
-        goldEarned: participant.goldEarned,
-        goldSpent: participant.goldSpent,
-        damageTaken: participant.damageTaken,
-        selfMitigated: participant.selfMitigated,
-        minionsKilled: participant.minionsKilled,
-        doubleKills: participant.doubleKills,
-        tripleKills: participant.tripleKills,
-        quadraKills: participant.quadraKills,
-        pentaKills: participant.pentaKills,
-        totalUnitsHealed: participant.totalUnitsHealed
+  const createMatch = prisma.match.create({
+    data: {
+      matchId,
+      gameMode: "MAYHEM",
+      gameDate,
+      gameEndedAt,
+      durationSeconds: payload.gameDuration,
+      queueId: payload.queueId,
+      teamsJson: Array.isArray(payload.teams) ? (payload.teams as Prisma.InputJsonValue) : undefined,
+      rawPayload: payload as Prisma.InputJsonValue,
+      participants: {
+        create: participants.map((p) => {
+          const player = playerByPuuid.get(p.puuid);
+          // The uploader's end-of-game block (LCU eog-stats-block, UPPERCASE keys) is the source for teammate healing/shielding.
+          const stats = p.isUploader ? eog : null;
+          return {
+            playerId: player?.id,
+            playerRiotIdName: player ? null : p.gameName ?? null,
+            playerRiotIdTag: player ? null : p.tagLine ?? null,
+            team: p.teamId,
+            win: p.win,
+            championId: p.championId,
+            kills: int(p.kills) ?? 0,
+            deaths: int(p.deaths) ?? 0,
+            assists: int(p.assists) ?? 0,
+            damageToChampions: int(p.totalDamageDealtToChampions) ?? 0,
+            healingDone: int(p.totalHeal) ?? 0,
+            killParticipation: 0,
+            damageShare: 0,
+            healingShare: 0,
+            performanceScore: scores.find((s) => s.participantId === p.participantId)?.score ?? 0,
+            totalTimeCrowdControlDealt: int(p.totalTimeCrowdControlDealt) ?? 0,
+            totalHealOnTeammates: round(stats?.TOTAL_HEAL_ON_TEAMMATES) ?? int(p.totalHealOnTeammates) ?? 0,
+            totalDamageShieldedOnTeammates:
+              round(stats?.TOTAL_DAMAGE_SHIELDED_ON_TEAMMATES) ?? int(p.totalDamageShieldedOnTeammates) ?? 0,
+            endOfGameStats: p.isUploader && eog ? (eog as Prisma.InputJsonValue) : undefined,
+            itemsJson: Array.isArray(p.items) ? (p.items as Prisma.InputJsonValue) : undefined,
+            augmentsJson: Array.isArray(p.augments) ? (p.augments as Prisma.InputJsonValue) : undefined,
+            spell1Id: int(p.spell1Id),
+            spell2Id: int(p.spell2Id),
+            champLevel: int(p.champLevel),
+            goldEarned: int(p.goldEarned),
+            goldSpent: int(p.goldSpent),
+            damageTaken: int(p.damageTaken),
+            selfMitigated: int(p.selfMitigated),
+            minionsKilled: int(p.minionsKilled),
+            doubleKills: int(p.doubleKills),
+            tripleKills: int(p.tripleKills),
+            quadraKills: int(p.quadraKills),
+            pentaKills: int(p.pentaKills),
+            totalUnitsHealed: int(p.totalUnitsHealed)
+          };
+        })
       }
-    });
+    }
+  });
+
+  try {
+    // One transaction: the match, its participants and any renames are saved together or not at all.
+    await prisma.$transaction([createMatch, ...renames]);
+  } catch (error) {
+    // A simultaneous upload of the same game won the unique match_id race.
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return result("duplicate", matchId);
+    }
+    throw error;
   }
 
-  return { accepted: true, duplicate: false, matchId, participants: payload.participants.length };
+  return result("stored", matchId);
 }

@@ -2,10 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { DEFAULT_MEDIAN_MMR } from "@/lib/mmr/ranked";
 import { getTierLabel } from "@/lib/mmr/tier";
 import { getChampionAssetMap, getChampionMap } from "@/lib/riot/champions";
-import { riotClient } from "@/lib/riot/client";
-import { fetchOpggHistoricalRank } from "@/lib/riot/opgg";
-import { extractRankedSnapshot } from "@/lib/riot/ranked";
-import { Player } from "@prisma/client";
+
 
 export async function getGlobalMedianMmr() {
   const players = await prisma.player.findMany({
@@ -16,6 +13,7 @@ export async function getGlobalMedianMmr() {
   return players.length < 10 ? DEFAULT_MEDIAN_MMR : players[Math.floor(players.length / 2)].rawMmr;
 }
 
+// Display lookup for the old profile page only (deleted in M5); never used for identity and never creates a player.
 export async function getPlayerByRiotId(gameName: string, tagLine: string) {
   return await prisma.player.findFirst({
     where: {
@@ -23,153 +21,6 @@ export async function getPlayerByRiotId(gameName: string, tagLine: string) {
       riotIdTag: { equals: tagLine, mode: 'insensitive' },
     },
   });
-}
-
-export async function getPlayerByPuuid(puuid: string) {
-  return prisma.player.findFirst({
-    where: {
-      puuid
-    }
-  });
-}
-
-// ALWAYS use the "Official" Riot-provided name and tag to ensure correct casing
-export async function upsertPlayer(
-  riotIdName: string,
-  riotIdTag: string,
-  puuid: string | null | undefined,
-  profileIconId?: number | null
-) {
-  const player = await prisma.player.upsert({
-    where: {
-        riotIdName_riotIdTag: {
-            riotIdName: riotIdName,
-            riotIdTag: riotIdTag
-        }
-    },
-    update: {
-        puuid: (puuid && puuid.length > 10) ? puuid : undefined,
-        profileIconId: profileIconId ?? undefined,
-        // Ensure we update to the official casing provided by Riot
-        riotIdName: riotIdName,
-        riotIdTag: riotIdTag,
-    },
-    create: {
-        puuid: (puuid && puuid.length > 10) ? puuid : null,
-        riotIdName: riotIdName,
-        riotIdTag: riotIdTag,
-        profileIconId,
-    },
-  });
-
-  // Self-heal: Link unlinked participants to this player
-  await linkUnlinkedParticipants(player.id, riotIdName, riotIdTag);
-  
-  // Retroactively fix placement status
-  await updatePlayerPlacementStatus(player.id);
-
-  return hydrateRankedSignals(player);
-}
-
-export async function updatePlayerPlacementStatus(playerId: string) {
-    const matches = await prisma.matchParticipant.findMany({
-        where: { playerId, match: { gameMode: 'MAYHEM' } },
-        include: { match: true },
-        orderBy: { match: { gameDate: 'asc' } }
-    });
-
-    for (let i = 0; i < matches.length; i++) {
-        const isPlacement = i < 10;
-        if (matches[i].isPlacement !== isPlacement) {
-            await prisma.matchParticipant.update({
-                where: { id: matches[i].id },
-                data: { isPlacement }
-            });
-        }
-    }
-}
-
-export async function linkUnlinkedParticipants(playerId: string, name: string, tag: string) {
-    await prisma.matchParticipant.updateMany({
-        where: {
-            playerId: null,
-            playerRiotIdName: { equals: name, mode: 'insensitive' },
-            playerRiotIdTag: { equals: tag, mode: 'insensitive' }
-        },
-        data: {
-            playerId: playerId
-        }
-    });
-}
-
-export async function hydrateRankedSignals(player: Player): Promise<Player> {
-  if (!player.puuid) return player;
-
-  const cacheAgeMs = player.cacheUpdatedAt ? Date.now() - player.cacheUpdatedAt.getTime() : Number.POSITIVE_INFINITY;
-  const rankCacheTtlMs = 7 * 24 * 60 * 60 * 1000;
-
-  if ((player.soloDuoTier || player.flexTier || player.historicalTier) && cacheAgeMs < rankCacheTtlMs) {
-    return player;
-  }
-
-  let riotData: Awaited<ReturnType<typeof extractRankedSnapshot>> | null = null;
-  let opggData: { tier: string, division: string } | null = null;
-
-  // 1. Try Riot API (Current)
-  try {
-    const entries = await riotClient.getLeagueEntriesByPuuid(player.puuid);
-    if (entries.length > 0) {
-      riotData = extractRankedSnapshot(entries);
-    }
-  } catch (error) {
-    console.warn(`Failed to fetch Riot ranked entries for ${player.riotIdName}`, error);
-  }
-
-  // 2. Fallback to OP.GG (Historical) if NO current ranked data found
-  if (!riotData || (!riotData.soloDuoTier && !riotData.flexTier)) {
-    try {
-      const historicalRank = await fetchOpggHistoricalRank(player.region, player.riotIdName, player.riotIdTag);
-      if (historicalRank) {
-        opggData = {
-            tier: historicalRank.tier,
-            division: historicalRank.division ?? "I" // Ensure division is a string
-        };
-      }
-    } catch (error) {
-      console.warn(`Failed to fetch OP.GG historical rank for ${player.riotIdName}`, error);
-    }
-  }
-
-  // 3. Persist and return
-  return await prisma.player.update({
-    where: { id: player.id },
-    data: {
-      soloDuoTier: riotData?.soloDuoTier ?? undefined,
-      soloDuoDivision: riotData?.soloDuoDivision ?? undefined,
-      flexTier: riotData?.flexTier ?? undefined,
-      flexDivision: riotData?.flexDivision ?? undefined,
-      historicalTier: opggData?.tier ?? (riotData ? undefined : "UNRANKED"),
-      historicalDivision: opggData?.division ?? (riotData ? undefined : null),
-      cacheUpdatedAt: new Date()
-    }
-  });
-}
-
-
-export async function ensurePlayerExists(gameName: string, tagLine: string): Promise<Player | null> {
-    try {
-        const account = await riotClient.getAccountByRiotId(gameName, tagLine);
-        if (account) {
-            const summoner = await riotClient.getSummonerByPuuid(account.puuid);
-            // PASS THE OFFICIAL ACCOUNT.GAMENAME AND TAGLINE!
-            return await upsertPlayer(account.gameName, account.tagLine, account.puuid, summoner.profileIconId);
-        }
-    } catch (e) {
-        console.error(`Failed to fetch/upsert player from Riot API: ${gameName}#${tagLine}`, e);
-    }
-    
-    // Fallback: If not found on Riot, find locally (already cased)
-    return await getPlayerByRiotId(gameName, tagLine);
 }
 
 export type PlayerProfile = 
@@ -185,10 +36,6 @@ export type PlayerProfile =
         rawMmr: number;
         currentLp: number;
         isPlaced: boolean;
-        promoFromTier: string | null;
-        promoToTier: string | null;
-        promoWins: number;
-        promoLosses: number;
         mayhemGames: number;
         aramGames: number;
         cacheUpdatedAt: Date | null;
@@ -281,7 +128,7 @@ export function formatRankLabel(rankTier: string | null, leaguePoints: number | 
 }
 
 export async function getPlayerProfile(gameName: string, tagLine: string): Promise<PlayerProfile> {
-  const player = await ensurePlayerExists(gameName, tagLine);
+  const player = await getPlayerByRiotId(gameName, tagLine);
 
   if (!player) {
     return { state: "awaiting", player: null, job: null };
@@ -316,11 +163,7 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
     state: "ready",
     player: {
       ...player,
-      isPlaced: player.isPlaced,
-      promoFromTier: player.promoFromTier,
-      promoToTier: player.promoToTier,
-      promoWins: player.promoWins,
-      promoLosses: player.promoLosses
+      isPlaced: player.isPlaced
     },
     mmr: {
         rawMmr: Math.round(player.rawMmr),
@@ -381,10 +224,6 @@ export async function getPlayerProfile(gameName: string, tagLine: string): Promi
     })),
     champions: await buildChampionStats(participants)
   };
-}
-
-export async function readPlayerProfileStatus(gameName: string, tagLine: string) {
-  return getPlayerProfile(gameName, tagLine);
 }
 
 async function buildChampionStats(
