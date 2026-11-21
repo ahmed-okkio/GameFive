@@ -38,6 +38,10 @@ function int(value: unknown) {
   return Number.isSafeInteger(value) ? (value as number) : undefined;
 }
 
+function round(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) ? Math.round(value) : undefined;
+}
+
 function str(value: unknown) {
   return typeof value === "string" && value.length > 0 ? value : undefined;
 }
@@ -138,8 +142,8 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
       participants: {
         create: participants.map((p) => {
           const player = playerByPuuid.get(p.puuid);
-          // The uploader's end-of-game block is the source for teammate healing/shielding.
-          const stats: Record<string, unknown> = p.isUploader && eog ? eog : p;
+          // The uploader's end-of-game block (LCU eog-stats-block, UPPERCASE keys) is the source for teammate healing/shielding.
+          const stats = p.isUploader ? eog : null;
           return {
             playerId: player?.id,
             playerRiotIdName: player ? null : p.gameName ?? null,
@@ -157,9 +161,9 @@ export async function ingestCompanionMayhemMatch(payload: CompanionMatchPayload)
             healingShare: 0,
             performanceScore: scores.find((s) => s.participantId === p.participantId)?.score ?? 0,
             totalTimeCrowdControlDealt: int(p.totalTimeCrowdControlDealt) ?? 0,
-            totalHealOnTeammates: int(stats.totalHealOnTeammates) ?? int(p.totalHealOnTeammates) ?? 0,
+            totalHealOnTeammates: round(stats?.TOTAL_HEAL_ON_TEAMMATES) ?? int(p.totalHealOnTeammates) ?? 0,
             totalDamageShieldedOnTeammates:
-              int(stats.totalDamageShieldedOnTeammates) ?? int(p.totalDamageShieldedOnTeammates) ?? 0,
+              round(stats?.TOTAL_DAMAGE_SHIELDED_ON_TEAMMATES) ?? int(p.totalDamageShieldedOnTeammates) ?? 0,
             endOfGameStats: p.isUploader && eog ? (eog as Prisma.InputJsonValue) : undefined,
             itemsJson: Array.isArray(p.items) ? (p.items as Prisma.InputJsonValue) : undefined,
             augmentsJson: Array.isArray(p.augments) ? (p.augments as Prisma.InputJsonValue) : undefined,

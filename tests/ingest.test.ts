@@ -28,7 +28,7 @@ function payload(overrides: Record<string, unknown> = {}) {
     gameMode: "KIWI",
     gameCreation: Date.now() + 60_000,
     gameDuration: 1200,
-    endOfGameStats: { totalHealOnTeammates: 4321, totalDamageShieldedOnTeammates: 1234, totalTimeSpentDead: 77 },
+    endOfGameStats: { TOTAL_HEAL_ON_TEAMMATES: 4321, TOTAL_DAMAGE_SHIELDED_ON_TEAMMATES: 1234, NUM_DEATHS: 1, TIME_SPENT_DEAD: 77 },
     participants: Array.from({ length: 10 }, (_, i) => ({
       puuid: i === 0 ? UPLOADER : `puuid-other-${i}-0000000000`,
       gameName: i === 0 ? "Uploader" : `Other${i}`,
@@ -161,6 +161,18 @@ describe.skipIf(!isLocalDb)("M2 entrants and ingest (local Postgres)", () => {
     expect(uploaderRow.totalHealOnTeammates).toBe(4321);
     expect(uploaderRow.totalDamageShieldedOnTeammates).toBe(1234);
     expect(await prisma.matchParticipant.count({ where: { matchId: match.id } })).toBe(10);
+  });
+
+  it("R2.5 tray backfill without endOfGameStats is stored with participant fallbacks", async () => {
+    const body: Record<string, unknown> = payload();
+    delete body.endOfGameStats;
+    const participants = body.participants as Array<Record<string, unknown>>;
+    participants[0] = { ...participants[0], totalHealOnTeammates: 55, totalDamageShieldedOnTeammates: 66 };
+    expect((await ingest(body as ReturnType<typeof payload>)).status).toBe("stored");
+
+    const row = await prisma.matchParticipant.findFirstOrThrow({ where: { championId: 1 } });
+    expect(row.endOfGameStats).toBeNull();
+    expect([row.totalHealOnTeammates, row.totalDamageShieldedOnTeammates]).toEqual([55, 66]);
   });
 
   it("R2.6 rejects uploads from non-Entrants without creating players", async () => {
