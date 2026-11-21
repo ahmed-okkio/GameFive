@@ -121,23 +121,14 @@ public class CompanionWorker : BackgroundService
         StartupRegistration.Unregister(_logger);
 
         // 3. One toast linking to the Ceremony.
-        var ceremonyUrl = string.IsNullOrWhiteSpace(status.CeremonyUrl) ? CompanionConfig.ServerBaseUrl : status.CeremonyUrl;
+        var ceremonyUrl = CompanionRules.ResolveUrl(CompanionConfig.ServerBaseUrl, status.CeremonyUrl);
         trayIcon.ShowToast("Mayhem Week is over", "Click to watch the Ceremony. The Companion is removing itself.",
             () => Process.Start(new ProcessStartInfo(ceremonyUrl) { UseShellExecute = true }));
         // shortcut: the toast only reacts to clicks while we are alive; 60 s is the window before we delete ourselves.
         await Task.Delay(TimeSpan.FromSeconds(60), CancellationToken.None);
 
         // 4. Delete the exe and AppData once this process has exited.
-        var exePath = Environment.ProcessPath;
-        var command = $"/c timeout /t 2 > NUL & del /f /q \"{exePath}\" & rd /s /q \"{_appPaths.AppDataDirectory}\"";
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = "cmd.exe",
-            Arguments = command,
-            WindowStyle = ProcessWindowStyle.Hidden,
-            CreateNoWindow = true,
-            UseShellExecute = false
-        });
+        Process.Start(CompanionRules.RetireCleanup(Environment.ProcessPath, _appPaths.AppDataDirectory, Path.GetTempPath()));
         _logger.Info("Retired; cleanup scheduled. Exiting.");
         trayIcon.Dispose();
         Environment.Exit(0);

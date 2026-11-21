@@ -76,3 +76,49 @@ public class CompanionRulesTests
     [Fact]
     public void UnreachableStatusNeverRetires() => Assert.False(CompanionRules.ShouldRetire(null));
 }
+
+public class CompanionRulesFixTests
+{
+    [Fact]
+    public void GmtDayIsGregorianWhateverTheCulture()
+    {
+        var saved = System.Globalization.CultureInfo.CurrentCulture;
+        try
+        {
+            System.Globalization.CultureInfo.CurrentCulture = new System.Globalization.CultureInfo("ar-SA"); // Um Al-Qura calendar
+            Assert.Equal("2026-12-26", CompanionRules.GmtDay(new DateTimeOffset(2026, 12, 26, 1, 0, 0, TimeSpan.Zero)));
+        }
+        finally
+        {
+            System.Globalization.CultureInfo.CurrentCulture = saved;
+        }
+    }
+
+    [Theory]
+    [InlineData("/api/companion/login?token=abc", "https://game-five-kohl.vercel.app/api/companion/login?token=abc")]
+    [InlineData("https://other.example/x", "https://other.example/x")]
+    [InlineData("/", "https://game-five-kohl.vercel.app/")]
+    [InlineData(null, "https://game-five-kohl.vercel.app/")]
+    [InlineData("", "https://game-five-kohl.vercel.app/")]
+    public void UrlsResolveAgainstServerBase(string? url, string expected) =>
+        Assert.Equal(expected, CompanionRules.ResolveUrl("https://game-five-kohl.vercel.app/", url));
+
+    [Fact]
+    public void StatusWithNullsDoesNotRetireOrForceUpdate()
+    {
+        var status = JsonSerializer.Deserialize<CompanionStatus>("{\"retire\":false,\"ceremonyUrl\":null,\"minVersion\":null}");
+        Assert.False(CompanionRules.ShouldRetire(status));
+        Assert.False(CompanionRules.IsNewer(status!.MinVersion, "5.0.0"));
+    }
+
+    [Fact]
+    public void RetireCleanupRunsOutsideTheFolderItDeletes()
+    {
+        var appData = @"C:\Users\x\AppData\Local\GameFive";
+        var psi = CompanionRules.RetireCleanup(appData + @"\GameFive.Companion.exe", appData, @"C:\Users\x\AppData\Local\Temp\");
+        Assert.Equal(@"C:\Users\x\AppData\Local\Temp\", psi.WorkingDirectory);
+        Assert.False(psi.WorkingDirectory.StartsWith(appData + @"\", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains($"rd /s /q \"{appData}\"", psi.Arguments);
+        Assert.Contains("del /f /q \"" + appData + "\\GameFive.Companion.exe\"", psi.Arguments);
+    }
+}

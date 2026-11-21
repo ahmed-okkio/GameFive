@@ -72,7 +72,10 @@ internal sealed class CompanionApi
     {
         try
         {
-            return await _http.GetFromJsonAsync<CompanionStatus>("api/companion/status", ct);
+            // A server that accepts but never answers must not hold startup for HttpClient's 100 s default.
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            timeout.CancelAfter(TimeSpan.FromSeconds(15));
+            return await _http.GetFromJsonAsync<CompanionStatus>("api/companion/status", timeout.Token);
         }
         catch (Exception ex)
         {
@@ -85,7 +88,7 @@ internal sealed class CompanionApi
     public async Task OpenAsEntrantAsync(string? puuid, string redirect)
     {
         var url = puuid is null ? null : await LoginLinkAsync(puuid, redirect, CancellationToken.None);
-        url ??= new Uri(_http.BaseAddress!, redirect).ToString();
+        url = CompanionRules.ResolveUrl(CompanionConfig.ServerBaseUrl, url ?? redirect);
         Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
     }
 

@@ -50,7 +50,7 @@ public class Program
         }
 
         StartupRegistration.EnsureRegistered(null, target);
-        Process.Start(new ProcessStartInfo(target) { UseShellExecute = false, WorkingDirectory = Path.GetDirectoryName(target)! });
+        Process.Start(new ProcessStartInfo(target) { UseShellExecute = false, WorkingDirectory = Path.GetTempPath() });
         return true;
     }
 
