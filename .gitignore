@@ -17,3 +17,5 @@ companion/obj/
 .DS_Store
 Thumbs.db
 scripts/*
+.vercel
+.env*
