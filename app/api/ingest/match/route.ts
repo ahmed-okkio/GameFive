@@ -1,16 +1,9 @@
 import { NextResponse } from "next/server";
-import { appConfig } from "@/lib/config";
+import { isCompanionAuthorized, recordCompanionVersion } from "@/lib/companion";
 import { companionMatchPayloadSchema, ingestCompanionMayhemMatch } from "@/lib/ingest/mayhem";
 
-function bearerToken(request: Request) {
-  const authorization = request.headers.get("authorization") ?? "";
-  const [scheme, token] = authorization.split(" ");
-
-  return scheme?.toLowerCase() === "bearer" ? token : null;
-}
-
 export async function POST(request: Request) {
-  if (bearerToken(request) !== appConfig.companionIngestToken) {
+  if (!isCompanionAuthorized(request)) {
     return NextResponse.json(
       { error: "Unauthorized" },
       { status: 401 }
@@ -28,6 +21,7 @@ export async function POST(request: Request) {
   }
 
   try {
+    await recordCompanionVersion(payload.data.uploaderPuuid, request);
     return NextResponse.json(await ingestCompanionMayhemMatch(payload.data));
   } catch (error) {
     // Nothing was saved (single transaction); the Companion's offline queue retries on 5xx.
