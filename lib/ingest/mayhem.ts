@@ -21,7 +21,7 @@ export const companionMatchPayloadSchema = z.object({
   mapId: z.number().int().nullable().optional(),
   gameCreation: z.number().int().positive(),
   gameDuration: z.number().int().nonnegative(),
-  teams: z.array(z.record(z.any())).optional(),
+  teams: z.array(z.record(z.string(), z.any())).optional(),
   participants: z
     .array(
       z.object({

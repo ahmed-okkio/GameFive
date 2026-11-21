@@ -642,9 +642,6 @@ RIOT_API_KEY=
 # Database
 DATABASE_URL=
 
-# Redis
-REDIS_URL=
-
 # Admin credentials
 ADMIN_USERNAME=
 ADMIN_PASSWORD_HASH=
