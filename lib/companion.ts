@@ -17,7 +17,7 @@ const hashToken = (token: string) => sha256(token).toString("hex");
 // Shared COMPANION_INGEST_TOKEN check for every Companion endpoint, in constant time.
 export function isCompanionAuthorized(request: Request) {
   const [scheme, token] = (request.headers.get("authorization") ?? "").split(" ");
-  if (scheme?.toLowerCase() !== "bearer" || !token) return false;
+  if (scheme?.toLowerCase() !== "bearer" || !token || !appConfig.companionIngestToken) return false;
   return timingSafeEqual(sha256(token), sha256(appConfig.companionIngestToken));
 }
 
