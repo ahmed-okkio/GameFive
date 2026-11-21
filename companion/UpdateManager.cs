@@ -10,9 +10,13 @@ internal sealed class UpdateManager
     private readonly HttpClient _httpClient;
     private string? _pendingUpdatePath;
 
-    public UpdateManager(CompanionLogger logger)
+    private readonly Func<Task<string?>> _getGameflowPhase;
+    private int _checking;
+
+    public UpdateManager(CompanionLogger logger, Func<Task<string?>> getGameflowPhase)
     {
         _logger = logger;
+        _getGameflowPhase = getGameflowPhase;
         _httpClient = new HttpClient();
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "GameFiveCompanion");
     }
@@ -24,7 +28,8 @@ internal sealed class UpdateManager
         await Task.CompletedTask;
         return;
 #else
-        var currentVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "0.0.0";
+        if (Interlocked.Exchange(ref _checking, 1) == 1) return; // a check is already running
+        var currentVersion = CompanionConfig.Version;
         try
         {
             _logger.Info("Checking for updates ...");
@@ -32,13 +37,19 @@ internal sealed class UpdateManager
 
             if (release?.TagName == null) return;
 
-            if (IsNewer(release.TagName, currentVersion))
+            if (CompanionRules.IsNewer(release.TagName, currentVersion))
             {
                 _logger.Info($"New version found: {release.TagName}. Current version: {currentVersion}");
                 var asset = release.Assets.FirstOrDefault(a => a.Name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase));
                 if (asset != null)
                 {
                     await DownloadUpdateAsync(asset.BrowserDownloadUrl, ct);
+                    // Never restart the Companion during champ select or a game.
+                    while (!CompanionRules.PhaseAllowsUpdate(await _getGameflowPhase()))
+                    {
+                        _logger.Info("Update deferred until the game ends.");
+                        await Task.Delay(TimeSpan.FromSeconds(30), ct);
+                    }
                     ApplyUpdate();
                 }
                 else
@@ -55,21 +66,11 @@ internal sealed class UpdateManager
         {
             _logger.Error("Failed to check for updates", ex);
         }
+        finally
+        {
+            Interlocked.Exchange(ref _checking, 0);
+        }
 #endif
-    }
-
-    private bool IsNewer(string latest, string current)
-    {
-        try
-        {
-            var l = Version.Parse(latest.TrimStart('v'));
-            var c = Version.Parse(current.TrimStart('v'));
-            return l > c;
-        }
-        catch
-        {
-            return latest != current;
-        }
     }
 
     private async Task DownloadUpdateAsync(string url, CancellationToken ct)

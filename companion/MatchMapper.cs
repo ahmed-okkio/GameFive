@@ -2,12 +2,9 @@ namespace GameFive.Companion;
 
 internal static class MatchMapper
 {
-    public static bool IsLikelyMayhem(LcuGame match)
-    {
-        return match.QueueId == 2400 || string.Equals(match.GameMode, "KIWI", StringComparison.OrdinalIgnoreCase);
-    }
+    public static bool IsMayhem(LcuGame match) => CompanionRules.IsMayhem(match.QueueId, match.GameType);
 
-    public static CompanionMatchUpload ToUpload(LcuGame match, string uploaderPuuid)
+    public static CompanionMatchUpload ToUpload(LcuGame match, string uploaderPuuid, System.Text.Json.JsonElement? endOfGameStats = null)
     {
         var identities = match.ParticipantIdentities.ToDictionary(identity => identity.ParticipantId, identity => identity.Player);
 
@@ -16,6 +13,8 @@ internal static class MatchMapper
             UploaderPuuid = uploaderPuuid,
             GameId = match.GameId,
             QueueId = match.QueueId,
+            GameType = match.GameType,
+            EndOfGameStats = endOfGameStats,
             GameMode = match.GameMode,
             MapId = match.MapId,
             GameCreation = match.GameCreation,
