@@ -9,6 +9,7 @@ internal sealed class AppPaths
         LogFilePath = Path.Combine(appDataDirectory, "companion.log");
         FailedUploadsPath = Path.Combine(appDataDirectory, "failed-uploads.json");
         BriefingDayPath = Path.Combine(appDataDirectory, "briefing-day.txt");
+        SiteOpenedPuuidsPath = Path.Combine(appDataDirectory, "site-opened-puuids.txt");
     }
 
     public string AppDataDirectory { get; }
@@ -16,6 +17,7 @@ internal sealed class AppPaths
     public string LogFilePath { get; }
     public string FailedUploadsPath { get; }
     public string BriefingDayPath { get; }
+    public string SiteOpenedPuuidsPath { get; }
 
     public static AppPaths Create()
     {

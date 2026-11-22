@@ -113,3 +113,36 @@ public class CompanionRulesFixTests
         Assert.Contains("del /f /q \"" + appData + "\\GameFive.Companion.exe\"", psi.Arguments);
     }
 }
+
+public class AutoOpenSiteTests
+{
+    [Fact]
+    public void OpensOncePerPuuidPerInstall()
+    {
+        Assert.True(CompanionRules.ShouldAutoOpenSite(null, "puuid-a"));          // no file yet
+        Assert.True(CompanionRules.ShouldAutoOpenSite("", "puuid-a"));
+        Assert.False(CompanionRules.ShouldAutoOpenSite("puuid-a\r\n", "puuid-a")); // restart / reinstall over AppData
+        Assert.True(CompanionRules.ShouldAutoOpenSite("puuid-a\r\n", "puuid-b"));  // another account gets its own
+        Assert.False(CompanionRules.ShouldAutoOpenSite("puuid-a\r\npuuid-b\r\n", "puuid-b"));
+        Assert.True(CompanionRules.ShouldAutoOpenSite("puuid-ab\r\n", "puuid-a")); // whole lines only
+    }
+}
+
+public class AutoOpenPhaseTests
+{
+    [Theory]
+    [InlineData("None", true)]
+    [InlineData("Lobby", true)]
+    [InlineData("EndOfGame", true)]
+    [InlineData("Matchmaking", false)]
+    [InlineData("ReadyCheck", false)]
+    [InlineData("ChampSelect", false)]
+    [InlineData("GameStart", false)]
+    [InlineData("InProgress", false)]
+    [InlineData("Reconnect", false)]
+    [InlineData("WaitingForStats", false)]
+    [InlineData("PreEndOfGame", false)]
+    [InlineData(null, false)]
+    public void SiteOpensOnlyOutOfQueueAndGame(string? phase, bool expected) =>
+        Assert.Equal(expected, CompanionRules.PhaseAllowsAutoOpen(phase));
+}

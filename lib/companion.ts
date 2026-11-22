@@ -7,6 +7,13 @@ import { prisma } from "@/lib/prisma";
 export const PLAYER_SESSION_COOKIE = "gamefive_player_session";
 export const LOGIN_TOKEN_TTL_MS = 5 * 60 * 1000;
 export const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+// Sessions last through the Ceremony even when opened in the Countdown.
+export const SESSION_MIN_END = new Date("2027-01-02T00:00:00Z");
+
+// The later of now + 30 days and SESSION_MIN_END; used for the DB session row and the cookie.
+export function sessionExpiresAt(now = Date.now()) {
+  return new Date(Math.max(now + SESSION_TTL_MS, SESSION_MIN_END.getTime()));
+}
 
 // Inbox item shape; the Event spec fills the inbox.
 export type InboxItem = { id: string; title: string; body: string; url: string };
@@ -52,10 +59,11 @@ export async function consumeLoginToken(token: string) {
   if (count !== 1) return null;
 
   const sessionToken = randomBytes(32).toString("base64url");
+  const expiresAt = sessionExpiresAt();
   await prisma.playerToken.create({
-    data: { tokenHash: hashToken(sessionToken), kind: "session", playerId: row.playerId, expiresAt: new Date(Date.now() + SESSION_TTL_MS) }
+    data: { tokenHash: hashToken(sessionToken), kind: "session", playerId: row.playerId, expiresAt }
   });
-  return { sessionToken, redirect: row.redirect ?? "/" };
+  return { sessionToken, expiresAt, redirect: row.redirect ?? "/" };
 }
 
 export async function entrantFromSessionToken(token: string | undefined) {

@@ -37,6 +37,15 @@ async function linkToken(redirect?: string) {
 
 const open = (url: URL) => login.GET(new Request(url));
 
+describe("sessionExpiresAt", () => {
+  it("is the later of now + 30 days and 2027-01-02T00:00:00Z", () => {
+    expect(companion.sessionExpiresAt(Date.parse("2026-12-01T12:00:00Z")).toISOString()).toBe("2027-01-02T00:00:00.000Z");
+    expect(companion.sessionExpiresAt(Date.parse("2026-12-03T00:00:00Z")).toISOString()).toBe("2027-01-02T00:00:00.000Z");
+    expect(companion.sessionExpiresAt(Date.parse("2026-12-03T00:00:01Z")).toISOString()).toBe("2027-01-02T00:00:01.000Z");
+    expect(companion.sessionExpiresAt(Date.parse("2027-02-01T00:00:00Z")).toISOString()).toBe("2027-03-03T00:00:00.000Z");
+  });
+});
+
 describe.skipIf(!isLocalDb)("M3 Companion API (local Postgres)", () => {
   beforeEach(async () => {
     await prisma.$executeRawUnsafe('TRUNCATE "player_tokens", "event_settings", "match_participants", "matches", "players" CASCADE');
@@ -79,7 +88,7 @@ describe.skipIf(!isLocalDb)("M3 Companion API (local Postgres)", () => {
     expect((await register.POST(req("/api/companion/register", { body: { puuid: "x" } }))).status).toBe(400);
   });
 
-  it("R3.2 a login link works once, sets a 30-day session cookie and redirects; stored only hashed", async () => {
+  it("R3.2 a login link works once, sets the session cookie and redirects; stored only hashed", async () => {
     const url = await linkToken("/player/abc?tab=games#top");
     const token = url.searchParams.get("token")!;
     expect(url.pathname).toBe("/api/companion/login");
@@ -94,7 +103,9 @@ describe.skipIf(!isLocalDb)("M3 Companion API (local Postgres)", () => {
     expect(res.headers.get("location")).toBe("http://localhost/player/abc?tab=games#top");
     const cookie = res.headers.get("set-cookie")!;
     expect(cookie).toMatch(new RegExp(`^${companion.PLAYER_SESSION_COOKIE}=`));
-    expect(cookie).toMatch(/Max-Age=2592000/);
+    // Max-Age runs to the later of 30 days and 2027-01-02T00:00Z (a few seconds of slack for the request).
+    const maxAge = Number(/Max-Age=(\d+)/.exec(cookie)![1]);
+    expect(Math.abs(maxAge - (companion.sessionExpiresAt().getTime() - Date.now()) / 1000)).toBeLessThan(5);
     expect(cookie).toMatch(/HttpOnly/i);
     expect(cookie).toMatch(/SameSite=lax/i);
     expect(cookie).not.toMatch(/next-auth/);
@@ -120,11 +131,24 @@ describe.skipIf(!isLocalDb)("M3 Companion API (local Postgres)", () => {
     expect(res.status).toBe(303);
     expect(res.headers.get("location")).toBe("http://localhost/");
 
-    // The session itself lasts 30 days.
+    // Opened in the Countdown, the session lasts through the Ceremony: until 2027-01-02T00:00Z, past 30 days.
     const sessionToken = res.headers.get("set-cookie")!.split(";")[0].split("=")[1];
-    vi.setSystemTime(new Date("2026-12-31T13:04:00Z"));
+    expect(res.headers.get("set-cookie")).toMatch(/Max-Age=2717701/); // 2026-12-01T13:04:59Z -> 2027-01-02T00:00Z
+    vi.setSystemTime(new Date("2027-01-01T23:59:59Z"));
     expect(await companion.entrantFromSessionToken(sessionToken)).not.toBeNull();
-    vi.setSystemTime(new Date("2026-12-31T13:05:00Z"));
+    vi.setSystemTime(new Date("2027-01-02T00:00:00Z"));
+    expect(await companion.entrantFromSessionToken(sessionToken)).toBeNull();
+  });
+
+  it("R3.2 a session opened late in Mayhem Week lasts 30 days, past 2027-01-02", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-12-30T10:00:00Z"));
+    const res = await open(await linkToken());
+    const sessionToken = res.headers.get("set-cookie")!.split(";")[0].split("=")[1];
+    expect(res.headers.get("set-cookie")).toMatch(/Max-Age=2592000/);
+    vi.setSystemTime(new Date("2027-01-29T09:59:59Z"));
+    expect(await companion.entrantFromSessionToken(sessionToken)).not.toBeNull();
+    vi.setSystemTime(new Date("2027-01-29T10:00:00Z"));
     expect(await companion.entrantFromSessionToken(sessionToken)).toBeNull();
   });
 

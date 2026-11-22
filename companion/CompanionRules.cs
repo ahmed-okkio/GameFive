@@ -31,6 +31,10 @@ internal static class CompanionRules
             && c > r;
     }
 
+    // The first-register browser window only opens out of queue and game, never over champ select or a match.
+    public static bool PhaseAllowsAutoOpen(string? gameflowPhase) =>
+        gameflowPhase is "None" or "Lobby" or "EndOfGame";
+
     public static bool PhaseAllowsUpdate(string? gameflowPhase) =>
         gameflowPhase is not ("ChampSelect" or "InProgress");
 
@@ -55,6 +59,10 @@ internal static class CompanionRules
     // not_entrant) or 400 (the payload will never be accepted). 401/403 is a token/config problem and 5xx,
     // 503 maintenance, other codes and network errors are transient, so the game stays queued for the next flush.
     public static bool IsFinalUploadAnswer(int statusCode) => statusCode is >= 200 and < 300 or 400;
+
+    // The site opens by itself once per install and PUUID; openedPuuids is the file of PUUIDs already opened, one per line.
+    public static bool ShouldAutoOpenSite(string? openedPuuids, string puuid) =>
+        !(openedPuuids ?? "").Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).Contains(puuid);
 
     // Only an explicit retire: true retires; a failed or unreadable status call is null.
     public static bool ShouldRetire(CompanionStatus? status) => status?.Retire == true;

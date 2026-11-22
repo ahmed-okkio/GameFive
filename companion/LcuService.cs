@@ -103,8 +103,9 @@ internal sealed class LcuService : IDisposable
                 return;
             }
 
-            await _api.RegisterAsync(summoner, ct);
+            var registered = await _api.RegisterAsync(summoner, ct);
             Puuid = summoner.Puuid;
+            if (registered) _ = OpenSiteOnceAsync(summoner.Puuid, ct);
 
             using var timer = new PeriodicTimer(InboxInterval);
             var briefing = CompanionRules.NeedsBriefing(ReadBriefingDay(), DateTimeOffset.UtcNow);
@@ -124,6 +125,53 @@ internal sealed class LcuService : IDisposable
         {
             _logger.Error("Entrant session failed.", ex);
         }
+    }
+
+    // Process-wide: two LcuService instances (rapid reconnect) must not both open the site.
+    private static readonly SemaphoreSlim SiteOpenLock = new(1, 1);
+
+    // First successful register for this PUUID on this install: land the player on the site logged in.
+    // Waits (within this connection) until the client is out of queue and game; marked only after a
+    // login link was opened, so any failure retries on the next connect.
+    private async Task OpenSiteOnceAsync(string puuid, CancellationToken ct)
+    {
+        try
+        {
+            var path = _paths.SiteOpenedPuuidsPath;
+            string? Opened() => File.Exists(path) ? File.ReadAllText(path) : null;
+            if (!CompanionRules.ShouldAutoOpenSite(Opened(), puuid)) return;
+
+            while (!CompanionRules.PhaseAllowsAutoOpen(await GetPhaseOrNullAsync()))
+            {
+                await Task.Delay(TimeSpan.FromSeconds(15), ct);
+            }
+
+            await SiteOpenLock.WaitAsync(ct);
+            try
+            {
+                if (!CompanionRules.ShouldAutoOpenSite(Opened(), puuid)) return;
+                if (!await _api.OpenAsEntrantAsync(puuid, "/", requireLoginLink: true, ct)) return;
+                File.AppendAllText(path, puuid + Environment.NewLine);
+                _logger.Info("Opened the site for this account's first register on this install.");
+            }
+            finally
+            {
+                SiteOpenLock.Release();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Could not open the site after the first register; will retry on the next connect.", ex);
+        }
+    }
+
+    private async Task<string?> GetPhaseOrNullAsync()
+    {
+        try { return await GetGameflowPhaseAsync(); }
+        catch (Exception ex) when (ex is not OperationCanceledException) { return null; }
     }
 
     private string? ReadBriefingDay()

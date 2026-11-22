@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { consumeLoginToken, PLAYER_SESSION_COOKIE, SESSION_TTL_MS } from "@/lib/companion";
+import { consumeLoginToken, PLAYER_SESSION_COOKIE } from "@/lib/companion";
 
 // Opened in the browser from a login link; the single-use login token is the credential here.
 export async function GET(request: Request) {
@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: SESSION_TTL_MS / 1000
+    maxAge: Math.floor((login.expiresAt.getTime() - Date.now()) / 1000)
   });
   return response;
 }
