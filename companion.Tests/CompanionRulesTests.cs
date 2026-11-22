@@ -113,3 +113,17 @@ public class CompanionRulesFixTests
         Assert.Contains("del /f /q \"" + appData + "\\GameFive.Companion.exe\"", psi.Arguments);
     }
 }
+
+public class AutoOpenSiteTests
+{
+    [Fact]
+    public void OpensOncePerPuuidPerInstall()
+    {
+        Assert.True(CompanionRules.ShouldAutoOpenSite(null, "puuid-a"));          // no file yet
+        Assert.True(CompanionRules.ShouldAutoOpenSite("", "puuid-a"));
+        Assert.False(CompanionRules.ShouldAutoOpenSite("puuid-a\r\n", "puuid-a")); // restart / reinstall over AppData
+        Assert.True(CompanionRules.ShouldAutoOpenSite("puuid-a\r\n", "puuid-b"));  // another account gets its own
+        Assert.False(CompanionRules.ShouldAutoOpenSite("puuid-a\r\npuuid-b\r\n", "puuid-b"));
+        Assert.True(CompanionRules.ShouldAutoOpenSite("puuid-ab\r\n", "puuid-a")); // whole lines only
+    }
+}

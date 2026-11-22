@@ -103,8 +103,9 @@ internal sealed class LcuService : IDisposable
                 return;
             }
 
-            await _api.RegisterAsync(summoner, ct);
+            var registered = await _api.RegisterAsync(summoner, ct);
             Puuid = summoner.Puuid;
+            if (registered) await OpenSiteOnceAsync(summoner.Puuid);
 
             using var timer = new PeriodicTimer(InboxInterval);
             var briefing = CompanionRules.NeedsBriefing(ReadBriefingDay(), DateTimeOffset.UtcNow);
@@ -123,6 +124,24 @@ internal sealed class LcuService : IDisposable
         catch (Exception ex)
         {
             _logger.Error("Entrant session failed.", ex);
+        }
+    }
+
+    // First successful register for this PUUID on this install: land the player on the site logged in.
+    // Marked only after a login link was opened, so a failure retries on the next connect.
+    private async Task OpenSiteOnceAsync(string puuid)
+    {
+        try
+        {
+            var path = _paths.SiteOpenedPuuidsPath;
+            if (!CompanionRules.ShouldAutoOpenSite(File.Exists(path) ? File.ReadAllText(path) : null, puuid)) return;
+            if (!await _api.OpenAsEntrantAsync(puuid, "/", requireLoginLink: true)) return;
+            File.AppendAllText(path, puuid + Environment.NewLine);
+            _logger.Info("Opened the site for this account's first register on this install.");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Could not open the site after the first register; will retry on the next connect.", ex);
         }
     }
 

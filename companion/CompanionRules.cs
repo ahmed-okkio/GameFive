@@ -56,6 +56,10 @@ internal static class CompanionRules
     // 503 maintenance, other codes and network errors are transient, so the game stays queued for the next flush.
     public static bool IsFinalUploadAnswer(int statusCode) => statusCode is >= 200 and < 300 or 400;
 
+    // The site opens by itself once per install and PUUID; openedPuuids is the file of PUUIDs already opened, one per line.
+    public static bool ShouldAutoOpenSite(string? openedPuuids, string puuid) =>
+        !(openedPuuids ?? "").Split('\n', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).Contains(puuid);
+
     // Only an explicit retire: true retires; a failed or unreadable status call is null.
     public static bool ShouldRetire(CompanionStatus? status) => status?.Retire == true;
 }

@@ -16,7 +16,8 @@ internal sealed class CompanionApi
         _http = CompanionConfig.CreateServerClient();
     }
 
-    public async Task RegisterAsync(LcuSummoner summoner, CancellationToken ct)
+    // True on a 2xx answer.
+    public async Task<bool> RegisterAsync(LcuSummoner summoner, CancellationToken ct)
     {
         try
         {
@@ -28,10 +29,12 @@ internal sealed class CompanionApi
                 version = CompanionConfig.Version
             }, ct);
             _logger.Info($"Register: status={(int)response.StatusCode}");
+            return response.IsSuccessStatusCode;
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             _logger.Error("Register failed.", ex);
+            return false;
         }
     }
 
@@ -84,12 +87,14 @@ internal sealed class CompanionApi
         }
     }
 
-    // Opens a site page as the Entrant through a fresh login link; falls back to the plain URL.
-    public async Task OpenAsEntrantAsync(string? puuid, string redirect)
+    // Opens a site page as the Entrant through a fresh login link; falls back to the plain URL unless
+    // requireLoginLink. True when a login link was obtained and opened.
+    public async Task<bool> OpenAsEntrantAsync(string? puuid, string redirect, bool requireLoginLink = false)
     {
         var url = puuid is null ? null : await LoginLinkAsync(puuid, redirect, CancellationToken.None);
-        url ??= new Uri(_http.BaseAddress!, redirect).ToString();
-        Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+        if (url is null && requireLoginLink) return false;
+        Process.Start(new ProcessStartInfo(url ?? new Uri(_http.BaseAddress!, redirect).ToString()) { UseShellExecute = true });
+        return url is not null;
     }
 
     private sealed class LoginLinkResponse
