@@ -135,6 +135,7 @@ model EventSettings {
   retire      Boolean  @default(false)
   ceremonyUrl String?  @map("ceremony_url")
   minVersion  String?  @map("min_version")
+  maintenance Boolean  @default(false)
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("event_settings")

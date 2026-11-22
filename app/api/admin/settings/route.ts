@@ -7,7 +7,8 @@ const settingsSchema = z
   .object({
     retire: z.boolean().optional(),
     ceremonyUrl: z.url().nullable().optional(),
-    minVersion: z.string().min(1).nullable().optional()
+    minVersion: z.string().min(1).nullable().optional(),
+    maintenance: z.boolean().optional()
   })
   .strict();
 
@@ -17,6 +18,6 @@ export async function PATCH(request: Request) {
   const body = settingsSchema.safeParse(await request.json().catch(() => null));
   if (!body.success) return NextResponse.json({ error: "Invalid settings", issues: body.error.issues }, { status: 400 });
 
-  const { retire, ceremonyUrl, minVersion } = await setEventSettings(body.data);
-  return NextResponse.json({ retire, ceremonyUrl, minVersion });
+  const { retire, ceremonyUrl, minVersion, maintenance } = await setEventSettings(body.data);
+  return NextResponse.json({ retire, ceremonyUrl, minVersion, maintenance });
 }

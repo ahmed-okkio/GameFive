@@ -1,7 +1,6 @@
 import { AdminLogin, AdminPanel } from "@/components/AdminPanel";
 import { isAdmin } from "@/lib/auth";
 import { getEventSettings } from "@/lib/companion";
-import { appConfig } from "@/lib/config";
 import { entrantWhere } from "@/lib/entrants";
 import { prisma } from "@/lib/prisma";
 
@@ -38,7 +37,6 @@ export default async function AdminPage() {
           players: m.participants.map((p) => `${p.playerRiotIdName ?? "?"}#${p.playerRiotIdTag ?? "?"}`)
         }))}
         settings={settings}
-        maintenanceMode={appConfig.maintenanceMode}
       />
     </section>
   );

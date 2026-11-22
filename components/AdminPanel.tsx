@@ -4,13 +4,12 @@ import { signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
-type Settings = { retire: boolean; ceremonyUrl: string | null; minVersion: string | null };
+type Settings = { retire: boolean; ceremonyUrl: string | null; minVersion: string | null; maintenance: boolean };
 
 type AdminPanelProps = {
   entrants: Array<{ id: string; riotIdName: string; riotIdTag: string }>;
   matches: Array<{ id: string; matchId: string; gameDate: string; players: string[] }>;
   settings: Settings;
-  maintenanceMode: boolean;
 };
 
 const box = "mt-6 rounded border border-line bg-black/20 p-4";
@@ -41,7 +40,7 @@ export function AdminLogin() {
   );
 }
 
-export function AdminPanel({ entrants, matches, settings, maintenanceMode }: AdminPanelProps) {
+export function AdminPanel({ entrants, matches, settings }: AdminPanelProps) {
   const router = useRouter();
   const [retire, setRetire] = useState(settings.retire);
   const [ceremonyUrl, setCeremonyUrl] = useState(settings.ceremonyUrl ?? "");
@@ -65,6 +64,11 @@ export function AdminPanel({ entrants, matches, settings, maintenanceMode }: Adm
     if (confirm(`Delete match ${matchId} and all its participants?`)) {
       call(`/api/admin/matches?id=${encodeURIComponent(id)}`, { method: "DELETE" }, `Deleted match ${matchId}`);
     }
+  }
+
+  function setMaintenance(on: boolean) {
+    const body = JSON.stringify({ maintenance: on });
+    call("/api/admin/settings", { method: "PATCH", headers: { "Content-Type": "application/json" }, body }, `Maintenance pause ${on ? "on" : "off"}`);
   }
 
   function saveSettings(event: FormEvent<HTMLFormElement>) {
@@ -93,9 +97,11 @@ export function AdminPanel({ entrants, matches, settings, maintenanceMode }: Adm
       <div className={box}>
         <h2 className="font-bold text-white">Maintenance pause</h2>
         <p className="mt-1 text-sm">
-          Currently <strong>{maintenanceMode ? "ON" : "OFF"}</strong>. Set the <code>MAINTENANCE_MODE</code> environment variable to{" "}
-          <code>true</code> or <code>false</code> in Vercel and redeploy.
+          Currently <strong>{settings.maintenance ? "ON" : "OFF"}</strong>. While on, game uploads get 503 and store nothing, and the site shows a notice.
         </p>
+        <button onClick={() => setMaintenance(!settings.maintenance)} className="mt-3 rounded bg-gold px-3 py-2 text-sm font-bold text-black">
+          Turn {settings.maintenance ? "off" : "on"}
+        </button>
       </div>
 
       <form onSubmit={saveSettings} className={box}>

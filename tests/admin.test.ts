@@ -1,4 +1,6 @@
 import bcrypt from "bcryptjs";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Real local Postgres only (e.g. `npx prisma dev`), never production: set TEST_DATABASE_URL to a localhost URL.
@@ -19,6 +21,8 @@ const entrants = await import("@/app/api/admin/entrants/route");
 const matches = await import("@/app/api/admin/matches/route");
 const settings = await import("@/app/api/admin/settings/route");
 const status = await import("@/app/api/companion/status/route");
+const ingest = await import("@/app/api/ingest/match/route");
+const { MaintenanceNotice } = await import("@/app/(site)/ui");
 
 const ADMIN = { user: { name: "Admin" } };
 const req = (path: string, method: string, body?: unknown) =>
@@ -58,6 +62,8 @@ describe.skipIf(!isLocalDb)("M6 admin tools (local Postgres)", () => {
     expect((await entrants.DELETE(req(`/api/admin/entrants?id=${playerId}`, "DELETE"))).status).toBe(401);
     expect((await matches.DELETE(req(`/api/admin/matches?id=${match.id}`, "DELETE"))).status).toBe(401);
     expect((await settings.PATCH(req("/api/admin/settings", "PATCH", { retire: true }))).status).toBe(401);
+    expect((await settings.PATCH(req("/api/admin/settings", "PATCH", { maintenance: true }))).status).toBe(401);
+    expect((await (await status.GET()).json()).maintenance).toBe(false);
     expect(await prisma.player.count({ where: entrantWhere })).toBe(1);
     expect(await prisma.matchParticipant.count()).toBe(2);
     expect((await (await status.GET()).json()).retire).toBe(false);
@@ -90,15 +96,72 @@ describe.skipIf(!isLocalDb)("M6 admin tools (local Postgres)", () => {
   it("R6.1 flipping the retirement flag changes the Companion status", async () => {
     let res = await settings.PATCH(req("/api/admin/settings", "PATCH", { retire: true, ceremonyUrl: "https://example.com/ceremony", minVersion: "5.1.0" }));
     expect(res.status).toBe(200);
-    expect(await (await status.GET()).json()).toEqual({ retire: true, ceremonyUrl: "https://example.com/ceremony", minVersion: "5.1.0" });
+    expect(await (await status.GET()).json()).toEqual({ retire: true, ceremonyUrl: "https://example.com/ceremony", minVersion: "5.1.0", maintenance: false });
 
     res = await settings.PATCH(req("/api/admin/settings", "PATCH", { retire: false, ceremonyUrl: null }));
-    expect(await res.json()).toEqual({ retire: false, ceremonyUrl: null, minVersion: "5.1.0" });
+    expect(await res.json()).toEqual({ retire: false, ceremonyUrl: null, minVersion: "5.1.0", maintenance: false });
     expect((await (await status.GET()).json()).retire).toBe(false);
 
-    for (const bad of [{ retire: "yes" }, { ceremonyUrl: "not a url" }, { other: 1 }, null]) {
+    for (const bad of [{ retire: "yes" }, { maintenance: "on" }, { ceremonyUrl: "not a url" }, { other: 1 }, null]) {
       expect((await settings.PATCH(req("/api/admin/settings", "PATCH", bad))).status).toBe(400);
     }
+  });
+
+  it("R6.1 maintenance pause: ingest answers 503 and stores nothing while on, and resumes when off", async () => {
+    const upload = (gameId: number) =>
+      ingest.POST(
+        new Request("http://localhost/api/ingest/match", {
+          method: "POST",
+          headers: { authorization: "Bearer dev-local-token", "content-type": "application/json" },
+          body: JSON.stringify({
+            source: "lcu",
+            uploaderPuuid: "puuid-admin-0000000000",
+            gameId,
+            queueId: 2400,
+            gameType: "MATCHED_GAME",
+            gameMode: "KIWI",
+            gameCreation: Date.now() + 60_000,
+            gameDuration: 1200,
+            participants: Array.from({ length: 10 }, (_, i) => ({
+              puuid: i === 0 ? "puuid-admin-0000000000" : `puuid-m6-other-${i}`,
+              gameName: `P${i}`,
+              tagLine: "EUW",
+              participantId: i + 1,
+              teamId: i < 5 ? 100 : 200,
+              championId: 1 + i,
+              win: i < 5,
+              kills: i,
+              deaths: 1,
+              assists: 2,
+              totalDamageDealtToChampions: 1000,
+              totalHeal: 100
+            }))
+          })
+        })
+      );
+
+    expect((await settings.PATCH(req("/api/admin/settings", "PATCH", { maintenance: true }))).status).toBe(200);
+    expect((await (await status.GET()).json()).maintenance).toBe(true);
+    const paused = await upload(5001);
+    expect(paused.status).toBe(503);
+    expect(await prisma.match.count()).toBe(0);
+    expect(await prisma.matchParticipant.count()).toBe(0);
+
+    // A bad token still gets 401 first, so the pause leaks nothing to strangers.
+    const stranger = await ingest.POST(new Request("http://localhost/api/ingest/match", { method: "POST", headers: { authorization: "Bearer nope" }, body: "{}" }));
+    expect(stranger.status).toBe(401);
+
+    expect((await settings.PATCH(req("/api/admin/settings", "PATCH", { maintenance: false }))).status).toBe(200);
+    const resumed = await upload(5001);
+    expect(resumed.status).toBe(200);
+    expect(await prisma.match.count()).toBe(1);
+  });
+});
+
+describe("M6 maintenance notice", () => {
+  it("renders one line only while the pause is on", () => {
+    expect(renderToStaticMarkup(createElement(MaintenanceNotice, { on: true }))).toContain("Maintenance pause");
+    expect(renderToStaticMarkup(createElement(MaintenanceNotice, { on: false }))).toBe("");
   });
 });
 

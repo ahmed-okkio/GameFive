@@ -72,10 +72,10 @@ export async function getPlayerSession() {
 
 export async function getEventSettings() {
   const row = await prisma.eventSettings.findUnique({ where: { id: 1 } });
-  return { retire: row?.retire ?? false, ceremonyUrl: row?.ceremonyUrl ?? null, minVersion: row?.minVersion ?? null };
+  return { retire: row?.retire ?? false, ceremonyUrl: row?.ceremonyUrl ?? null, minVersion: row?.minVersion ?? null, maintenance: row?.maintenance ?? false };
 }
 
 // Admin setter (UI in M6; the Event spec flips it at Lockdown).
-export async function setEventSettings(data: { retire?: boolean; ceremonyUrl?: string | null; minVersion?: string | null }) {
+export async function setEventSettings(data: { retire?: boolean; ceremonyUrl?: string | null; minVersion?: string | null; maintenance?: boolean }) {
   return prisma.eventSettings.upsert({ where: { id: 1 }, create: { id: 1, ...data }, update: data });
 }
