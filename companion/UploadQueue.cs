@@ -14,7 +14,7 @@ internal sealed class UploadQueue
 
     private readonly string _path;
     private readonly CompanionLogger _logger;
-    // Enqueue and Remove are read-modify-write; a concurrent pair must not overwrite each other.
+    // Every file access holds this, so no rename lands while another call reads or writes the file.
     private readonly object _lock = new();
 
     public UploadQueue(string path, CompanionLogger logger)
@@ -23,42 +23,55 @@ internal sealed class UploadQueue
         _logger = logger;
     }
 
+    // Windows reports a locked file as IOException or UnauthorizedAccessException; both are transient here.
+    public static bool IsFileError(Exception ex) => ex is IOException or UnauthorizedAccessException;
+
+    // File errors propagate: answering "empty" would let the next Save wipe the real queue.
     public List<CompanionMatchUpload> Load()
     {
-        if (!File.Exists(_path))
+        lock (_lock)
         {
-            return [];
-        }
+            if (!File.Exists(_path))
+            {
+                return [];
+            }
 
-        // IO errors propagate: answering "empty" would let the next Save wipe the real queue.
-        var json = File.ReadAllText(_path);
-        try
-        {
-            return JsonSerializer.Deserialize<List<CompanionMatchUpload>>(json) ?? [];
-        }
-        catch (JsonException ex)
-        {
-            // Keep the unreadable file for inspection instead of overwriting it on the next Save.
-            var bad = $"{_path}.{DateTime.UtcNow:yyyyMMddHHmmss}.bad";
-            File.Move(_path, bad, overwrite: true);
-            _logger.Error($"Upload queue was unreadable; moved aside to {bad}.", ex);
-            return [];
+            var json = WithRetry(() => File.ReadAllText(_path));
+            try
+            {
+                return JsonSerializer.Deserialize<List<CompanionMatchUpload>>(json) ?? [];
+            }
+            catch (JsonException ex)
+            {
+                // Keep the unreadable file for inspection instead of overwriting it on the next Save.
+                var bad = $"{_path}.{DateTime.UtcNow:yyyyMMddHHmmss}.bad";
+                WithRetry(() => File.Move(_path, bad, overwrite: true));
+                _logger.Error($"Upload queue was unreadable; moved aside to {bad}.", ex);
+                return [];
+            }
         }
     }
 
     public void Save(List<CompanionMatchUpload> uploads)
     {
-        var distinct = uploads
-            .GroupBy(upload => upload.GameId)
-            .Select(group => group.First())
-            .OrderByDescending(upload => upload.GameCreation)
-            .Take(MaxQueued)
-            .ToList();
+        lock (_lock)
+        {
+            var distinct = uploads
+                .GroupBy(upload => upload.GameId)
+                .Select(group => group.First())
+                .OrderByDescending(upload => upload.GameCreation)
+                .Take(MaxQueued)
+                .ToList();
 
-        // Write then rename, so a crash mid-write never leaves a half-written queue.
-        var tmp = _path + ".tmp";
-        File.WriteAllText(tmp, JsonSerializer.Serialize(distinct, JsonOptions));
-        File.Move(tmp, _path, overwrite: true);
+            // Write through to disk, then rename: neither a crash nor power loss leaves a half-written queue.
+            var tmp = _path + ".tmp";
+            using (var stream = new FileStream(tmp, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                JsonSerializer.Serialize(stream, distinct, JsonOptions);
+                stream.Flush(flushToDisk: true);
+            }
+            WithRetry(() => File.Move(tmp, _path, overwrite: true));
+        }
     }
 
     public void Enqueue(CompanionMatchUpload upload)
@@ -83,4 +96,22 @@ internal sealed class UploadQueue
             Save(Load().Where(upload => !gameIds.Contains(upload.GameId)).ToList());
         }
     }
+
+    // Antivirus, indexers and backups hold files briefly; a few short retries ride that out.
+    private static T WithRetry<T>(Func<T> action)
+    {
+        for (var attempt = 1; ; attempt++)
+        {
+            try
+            {
+                return action();
+            }
+            catch (Exception ex) when (IsFileError(ex) && attempt < 5)
+            {
+                Thread.Sleep(100);
+            }
+        }
+    }
+
+    private static void WithRetry(Action action) => WithRetry(() => { action(); return 0; });
 }

@@ -181,4 +181,54 @@ public class UploadQueueTests : IDisposable
         queue.Save([Game(1)]);
         Assert.Equal(["queue.json"], Directory.GetFiles(_dir, "queue.json*").Select(Path.GetFileName));
     }
+
+    // An antivirus/indexer-style reader: blocks the rename onto queue.json (UnauthorizedAccessException on Windows).
+    private FileStream HoldQueueFile() =>
+        new(Path.Combine(_dir, "queue.json"), FileMode.Open, FileAccess.Read, FileShare.Read);
+
+    [Fact]
+    public async Task LockedQueueFileWithServerDownKeepsTheGameAndRetriesIt()
+    {
+        var server = new FakeServer(() => Answer(HttpStatusCode.ServiceUnavailable));
+        var (uploader, queue) = Create(server);
+        queue.Save([]);
+
+        using (HoldQueueFile())
+        {
+            await uploader.UploadOrQueueAsync(Game(1), CancellationToken.None); // enqueue fails, send gets 503
+            Assert.Empty(queue.Load());
+
+            uploader.ResetCooldown();
+            await uploader.FlushAsync(CancellationToken.None); // still locked: must not throw, must retry the send
+        }
+        Assert.Equal([1L, 1L], server.Sent);
+
+        uploader.ResetCooldown();
+        await uploader.FlushAsync(CancellationToken.None); // lock gone, server still down: game reaches the file
+        Assert.Equal(1L, Assert.Single(queue.Load()).GameId);
+
+        server.Respond = () => Answer(HttpStatusCode.OK);
+        uploader.ResetCooldown();
+        await uploader.FlushAsync(CancellationToken.None);
+        Assert.Empty(queue.Load());
+        Assert.Equal([1L, 1L, 1L, 1L], server.Sent);
+    }
+
+    [Fact]
+    public async Task LockedQueueFileDuringAcceptedUploadNeitherThrowsNorResends()
+    {
+        var server = new FakeServer(() => Answer(HttpStatusCode.OK));
+        var (uploader, queue) = Create(server);
+        queue.Save([Game(1)]);
+
+        using (HoldQueueFile())
+        {
+            await uploader.FlushAsync(CancellationToken.None); // sent and answered, but the file can't be rewritten
+            await uploader.UploadOrQueueAsync(Game(2), CancellationToken.None);
+        }
+        await uploader.FlushAsync(CancellationToken.None);
+
+        Assert.Empty(queue.Load());
+        Assert.Equal([1L, 2L], server.Sent);
+    }
 }
