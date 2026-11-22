@@ -6,7 +6,8 @@ import { setEventSettings } from "@/lib/companion";
 const settingsSchema = z
   .object({
     retire: z.boolean().optional(),
-    ceremonyUrl: z.url().nullable().optional(),
+    // The Companion shell-opens this on every player's PC at retirement: absolute http(s) only.
+    ceremonyUrl: z.url({ protocol: /^https?$/ }).nullable().optional(),
     minVersion: z.string().min(1).nullable().optional(),
     maintenance: z.boolean().optional()
   })
