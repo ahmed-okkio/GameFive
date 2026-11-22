@@ -69,8 +69,7 @@ The branch `prototype/visual-direction` (fd0046b, never merge) is the visual spe
 
 - **Home (`/`)** is the Countdown from Dec 1 until Fri Dec 25 00:00 GMT: no header bar; the title lockup; the four-card clock counting down to Dec 25 00:00 GMT; "Seven days. Every game is Game 5." and "Fri Dec 25 to Thu Dec 31, GMT"; the three sign-up steps and **Download the Companion** (the `releases/latest` exe) with "Reinstalling it is the sign-up. Windows only."; the **Entrant list**: count plus names and tags, newest first, no states. A logged-in Entrant sees the line "You're entered to play in GameFive: One Last Chance." and their own row marked as theirs (gold, "You"); the "hasn't sent a game since …" warning shows there when their Companion has gone quiet.
 - **Splash:** the logo sweep on a full page load, as in the prototype (skipped for reduced motion, not replayed on client navigation).
-- **`/companion`:** the prototype's Companion page, an info page only (no status line; login lands on home). Its tray-icon legend shows the real crest icons (`connected.ico` / `disconnected.ico`), not drawn diamonds.
-- **Removed:** the old home, `/leaderboard`, `/player/...` profiles, the Riot ID search and the `players/.../status` and `refresh` APIs. Their URLs redirect to `/`. The Event spec brings back profiles and boards in the new look.
+- **Removed:** the old home, `/companion` (the home page covers download and sign-up), `/leaderboard`, `/player/...` profiles, the Riot ID search and the `players/.../status` and `refresh` APIs. Their URLs redirect to `/`. The Event spec brings back profiles and boards in the new look.
 - **Tab icon and header logo:** the crest.
 - After Dec 25 00:00 GMT, home shows a plain holding line until the Event spec ships (it must ship before then).
 
