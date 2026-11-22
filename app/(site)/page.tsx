@@ -2,7 +2,7 @@ import { getPlayerSession } from "@/lib/companion";
 import { EVENT_START } from "@/lib/countdown";
 import { listEntrants } from "@/lib/entrants";
 import { Clock } from "./Clock";
-import { EnteredLine, EntrantList, SignUp } from "./Entrants";
+import { EntrantList, SignUp } from "./Entrants";
 import { D } from "./ui";
 
 export const dynamic = "force-dynamic";
@@ -49,7 +49,6 @@ export default async function Home() {
         {/* What GameFive is, as the clock's caption: the name is the pitch. */}
         <p className={`${D} mt-6 text-xl text-[#F0E6D2]`}>Seven days. Every game is Game 5.</p>
         <p className="mt-1">Fri Dec 25 to Thu Dec 31, GMT</p>
-        <EnteredLine me={me} />
       </section>
 
       <div className="mt-10 grid gap-x-14 gap-y-12 lg:grid-cols-[minmax(0,1fr)_19rem]">

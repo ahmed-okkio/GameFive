@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { EVENT_START, timeLeft } from "@/lib/countdown";
-import { EnteredLine, EntrantList, SignUp } from "@/app/(site)/Entrants";
+import { EntrantList, SignUp } from "@/app/(site)/Entrants";
 
 describe("R5.2 countdown clock", () => {
   it("counts down to 2026-12-25T00:00:00Z", () => {
@@ -20,7 +20,7 @@ describe("R5.5 logged-in Entrant on home", () => {
     { id: "b", riotIdName: "Okkio", riotIdTag: "EUW" },
     { id: "c", riotIdName: "Okkio", riotIdTag: "EUW2" } // same name, another player: marked by id, not name
   ];
-  const render = (me: string | null) => renderToStaticMarkup(createElement("div", null, createElement(EnteredLine, { me }), createElement(SignUp, { me }), createElement(EntrantList, { names, me })));
+  const render = (me: string | null) => renderToStaticMarkup(createElement("div", null, createElement(SignUp, { me }), createElement(EntrantList, { names, me })));
 
   it("shows the entered line and marks only the Entrant's own row", () => {
     const html = render("b");

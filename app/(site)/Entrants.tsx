@@ -5,19 +5,10 @@ import { D, H2, N, Steps, downloadButton } from "./ui";
 
 type Entrant = { id: string; riotIdName: string; riotIdTag: string };
 
-// Shown only to the logged-in Entrant, in the prototype's Entrant status style.
-export const EnteredLine = ({ me }: { me: string | null }) =>
-  me && (
-    <p className="enter mt-8 flex w-fit items-center gap-3 border border-[#0AC8B9]/40 px-5 py-4 text-left text-[#F0E6D2]">
-      <span aria-hidden="true" className="h-2 w-2 shrink-0 rotate-45 bg-[#0AC8B9] shadow-[0_0_8px_#0AC8B9]" />
-      You&apos;re entered to play in GameFive: One Last Chance.
-    </p>
-  );
-
-// The sign-up steps and download; "You're not in yet" only for visitors who aren't a logged-in Entrant.
+// The sign-up steps and download, headed by "You're entered…" for the logged-in Entrant and "You're not in yet" for everyone else.
 export const SignUp = ({ me }: { me: string | null }) => (
   <section>
-    {!me && <H2>You&apos;re not in yet</H2>}
+    <H2>{me ? "You're entered to play in GameFive: One Last Chance." : "You're not in yet"}</H2>
     <Steps />
     <a href={appConfig.companionDownloadUrl} className={downloadButton}>Download the Companion</a>
     <p className="mt-3">Reinstalling it is the sign-up. Windows only.</p>
