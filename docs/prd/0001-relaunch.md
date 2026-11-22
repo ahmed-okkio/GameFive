@@ -23,7 +23,7 @@ Event Points, Daily Quests, Squad Contracts, Record Bounties, Daily MVP, firsts,
 - A player becomes an **Entrant** on the Companion's first `register` call. Store `registeredAt` on the player row; a player with no `registeredAt` (or one an admin removed) is not an Entrant. An old player who registers reuses their row, matched by PUUID.
 - **Identity is the PUUID only.** No lookup by Riot name, no PUUID overwrite. A Riot ID rename is picked up on the next `register` or upload.
 - Only games that **end after** an Entrant's `registeredAt` count for that Entrant. Non-Entrants' games are ignored.
-- **Login:** the tray is the only login. The Companion asks the server for a one-time login link for the connected account; opening it sets a 30-day session cookie. No passwords, no Riot sign-in for players. Admin login stays as it is.
+- **Login:** the tray is the only login. The Companion asks the server for a one-time login link for the connected account; opening it sets a session cookie that lasts 30 days or until 2027-01-02 00:00 GMT (after the Ceremony), whichever is later. No passwords, no Riot sign-in for players. Admin login stays as it is.
 - **No impersonation protection.** The shared `COMPANION_INGEST_TOKEN` authorises `register`, uploads, inbox and login links (owner accepts the risk).
 - **Admin removal:** an admin can remove an Entrant. There is no self-withdraw.
 - Every Companion request sends `X-Companion-Version`; the server stores the latest version per player. No heartbeat, no online status.
@@ -46,7 +46,7 @@ Event Points, Daily Quests, Squad Contracts, Record Bounties, Daily MVP, firsts,
 All endpoints take the shared token. JSON in and out.
 
 - `POST /api/companion/register` `{puuid, gameName, tagLine, version}`: creates or refreshes the Entrant, updates the Riot ID, stores the version. Idempotent; the Companion calls it on every League client connect.
-- `POST /api/companion/login-link` `{puuid}`: returns a single-use URL. The token is stored hashed and expires 5 minutes after it's issued. Opening it sets the 30-day session cookie and redirects to the requested page (default: home).
+- `POST /api/companion/login-link` `{puuid}`: returns a single-use URL. The token is stored hashed and expires 5 minutes after it's issued. Opening it sets the session cookie (see §2) and redirects to the requested page (default: home).
 - `GET /api/companion/inbox?puuid=&since=&briefing=0|1`: returns `{items: [{id, title, body, url}], now}`. **Empty during the Countdown.** The Event spec fills it. `briefing=1` is sent on the first connect of each GMT day.
 - `GET /api/companion/status`: global, unauthenticated, returns `{retire, ceremonyUrl, minVersion}`. `retire` comes from an admin flag; the Event spec sets it automatically at Lockdown.
 
@@ -56,7 +56,7 @@ All endpoints take the shared token. JSON in and out.
 - **Version 5.0.0**, published as the GitHub **Latest** release (above the demoted 4.0.0) so `releases/latest` and the updater serve it.
 - **Self-destruct removed.** Retirement replaces it: at startup and every 6 h (same timer as the update check, whether or not League is open) it calls `status`. Only an explicit `retire: true` retires it; a network failure never does. On retire it drains the upload queue, calls `StartupRegistration.Unregister`, shows one toast linking to `ceremonyUrl`, then deletes its exe and AppData.
 - **Updates** from `releases/latest` at startup and every 6 h, applied only when the gameflow phase is not ChampSelect or InProgress. If `minVersion` is above the running version, check for an update straight away.
-- **Register** on every League client connect (see §4). The tray acts as the Entrant only while the client is connected; nothing is cached.
+- **Register** on every League client connect (see §4). The first time a PUUID registers on an install, the Companion opens a login link to `/companion` in the default browser by itself, once per install and PUUID (remembered in AppData), so installing lands the player on the site already logged in. The tray acts as the Entrant only while the client is connected; nothing is cached.
 - **Uploads:** only queue 2400 `MATCHED_GAME`, on both the live path (`LcuService`) and the tray backfill (`MatchUploaderService`, "Upload recent games"). The upload carries the match-history game (all 10 participants) plus the player's own end-of-game `stats` block, read when the game ends (`totalHealOnTeammates`, `totalDamageShieldedOnTeammates`, time spent dead and the rest). Pings are not needed (ticket 12). Every request sends `X-Companion-Version`.
 - **Toasts:** while the client is connected, poll `inbox` every 60 s and right after each upload; show one item per poll with `NotifyIcon.ShowBalloonTip`; a click opens the item's `url` through a fresh login link. Missed items are dropped, not replayed. Nothing is polled while the client is closed. On the first connect of each GMT day, poll with `briefing=1`.
 - **Tray menu:** status line (connection and version), **Open Mayhem Week** (opens the site home via a login link), Upload recent games, Check for updates, Open log, Exit. Reconnect is removed. No quest rolling anywhere in the tray.

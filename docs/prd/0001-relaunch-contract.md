@@ -26,7 +26,7 @@ PRD: [0001-relaunch.md](0001-relaunch.md). Each ID is judged PASS / FAIL / BLOCK
 ## M3 Companion API
 
 - **R3.1** **(security)** Every `/api/companion/*` endpoint except `status`, and `/api/ingest/match`, rejects a missing or wrong token with 401.
-- **R3.2** `login-link` returns a URL. Opening it once sets a session cookie lasting 30 days and redirects; opening it again, or after 5 minutes, fails. The token is not stored in plain text. **(security)**
+- **R3.2** `login-link` returns a URL. Opening it once sets a session cookie (and server session) lasting until the later of 30 days and 2027-01-02T00:00:00Z, and redirects; opening it again, or after 5 minutes, fails. The token is not stored in plain text. **(security)**
 - **R3.3** `inbox` answers `{items: [], now}` during the Countdown, accepts `since` and `briefing`, and its item shape is `{id, title, body, url}` (type exported for the Event spec).
 - **R3.4** `status` answers `{retire, ceremonyUrl, minVersion}` without a token; `retire` follows the admin flag.
 - **R3.5** Each Companion request's `X-Companion-Version` is stored on the player as their latest version.
@@ -37,7 +37,7 @@ PRD: [0001-relaunch.md](0001-relaunch.md). Each ID is judged PASS / FAIL / BLOCK
 - **R4.2** Run from Downloads, it copies itself to `%LocalAppData%\GameFive\`, registers autostart to that copy and relaunches from it (unit-test the path logic; manual check on the owner's PC).
 - **R4.3** The live path and the tray backfill both upload only queue 2400 `MATCHED_GAME` (shared predicate, unit-tested with 2400/MATCHED_GAME, 2400/CUSTOM_GAME, 3270/CUSTOM_GAME).
 - **R4.4** The upload carries the 10-player match-history game and the end-of-game `stats` block with `totalHealOnTeammates` and `totalDamageShieldedOnTeammates`; every request sends `X-Companion-Version: 5.0.0`.
-- **R4.5** `register` is called on every League client connect.
+- **R4.5** `register` is called on every League client connect. After the first successful `register` for a PUUID on an install, the Companion opens a login link to `/companion` once; later connects, restarts and a reinstall over the same AppData don't open it again; another PUUID on the same install gets its own once.
 - **R4.6** Retirement: with `retire: true` it drains the queue, unregisters autostart, shows one toast with `ceremonyUrl` and deletes its exe and AppData; with the endpoint unreachable it does nothing. Checked at startup and every 6 h.
 - **R4.7** Updates follow `releases/latest`, never apply during ChampSelect or InProgress, and run immediately when `minVersion` is above the running version.
 - **R4.8** Inbox polling every 60 s and after each upload, only while the client is connected; one balloon per poll; a click opens the item URL via a fresh login link; `briefing=1` on the first connect of each GMT day.
