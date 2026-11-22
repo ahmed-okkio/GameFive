@@ -8,7 +8,7 @@ type Entrant = { id: string; riotIdName: string; riotIdTag: string };
 // Shown only to the logged-in Entrant, in the prototype's Entrant status style.
 export const EnteredLine = ({ me }: { me: string | null }) =>
   me && (
-    <p className="enter mx-auto mt-8 flex w-fit items-center gap-3 border border-[#0AC8B9]/40 px-5 py-4 text-left text-[#F0E6D2]">
+    <p className="enter mt-8 flex w-fit items-center gap-3 border border-[#0AC8B9]/40 px-5 py-4 text-left text-[#F0E6D2]">
       <span aria-hidden="true" className="h-2 w-2 shrink-0 rotate-45 bg-[#0AC8B9] shadow-[0_0_8px_#0AC8B9]" />
       You&apos;re entered to play in GameFive: One Last Chance.
     </p>
