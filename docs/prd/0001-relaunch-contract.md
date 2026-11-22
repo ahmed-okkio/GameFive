@@ -49,7 +49,7 @@ PRD: [0001-relaunch.md](0001-relaunch.md). Each ID is judged PASS / FAIL / BLOCK
 - **R5.2** The clock counts down to 2026-12-25T00:00:00Z (test with a fixed clock) and gives screen readers one sentence, not a ticking region.
 - **R5.3** The Entrant list shows every current Entrant (name and tag), newest first, with the count; removed Entrants and old non-registered players are absent.
 - **R5.4** **Download the Companion** links to `releases/latest/download/GameFive.Companion.exe`.
-- **R5.5** There is no `/companion` page (it redirects to `/`, and nothing links to it). On `/`, a logged-in Entrant sees "You're entered to play in GameFive: One Last Chance.", their own Entrant row marked (gold, "You"), and the quiet warning when no game arrived for 24 h; a logged-out visitor sees neither.
+- **R5.5** There is no `/companion` page (it redirects to `/`, and nothing links to it). On `/`, a logged-in Entrant sees "You're entered to play in GameFive: One Last Chance." and their own Entrant row marked (gold, "You"); a logged-out visitor sees neither. No quiet/"hasn't sent a game" warning anywhere.
 - **R5.6** `/leaderboard`, `/player/x/y` and the old search redirect to `/`; the `players/.../status` and `refresh` APIs are gone.
 - **R5.7** The splash plays on a full load, not on client navigation, and not under `prefers-reduced-motion`.
 - **R5.8** The tab icon and header logo are the crest.
