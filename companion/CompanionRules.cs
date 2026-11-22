@@ -31,6 +31,10 @@ internal static class CompanionRules
             && c > r;
     }
 
+    // The first-register browser window only opens out of queue and game, never over champ select or a match.
+    public static bool PhaseAllowsAutoOpen(string? gameflowPhase) =>
+        gameflowPhase is "None" or "Lobby" or "EndOfGame";
+
     public static bool PhaseAllowsUpdate(string? gameflowPhase) =>
         gameflowPhase is not ("ChampSelect" or "InProgress");
 

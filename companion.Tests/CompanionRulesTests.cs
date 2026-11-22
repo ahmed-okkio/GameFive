@@ -127,3 +127,22 @@ public class AutoOpenSiteTests
         Assert.True(CompanionRules.ShouldAutoOpenSite("puuid-ab\r\n", "puuid-a")); // whole lines only
     }
 }
+
+public class AutoOpenPhaseTests
+{
+    [Theory]
+    [InlineData("None", true)]
+    [InlineData("Lobby", true)]
+    [InlineData("EndOfGame", true)]
+    [InlineData("Matchmaking", false)]
+    [InlineData("ReadyCheck", false)]
+    [InlineData("ChampSelect", false)]
+    [InlineData("GameStart", false)]
+    [InlineData("InProgress", false)]
+    [InlineData("Reconnect", false)]
+    [InlineData("WaitingForStats", false)]
+    [InlineData("PreEndOfGame", false)]
+    [InlineData(null, false)]
+    public void SiteOpensOnlyOutOfQueueAndGame(string? phase, bool expected) =>
+        Assert.Equal(expected, CompanionRules.PhaseAllowsAutoOpen(phase));
+}

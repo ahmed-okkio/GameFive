@@ -89,9 +89,9 @@ internal sealed class CompanionApi
 
     // Opens a site page as the Entrant through a fresh login link; falls back to the plain URL unless
     // requireLoginLink. True when a login link was obtained and opened.
-    public async Task<bool> OpenAsEntrantAsync(string? puuid, string redirect, bool requireLoginLink = false)
+    public async Task<bool> OpenAsEntrantAsync(string? puuid, string redirect, bool requireLoginLink = false, CancellationToken ct = default)
     {
-        var url = puuid is null ? null : await LoginLinkAsync(puuid, redirect, CancellationToken.None);
+        var url = puuid is null ? null : await LoginLinkAsync(puuid, redirect, ct);
         if (url is null && requireLoginLink) return false;
         Process.Start(new ProcessStartInfo(url ?? new Uri(_http.BaseAddress!, redirect).ToString()) { UseShellExecute = true });
         return url is not null;
