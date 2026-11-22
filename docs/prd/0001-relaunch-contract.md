@@ -57,7 +57,7 @@ PRD: [0001-relaunch.md](0001-relaunch.md). Each ID is judged PASS / FAIL / BLOCK
 
 ## M6 Admin, release and go-live
 
-- **R6.1** Admin can remove an Entrant, delete a match, flip the retirement flag and set the maintenance pause; non-admins get 401/redirect. **(security)**
+- **R6.1** Admin can remove an Entrant, delete a match, flip the retirement flag and toggle the maintenance pause (while on, ingest answers 503 and stores nothing, and the site shows a one-line notice; off again, ingest resumes); non-admins get 401/redirect. **(security)**
 - **R6.2** The Vercel project serves the site at the relaunch URL (`https://game-five-kohl.vercel.app` unless the owner records otherwise) using the pooler `DATABASE_URL`.
 - **R6.3** `ServerBaseUrl` in the Companion equals the live URL.
 - **R6.4** GitHub `releases/latest` resolves to 5.0.0, and its asset is `GameFive.Companion.exe`.

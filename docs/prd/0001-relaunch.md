@@ -80,7 +80,7 @@ The existing admin page, reduced to the tools the Countdown needs:
 - Remove an Entrant.
 - Delete a match.
 - Flip the Companion retirement flag.
-- Maintenance pause (existing `MAINTENANCE_MODE`).
+- Maintenance pause: an admin toggle stored with the event settings (replaces the env-only `MAINTENANCE_MODE`, which is removed). While on, ingest answers 503 so the Companion's offline queue retries later, and the site shows a one-line notice.
 
 The Event spec adds points adjustment, rescoring, day close and early Lockdown.
 
