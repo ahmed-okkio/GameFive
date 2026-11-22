@@ -55,7 +55,7 @@ export default async function Home() {
       <div className="mt-10 grid gap-x-14 gap-y-12 lg:grid-cols-[minmax(0,1fr)_19rem]">
         <SignUp me={me} />
         {/* On wide screens the list fills the sign-up column's height and scrolls inside it, so the page itself doesn't grow with sign-ups; min height = header (6.25rem) + the mobile list cap (22rem), so a short list never scrolls. */}
-        <section className="lg:relative lg:min-h-[28.25rem]">
+        <section className="lg:relative">
           <EntrantList names={names} me={me} />
         </section>
       </div>
