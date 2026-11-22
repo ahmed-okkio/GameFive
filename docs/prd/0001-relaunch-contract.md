@@ -37,7 +37,7 @@ PRD: [0001-relaunch.md](0001-relaunch.md). Each ID is judged PASS / FAIL / BLOCK
 - **R4.2** Run from Downloads, it copies itself to `%LocalAppData%\GameFive\`, registers autostart to that copy and relaunches from it (unit-test the path logic; manual check on the owner's PC).
 - **R4.3** The live path and the tray backfill both upload only queue 2400 `MATCHED_GAME` (shared predicate, unit-tested with 2400/MATCHED_GAME, 2400/CUSTOM_GAME, 3270/CUSTOM_GAME).
 - **R4.4** The upload carries the 10-player match-history game and the end-of-game `stats` block with `totalHealOnTeammates` and `totalDamageShieldedOnTeammates`; every request sends `X-Companion-Version: 5.0.0`.
-- **R4.5** `register` is called on every League client connect. After the first successful `register` for a PUUID on an install, the Companion opens a login link to `/companion` once; later connects, restarts and a reinstall over the same AppData don't open it again; another PUUID on the same install gets its own once.
+- **R4.5** `register` is called on every League client connect. After the first successful `register` for a PUUID on an install, the Companion opens a login link to the home page once; later connects, restarts and a reinstall over the same AppData don't open it again; another PUUID on the same install gets its own once.
 - **R4.6** Retirement: with `retire: true` it drains the queue, unregisters autostart, shows one toast with `ceremonyUrl` and deletes its exe and AppData; with the endpoint unreachable it does nothing. Checked at startup and every 6 h.
 - **R4.7** Updates follow `releases/latest`, never apply during ChampSelect or InProgress, and run immediately when `minVersion` is above the running version.
 - **R4.8** Inbox polling every 60 s and after each upload, only while the client is connected; one balloon per poll; a click opens the item URL via a fresh login link; `briefing=1` on the first connect of each GMT day.
@@ -49,7 +49,7 @@ PRD: [0001-relaunch.md](0001-relaunch.md). Each ID is judged PASS / FAIL / BLOCK
 - **R5.2** The clock counts down to 2026-12-25T00:00:00Z (test with a fixed clock) and gives screen readers one sentence, not a ticking region.
 - **R5.3** The Entrant list shows every current Entrant (name and tag), newest first, with the count; removed Entrants and old non-registered players are absent.
 - **R5.4** **Download the Companion** links to `releases/latest/download/GameFive.Companion.exe`.
-- **R5.5** `/companion` matches the prototype's Companion page; a logged-in Entrant sees the status line with the time of their last game.
+- **R5.5** `/companion` matches the prototype's Companion page except that its tray-icon legend shows the real crest icons; it has no status line. On `/`, a logged-in Entrant sees "You're entered to play in GameFive: One Last Chance.", their own Entrant row marked (gold, "You"), and the quiet warning when no game arrived for 24 h; a logged-out visitor sees neither.
 - **R5.6** `/leaderboard`, `/player/x/y` and the old search redirect to `/`; the `players/.../status` and `refresh` APIs are gone.
 - **R5.7** The splash plays on a full load, not on client navigation, and not under `prefers-reduced-motion`.
 - **R5.8** The tab icon and header logo are the crest.
