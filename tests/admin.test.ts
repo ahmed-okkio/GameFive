@@ -102,7 +102,7 @@ describe.skipIf(!isLocalDb)("M6 admin tools (local Postgres)", () => {
     expect(await res.json()).toEqual({ retire: false, ceremonyUrl: null, minVersion: "5.1.0", maintenance: false });
     expect((await (await status.GET()).json()).retire).toBe(false);
 
-    for (const bad of [{ retire: "yes" }, { maintenance: "on" }, { ceremonyUrl: "not a url" }, { other: 1 }, null]) {
+    for (const bad of [{ retire: "yes" }, { maintenance: "on" }, { ceremonyUrl: "not a url" }, { ceremonyUrl: "javascript:alert(1)" }, { ceremonyUrl: "file:///C:/Windows/System32/calc.exe" }, { ceremonyUrl: "/relative" }, { other: 1 }, null]) {
       expect((await settings.PATCH(req("/api/admin/settings", "PATCH", bad))).status).toBe(400);
     }
   });
