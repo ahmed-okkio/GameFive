@@ -160,9 +160,9 @@ describe.skipIf(!isLocalDb)("M3 Companion API (local Postgres)", () => {
   });
 
   it("R3.4 status answers without a token and retire follows the admin flag", async () => {
-    expect(await (await status.GET()).json()).toEqual({ retire: false, ceremonyUrl: null, minVersion: null });
+    expect(await (await status.GET()).json()).toEqual({ retire: false, ceremonyUrl: null, minVersion: null, maintenance: false });
     await companion.setEventSettings({ retire: true, ceremonyUrl: "https://gamefive.example/ceremony", minVersion: "5.0.0" });
-    expect(await (await status.GET()).json()).toEqual({ retire: true, ceremonyUrl: "https://gamefive.example/ceremony", minVersion: "5.0.0" });
+    expect(await (await status.GET()).json()).toEqual({ retire: true, ceremonyUrl: "https://gamefive.example/ceremony", minVersion: "5.0.0", maintenance: false });
     await companion.setEventSettings({ retire: false });
     expect((await (await status.GET()).json()).retire).toBe(false);
   });

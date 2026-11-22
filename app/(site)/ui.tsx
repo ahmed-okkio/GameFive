@@ -97,3 +97,13 @@ export const Steps = () => (
 );
 
 export const downloadButton = `${caps} mt-6 inline-block border border-[#0AC8B9] bg-[#0A323C] px-8 py-4 text-[#CDFAFA] hover:bg-[#0D4855] hover:shadow-[0_0_24px_rgba(10,200,185,0.35)] ${focus}`;
+
+// One plain line while the admin has the maintenance pause on.
+export function MaintenanceNotice({ on }: { on: boolean }) {
+  if (!on) return null;
+  return (
+    <p role="status" className="relative border-b border-[#463714] bg-[#0A1428] px-4 py-2 text-center text-sm text-[#F0E6D2]">
+      Maintenance pause: game uploads are on hold for now.
+    </p>
+  );
+}

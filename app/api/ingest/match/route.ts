@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isCompanionAuthorized, recordCompanionVersion } from "@/lib/companion";
+import { getEventSettings, isCompanionAuthorized, recordCompanionVersion } from "@/lib/companion";
 import { companionMatchPayloadSchema, ingestCompanionMayhemMatch } from "@/lib/ingest/mayhem";
 
 export async function POST(request: Request) {
@@ -8,6 +8,11 @@ export async function POST(request: Request) {
       { error: "Unauthorized" },
       { status: 401 }
     );
+  }
+
+  // Maintenance pause: store nothing; the Companion's offline queue retries on 5xx.
+  if ((await getEventSettings()).maintenance) {
+    return NextResponse.json({ error: "Maintenance pause" }, { status: 503, headers: { "Retry-After": "300" } });
   }
 
   const body = await request.json().catch(() => null);

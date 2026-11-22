@@ -11,6 +11,8 @@ export default defineConfig({
     environment: "node",
     include: ["tests/**/*.test.ts"],
     // DB test files share one local database and truncate it.
-    fileParallelism: false
+    fileParallelism: false,
+    // The first query against a cold local database can take several seconds.
+    testTimeout: 20_000
   }
 });
