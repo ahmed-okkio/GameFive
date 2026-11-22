@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { EVENT_START, timeLeft } from "@/lib/countdown";
-import { EnteredLine, EntrantList } from "@/app/(site)/Entrants";
+import { EnteredLine, EntrantList, SignUp } from "@/app/(site)/Entrants";
 
 describe("R5.2 countdown clock", () => {
   it("counts down to 2026-12-25T00:00:00Z", () => {
@@ -20,16 +20,18 @@ describe("R5.5 logged-in Entrant on home", () => {
     { id: "b", riotIdName: "Okkio", riotIdTag: "EUW" },
     { id: "c", riotIdName: "Okkio", riotIdTag: "EUW2" } // same name, another player: marked by id, not name
   ];
-  const render = (me: string | null) => renderToStaticMarkup(createElement("div", null, createElement(EnteredLine, { me }), createElement(EntrantList, { names, me })));
+  const render = (me: string | null) => renderToStaticMarkup(createElement("div", null, createElement(EnteredLine, { me }), createElement(SignUp, { me }), createElement(EntrantList, { names, me })));
 
   it("shows the entered line and marks only the Entrant's own row", () => {
     const html = render("b");
     expect(html).toContain("You&#x27;re entered to play in GameFive: One Last Chance.");
     expect(html.match(/>You</g)).toHaveLength(1);
-    const rows = html.split("<li").slice(1);
+    const rows = html.split("<li").filter((r) => r.includes("text-[0.65em]"));
     expect(rows[1]).toContain(">You<");
     expect(rows[1]).toContain("shadow-[inset_2px_0_0_#C8AA6E]");
     expect(rows[2]).not.toContain(">You<");
+    expect(html).not.toContain("not in yet");
+    expect(html).toContain("Download the Companion");
   });
 
   it("shows neither to a logged-out visitor", () => {
@@ -37,5 +39,6 @@ describe("R5.5 logged-in Entrant on home", () => {
     expect(html).not.toContain("entered to play");
     expect(html).not.toContain(">You<");
     expect(html).not.toContain("inset_2px");
+    expect(html).toContain("You&#x27;re not in yet");
   });
 });

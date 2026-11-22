@@ -1,10 +1,9 @@
 import { getPlayerSession } from "@/lib/companion";
-import { appConfig } from "@/lib/config";
 import { EVENT_START } from "@/lib/countdown";
 import { listEntrants } from "@/lib/entrants";
 import { Clock } from "./Clock";
-import { EnteredLine, EntrantList } from "./Entrants";
-import { D, H2, Steps, downloadButton } from "./ui";
+import { EnteredLine, EntrantList, SignUp } from "./Entrants";
+import { D } from "./ui";
 
 export const dynamic = "force-dynamic";
 
@@ -54,12 +53,7 @@ export default async function Home() {
       </section>
 
       <div className="mt-10 grid gap-x-14 gap-y-12 lg:grid-cols-[minmax(0,1fr)_19rem]">
-        <section>
-          <H2>You&apos;re not in yet</H2>
-          <Steps />
-          <a href={appConfig.companionDownloadUrl} className={downloadButton}>Download the Companion</a>
-          <p className="mt-3">Reinstalling it is the sign-up. Windows only.</p>
-        </section>
+        <SignUp me={me} />
         {/* On wide screens the list fills the sign-up column's height and scrolls inside it, so the page itself doesn't grow with sign-ups. */}
         <section className="lg:relative">
           <EntrantList names={names} me={me} />
