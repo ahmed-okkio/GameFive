@@ -1,3 +1,4 @@
+import { FadeIfOverflow } from "./FadeIfOverflow";
 import { ScrollToMe } from "./ScrollToMe";
 import { appConfig } from "@/lib/config";
 import { D, H2, N, Steps, downloadButton } from "./ui";
@@ -31,7 +32,7 @@ export const EntrantList = ({ names, me }: { names: Entrant[]; me: string | null
       <span className={`${N} text-4xl text-[#F0E6D2]`}>{names.length}</span>
       <span>signed up so far</span>
     </p>
-    <ol className="mt-4 max-h-[22rem] min-h-0 flex-1 overflow-y-auto pr-2 [mask-image:linear-gradient(180deg,#000_85%,transparent)] [scrollbar-color:#785A28_transparent] [scrollbar-width:thin] lg:max-h-none">
+    <ol className="relative mt-4 max-h-[22rem] min-h-0 flex-1 overflow-y-auto pr-2 data-[overflow]:[mask-image:linear-gradient(180deg,#000_85%,transparent)] [scrollbar-color:#785A28_transparent] [scrollbar-width:thin] lg:max-h-none">
       {names.map((e, k) => {
         const mine = e.id === me;
         return (
@@ -44,5 +45,6 @@ export const EntrantList = ({ names, me }: { names: Entrant[]; me: string | null
         );
       })}
     </ol>
+    <FadeIfOverflow />
   </div>
 );
