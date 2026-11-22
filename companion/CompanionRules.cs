@@ -51,6 +51,11 @@ internal static class CompanionRules
         UseShellExecute = false
     };
 
+    // A queued game leaves the queue only on a final answer: any 2xx (stored, duplicate, not_mayhem, remake,
+    // not_entrant) or 400 (the payload will never be accepted). 401/403 is a token/config problem and 5xx,
+    // 503 maintenance, other codes and network errors are transient, so the game stays queued for the next flush.
+    public static bool IsFinalUploadAnswer(int statusCode) => statusCode is >= 200 and < 300 or 400;
+
     // Only an explicit retire: true retires; a failed or unreadable status call is null.
     public static bool ShouldRetire(CompanionStatus? status) => status?.Retire == true;
 }

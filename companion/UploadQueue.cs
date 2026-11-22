@@ -9,6 +9,9 @@ internal sealed class UploadQueue
         WriteIndented = true
     };
 
+    // shortcut: oldest games are dropped past this; a Mayhem Week is a few dozen games per player.
+    public const int MaxQueued = 100;
+
     private readonly string _path;
     private readonly CompanionLogger _logger;
 
@@ -42,6 +45,8 @@ internal sealed class UploadQueue
         var distinct = uploads
             .GroupBy(upload => upload.GameId)
             .Select(group => group.First())
+            .OrderByDescending(upload => upload.GameCreation)
+            .Take(MaxQueued)
             .ToList();
 
         File.WriteAllText(_path, JsonSerializer.Serialize(distinct, JsonOptions));

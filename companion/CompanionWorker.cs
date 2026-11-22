@@ -114,7 +114,7 @@ public class CompanionWorker : BackgroundService
         _logger.Info("Retire flag set by the server. Retiring.");
 
         // 1. Drain the upload queue (one last attempt for everything queued).
-        uploader.ClearUploadedGameIds();
+        uploader.ResetCooldown();
         await uploader.FlushAsync(ct);
 
         // 2. Unregister autostart.

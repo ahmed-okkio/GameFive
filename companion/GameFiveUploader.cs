@@ -15,9 +15,11 @@ internal sealed class GameFiveUploader : IDisposable
     private readonly UploadQueue _queue;
     private readonly CompanionLogger _logger;
     private readonly HttpClient _httpClient;
-    private readonly HashSet<long> _attemptedGameIds = [];
+    // One upload or flush at a time, so a game is never sent twice concurrently.
+    private readonly SemaphoreSlim _gate = new(1, 1);
+    // Games the server gave a final answer for this session; never re-sent.
+    private readonly HashSet<long> _finishedGameIds = [];
     private DateTimeOffset _nextRetryAt = DateTimeOffset.MinValue;
-    private bool _uploadsDisabled;
 
     // Raised after the server accepts an upload, so the inbox is polled right after it.
     public event Action? Uploaded;
@@ -31,7 +33,54 @@ internal sealed class GameFiveUploader : IDisposable
 
     public async Task FlushAsync(CancellationToken cancellationToken)
     {
-        if (_uploadsDisabled || DateTimeOffset.UtcNow < _nextRetryAt)
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            await FlushCoreAsync(cancellationToken);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    public async Task UploadOrQueueAsync(CompanionMatchUpload upload, CancellationToken cancellationToken)
+    {
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            if (_finishedGameIds.Contains(upload.GameId))
+            {
+                _logger.Info($"Mayhem upload skipped; already answered this session. gameId={upload.GameId}");
+                return;
+            }
+
+            // Try to upload the current match AND flush the queue
+            await FlushCoreAsync(cancellationToken);
+
+            if (await TryUploadAsync(upload, cancellationToken))
+            {
+                return;
+            }
+
+            _queue.Enqueue(upload);
+            _logger.Info($"Upload failed. Queued Mayhem upload for retry. gameId={upload.GameId}");
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    // Retirement's last drain ignores the cooldown.
+    public void ResetCooldown()
+    {
+        _nextRetryAt = DateTimeOffset.MinValue;
+    }
+
+    private async Task FlushCoreAsync(CancellationToken cancellationToken)
+    {
+        if (DateTimeOffset.UtcNow < _nextRetryAt)
         {
             return;
         }
@@ -47,56 +96,22 @@ internal sealed class GameFiveUploader : IDisposable
 
         foreach (var upload in queuedUploads)
         {
-            if (_attemptedGameIds.Contains(upload.GameId))
-            {
-                continue;
-            }
-
-            if (!await TryUploadAsync(upload, cancellationToken))
+            // After the first transient failure keep the rest queued untried until the cooldown ends.
+            var keep = !_finishedGameIds.Contains(upload.GameId)
+                && (remaining.Count > 0 || !await TryUploadAsync(upload, cancellationToken));
+            if (keep)
             {
                 remaining.Add(upload);
             }
         }
 
         _queue.Save(remaining);
-        _logger.Info($"Upload retry summary: attempted={queuedUploads.Count}, remaining={remaining.Count}");
+        _logger.Info($"Upload retry summary: queued={queuedUploads.Count}, remaining={remaining.Count}");
     }
 
-    public async Task UploadOrQueueAsync(CompanionMatchUpload upload, CancellationToken cancellationToken)
-    {
-        if (_uploadsDisabled)
-        {
-            _logger.Info($"Mayhem upload skipped; uploads disabled after auth failure. gameId={upload.GameId}");
-            return;
-        }
-
-        // Try to upload the current match AND flush the queue
-        await FlushAsync(cancellationToken);
-        
-        if (await TryUploadAsync(upload, cancellationToken))
-        {
-            return; // Success!
-        }
-
-        _queue.Enqueue(upload);
-        _logger.Info($"Upload failed. Queued Mayhem upload for retry. gameId={upload.GameId}");
-    }
-
-    public void ClearUploadedGameIds()
-    {
-        _attemptedGameIds.Clear();
-        _uploadsDisabled = false;
-        _nextRetryAt = DateTimeOffset.MinValue;
-    }
-
+    // True when the server gave a final answer (the game leaves the queue); false keeps it queued.
     private async Task<bool> TryUploadAsync(CompanionMatchUpload upload, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(CompanionConfig.ServerBaseUrl) || string.IsNullOrWhiteSpace(CompanionConfig.AuthToken))
-        {
-            _logger.Info("Upload skipped because ServerBaseUrl/AuthToken is missing.");
-            return false;
-        }
-
         try
         {
             var json = JsonSerializer.Serialize(upload, JsonOptions);
@@ -107,20 +122,20 @@ internal sealed class GameFiveUploader : IDisposable
 
             using var response = await _httpClient.SendAsync(request, cancellationToken);
             var body = await response.Content.ReadAsStringAsync(cancellationToken);
-            _attemptedGameIds.Add(upload.GameId);
+            var status = (int)response.StatusCode;
 
+            if (!CompanionRules.IsFinalUploadAnswer(status))
+            {
+                _logger.Info($"Mayhem upload failed; kept for retry. gameId={upload.GameId}, status={status}, body={body}");
+                _nextRetryAt = DateTimeOffset.UtcNow.Add(RetryCooldown);
+                return false;
+            }
+
+            _finishedGameIds.Add(upload.GameId);
             if (!response.IsSuccessStatusCode)
             {
-                _logger.Info($"Mayhem upload failed. gameId={upload.GameId}, status={(int)response.StatusCode}, body={body}");
-                _nextRetryAt = DateTimeOffset.UtcNow.Add(RetryCooldown);
-
-                if (response.StatusCode is System.Net.HttpStatusCode.Unauthorized or System.Net.HttpStatusCode.Forbidden)
-                {
-                    _uploadsDisabled = true;
-                    _logger.Info("Mayhem uploads disabled for this League session because auth failed. Fix config and restart companion.");
-                }
-
-                return false;
+                _logger.Error($"Mayhem upload rejected as invalid; dropped. gameId={upload.GameId}, status={status}, body={body}");
+                return true;
             }
 
             _logger.Info($"Mayhem upload accepted. gameId={upload.GameId}, body={body}");
@@ -129,9 +144,8 @@ internal sealed class GameFiveUploader : IDisposable
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
-            _attemptedGameIds.Add(upload.GameId);
             _nextRetryAt = DateTimeOffset.UtcNow.Add(RetryCooldown);
-            _logger.Error($"Mayhem upload failed. gameId={upload.GameId}", ex);
+            _logger.Error($"Mayhem upload failed; kept for retry. gameId={upload.GameId}", ex);
             return false;
         }
     }

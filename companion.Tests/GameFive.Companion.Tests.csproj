@@ -6,12 +6,16 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <!-- Compiles the Companion's pure pure files directly, so tests need no WinForms or LCU. -->
+  <!-- Compiles the Companion's pure files directly, so tests need no WinForms or LCU. -->
   <ItemGroup>
     <Compile Include="..\companion\CompanionRules.cs" Link="CompanionRules.cs" />
     <Compile Include="..\companion\LcuModels.cs" Link="LcuModels.cs" />
     <Compile Include="..\companion\MatchMapper.cs" Link="MatchMapper.cs" />
     <Compile Include="..\companion\CompanionUploadModels.cs" Link="CompanionUploadModels.cs" />
+    <Compile Include="..\companion\CompanionConfig.cs" Link="CompanionConfig.cs" />
+    <Compile Include="..\companion\CompanionLogger.cs" Link="CompanionLogger.cs" />
+    <Compile Include="..\companion\UploadQueue.cs" Link="UploadQueue.cs" />
+    <Compile Include="..\companion\GameFiveUploader.cs" Link="GameFiveUploader.cs" />
   </ItemGroup>
 
   <ItemGroup>
