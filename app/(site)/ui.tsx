@@ -9,12 +9,10 @@ export const N = "font-semibold tabular-nums"; // figures stay in Spectral: Marc
 export const focus = "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-[#F0E6D2]";
 export const goldEdge = "linear-gradient(180deg,#F6D879,#8A6418)";
 export const quiet = "linear-gradient(180deg,#785A28,#463714)";
-export const winEdge = "linear-gradient(180deg,#7FF0E0,#0A8A80)";
 const cut = "polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px)";
 // Hover: the card lifts and tilts toward a corner while light travels across its rim and face.
 // Lift, tilt and light share one duration and curve, so the light moves with the tilt both ways.
 const rimLight = "linear-gradient(110deg,transparent 40%,rgba(255,255,255,.3) 50%,transparent 60%)";
-const rimLightSoft = "linear-gradient(110deg,transparent 40%,rgba(255,255,255,.12) 50%,transparent 60%)";
 const faceLight = "linear-gradient(110deg,transparent 30%,rgba(255,255,255,.025) 50%,transparent 70%)";
 export const tilt = "group motion-safe:transition-transform motion-safe:duration-1000 motion-safe:ease-[cubic-bezier(.2,.7,.2,1)] motion-safe:hover:[transform:perspective(900px)_translateY(-2px)_rotateX(3deg)_rotateY(-3deg)]";
 
@@ -42,13 +40,13 @@ export const siteStyles = `.sweep{background-position:97% 0}
 
 // A chamfered panel with a 1px gradient edge (a border can't follow a clip-path).
 // rim: on hover of the parent .group, light travels across the edge (behind the panel) and faintly across the face (above it).
-export function Frame({ edge, rim = false, soft = false, className = "", children }: { edge: string; rim?: boolean; soft?: boolean; className?: string; children: ReactNode }) {
+export function Frame({ edge, rim = false, className = "", children }: { edge: string; rim?: boolean; className?: string; children: ReactNode }) {
   const light = (image: string) => <span aria-hidden="true" className="sweep pointer-events-none absolute inset-0" style={{ backgroundImage: image, backgroundSize: "250% 100%" }} />;
   return (
     <div style={{ clipPath: cut, background: edge, padding: 1 }} className="relative h-full">
-      {rim && light(soft ? rimLightSoft : rimLight)}
+      {rim && light(rimLight)}
       <div style={{ clipPath: cut }} className={`relative h-full bg-[linear-gradient(180deg,#0E1B30,#050C16)] ${className}`}>{children}</div>
-      {rim && !soft && light(faceLight)}
+      {rim && light(faceLight)}
     </div>
   );
 }
@@ -59,20 +57,6 @@ export const H2 = ({ children }: { children: ReactNode }) => (
     <span aria-hidden="true" className="h-px flex-1 bg-gradient-to-r from-[#C8AA6E]/70 to-transparent" />
   </h2>
 );
-
-// The chosen logo: gold chamfered crest, prismatic V.
-export function LogoMark({ size }: { size: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true">
-      <defs>
-        <linearGradient id="logo-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#F6D879" /><stop offset="1" stopColor="#8A6418" /></linearGradient>
-        <linearGradient id="logo-p" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#7FF0E0" /><stop offset=".5" stopColor="#B59CFF" /><stop offset="1" stopColor="#FF9CD6" /></linearGradient>
-      </defs>
-      <path d="M14 2H62V50L50 62H2V14Z" fill="#0A1428" stroke="url(#logo-g)" strokeWidth="2.5" />
-      <path d="M15 18H25L32 40L39 18H49L36 50H28Z" fill="url(#logo-p)" />
-    </svg>
-  );
-}
 
 const steps = [
   { title: "Download the Companion", body: "Windows only. One exe, installs itself." },

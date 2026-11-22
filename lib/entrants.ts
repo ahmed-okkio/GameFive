@@ -49,8 +49,3 @@ export function listEntrants() {
   return prisma.player.findMany({ where: entrantWhere, orderBy: { registeredAt: "desc" }, select: { id: true, riotIdName: true, riotIdTag: true } });
 }
 
-// When the newest stored game the player played in ended, or null.
-export async function lastGameEndedAt(playerId: string) {
-  const { _max } = await prisma.match.aggregate({ where: { participants: { some: { playerId } } }, _max: { gameEndedAt: true } });
-  return _max.gameEndedAt;
-}
