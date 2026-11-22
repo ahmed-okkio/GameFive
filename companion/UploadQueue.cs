@@ -14,6 +14,8 @@ internal sealed class UploadQueue
 
     private readonly string _path;
     private readonly CompanionLogger _logger;
+    // Enqueue and Remove are read-modify-write; a concurrent pair must not overwrite each other.
+    private readonly object _lock = new();
 
     public UploadQueue(string path, CompanionLogger logger)
     {
@@ -28,14 +30,18 @@ internal sealed class UploadQueue
             return [];
         }
 
+        // IO errors propagate: answering "empty" would let the next Save wipe the real queue.
+        var json = File.ReadAllText(_path);
         try
         {
-            var json = File.ReadAllText(_path);
             return JsonSerializer.Deserialize<List<CompanionMatchUpload>>(json) ?? [];
         }
-        catch (Exception ex)
+        catch (JsonException ex)
         {
-            _logger.Error("Failed to load failed upload queue.", ex);
+            // Keep the unreadable file for inspection instead of overwriting it on the next Save.
+            var bad = $"{_path}.{DateTime.UtcNow:yyyyMMddHHmmss}.bad";
+            File.Move(_path, bad, overwrite: true);
+            _logger.Error($"Upload queue was unreadable; moved aside to {bad}.", ex);
             return [];
         }
     }
@@ -49,17 +55,32 @@ internal sealed class UploadQueue
             .Take(MaxQueued)
             .ToList();
 
-        File.WriteAllText(_path, JsonSerializer.Serialize(distinct, JsonOptions));
+        // Write then rename, so a crash mid-write never leaves a half-written queue.
+        var tmp = _path + ".tmp";
+        File.WriteAllText(tmp, JsonSerializer.Serialize(distinct, JsonOptions));
+        File.Move(tmp, _path, overwrite: true);
     }
 
     public void Enqueue(CompanionMatchUpload upload)
     {
-        var uploads = Load();
-
-        if (uploads.All(item => item.GameId != upload.GameId))
+        lock (_lock)
         {
-            uploads.Add(upload);
-            Save(uploads);
+            var uploads = Load();
+
+            if (uploads.All(item => item.GameId != upload.GameId))
+            {
+                uploads.Add(upload);
+                Save(uploads);
+            }
+        }
+    }
+
+    public void Remove(IReadOnlyCollection<long> gameIds)
+    {
+        if (gameIds.Count == 0) return;
+        lock (_lock)
+        {
+            Save(Load().Where(upload => !gameIds.Contains(upload.GameId)).ToList());
         }
     }
 }

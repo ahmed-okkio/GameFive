@@ -36,7 +36,11 @@ internal sealed class GameFiveUploader : IDisposable
         await _gate.WaitAsync(cancellationToken);
         try
         {
-            await FlushCoreAsync(cancellationToken);
+            await FlushCoreAsync(ignoreCooldown: false, cancellationToken);
+        }
+        catch (IOException ex)
+        {
+            _logger.Error("Upload queue file could not be read or written; retrying next flush.", ex);
         }
         finally
         {
@@ -46,25 +50,29 @@ internal sealed class GameFiveUploader : IDisposable
 
     public async Task UploadOrQueueAsync(CompanionMatchUpload upload, CancellationToken cancellationToken)
     {
+        // On disk before anything is sent, so a shutdown or crash mid-send can't lose the game.
+        try
+        {
+            _queue.Enqueue(upload);
+        }
+        catch (IOException ex)
+        {
+            _logger.Error($"Could not queue gameId={upload.GameId}; sending without a queue copy.", ex);
+            await _gate.WaitAsync(cancellationToken);
+            try { await TryUploadAsync(upload, cancellationToken); }
+            finally { _gate.Release(); }
+            return;
+        }
+
+        // The new game is newest, so the flush tries it first; the cooldown doesn't hold back a fresh game.
         await _gate.WaitAsync(cancellationToken);
         try
         {
-            if (_finishedGameIds.Contains(upload.GameId))
-            {
-                _logger.Info($"Mayhem upload skipped; already answered this session. gameId={upload.GameId}");
-                return;
-            }
-
-            // Try to upload the current match AND flush the queue
-            await FlushCoreAsync(cancellationToken);
-
-            if (await TryUploadAsync(upload, cancellationToken))
-            {
-                return;
-            }
-
-            _queue.Enqueue(upload);
-            _logger.Info($"Upload failed. Queued Mayhem upload for retry. gameId={upload.GameId}");
+            await FlushCoreAsync(ignoreCooldown: true, cancellationToken);
+        }
+        catch (IOException ex)
+        {
+            _logger.Error("Upload queue file could not be read or written; retrying next flush.", ex);
         }
         finally
         {
@@ -78,9 +86,9 @@ internal sealed class GameFiveUploader : IDisposable
         _nextRetryAt = DateTimeOffset.MinValue;
     }
 
-    private async Task FlushCoreAsync(CancellationToken cancellationToken)
+    private async Task FlushCoreAsync(bool ignoreCooldown, CancellationToken cancellationToken)
     {
-        if (DateTimeOffset.UtcNow < _nextRetryAt)
+        if (!ignoreCooldown && DateTimeOffset.UtcNow < _nextRetryAt)
         {
             return;
         }
@@ -92,21 +100,23 @@ internal sealed class GameFiveUploader : IDisposable
             return;
         }
 
-        var remaining = new List<CompanionMatchUpload>();
+        var answered = new List<long>();
 
-        foreach (var upload in queuedUploads)
+        foreach (var upload in queuedUploads.OrderByDescending(upload => upload.GameCreation))
         {
-            // After the first transient failure keep the rest queued untried until the cooldown ends.
-            var keep = !_finishedGameIds.Contains(upload.GameId)
-                && (remaining.Count > 0 || !await TryUploadAsync(upload, cancellationToken));
-            if (keep)
+            if (_finishedGameIds.Contains(upload.GameId) || await TryUploadAsync(upload, cancellationToken))
             {
-                remaining.Add(upload);
+                answered.Add(upload.GameId);
+            }
+            else
+            {
+                break; // after the first transient failure keep the rest queued untried until the next flush
             }
         }
 
-        _queue.Save(remaining);
-        _logger.Info($"Upload retry summary: queued={queuedUploads.Count}, remaining={remaining.Count}");
+        // Removes only what was answered, so a game enqueued meanwhile is never overwritten.
+        _queue.Remove(answered);
+        _logger.Info($"Upload flush: queued={queuedUploads.Count}, answered={answered.Count}");
     }
 
     // True when the server gave a final answer (the game leaves the queue); false keeps it queued.

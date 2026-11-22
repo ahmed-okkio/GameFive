@@ -128,4 +128,57 @@ public class UploadQueueTests : IDisposable
         Assert.Equal(UploadQueue.MaxQueued, kept.Count);
         Assert.DoesNotContain(kept, g => g.GameId <= 5);
     }
+
+    [Fact]
+    public async Task GameIsOnDiskBeforeItIsSent()
+    {
+        UploadQueue? queue = null;
+        var onDiskAtSend = new List<long>();
+        var server = new FakeServer(() =>
+        {
+            onDiskAtSend.AddRange(queue!.Load().Select(g => g.GameId));
+            return Answer(HttpStatusCode.OK);
+        });
+        (var uploader, queue) = Create(server);
+
+        await uploader.UploadOrQueueAsync(Game(7), CancellationToken.None);
+
+        Assert.Equal([7L], onDiskAtSend);
+        Assert.Empty(queue.Load());
+    }
+
+    [Fact]
+    public async Task CancelledWhileWaitingStillLeavesTheGameQueued()
+    {
+        var (uploader, queue) = Create(new FakeServer(() => Answer(HttpStatusCode.OK)));
+        using var cancelled = new CancellationTokenSource();
+        cancelled.Cancel();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => uploader.UploadOrQueueAsync(Game(3), cancelled.Token));
+
+        Assert.Equal(3L, Assert.Single(queue.Load()).GameId);
+    }
+
+    [Fact]
+    public void CorruptQueueFileIsKeptAsideNotWiped()
+    {
+        var (_, queue) = Create(new FakeServer(() => Answer(HttpStatusCode.OK)));
+        var path = Path.Combine(_dir, "queue.json");
+        File.WriteAllText(path, "[{\"gameId\": 1, trunc");
+
+        Assert.Empty(queue.Load());
+        queue.Enqueue(Game(2));
+
+        var bad = Assert.Single(Directory.GetFiles(_dir, "queue.json.*.bad"));
+        Assert.Equal("[{\"gameId\": 1, trunc", File.ReadAllText(bad));
+        Assert.Equal(2L, Assert.Single(queue.Load()).GameId);
+    }
+
+    [Fact]
+    public void SaveLeavesNoTempFileBehind()
+    {
+        var (_, queue) = Create(new FakeServer(() => Answer(HttpStatusCode.OK)));
+        queue.Save([Game(1)]);
+        Assert.Equal(["queue.json"], Directory.GetFiles(_dir, "queue.json*").Select(Path.GetFileName));
+    }
 }
