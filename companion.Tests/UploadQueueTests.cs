@@ -128,4 +128,107 @@ public class UploadQueueTests : IDisposable
         Assert.Equal(UploadQueue.MaxQueued, kept.Count);
         Assert.DoesNotContain(kept, g => g.GameId <= 5);
     }
+
+    [Fact]
+    public async Task GameIsOnDiskBeforeItIsSent()
+    {
+        UploadQueue? queue = null;
+        var onDiskAtSend = new List<long>();
+        var server = new FakeServer(() =>
+        {
+            onDiskAtSend.AddRange(queue!.Load().Select(g => g.GameId));
+            return Answer(HttpStatusCode.OK);
+        });
+        (var uploader, queue) = Create(server);
+
+        await uploader.UploadOrQueueAsync(Game(7), CancellationToken.None);
+
+        Assert.Equal([7L], onDiskAtSend);
+        Assert.Empty(queue.Load());
+    }
+
+    [Fact]
+    public async Task CancelledWhileWaitingStillLeavesTheGameQueued()
+    {
+        var (uploader, queue) = Create(new FakeServer(() => Answer(HttpStatusCode.OK)));
+        using var cancelled = new CancellationTokenSource();
+        cancelled.Cancel();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => uploader.UploadOrQueueAsync(Game(3), cancelled.Token));
+
+        Assert.Equal(3L, Assert.Single(queue.Load()).GameId);
+    }
+
+    [Fact]
+    public void CorruptQueueFileIsKeptAsideNotWiped()
+    {
+        var (_, queue) = Create(new FakeServer(() => Answer(HttpStatusCode.OK)));
+        var path = Path.Combine(_dir, "queue.json");
+        File.WriteAllText(path, "[{\"gameId\": 1, trunc");
+
+        Assert.Empty(queue.Load());
+        queue.Enqueue(Game(2));
+
+        var bad = Assert.Single(Directory.GetFiles(_dir, "queue.json.*.bad"));
+        Assert.Equal("[{\"gameId\": 1, trunc", File.ReadAllText(bad));
+        Assert.Equal(2L, Assert.Single(queue.Load()).GameId);
+    }
+
+    [Fact]
+    public void SaveLeavesNoTempFileBehind()
+    {
+        var (_, queue) = Create(new FakeServer(() => Answer(HttpStatusCode.OK)));
+        queue.Save([Game(1)]);
+        Assert.Equal(["queue.json"], Directory.GetFiles(_dir, "queue.json*").Select(Path.GetFileName));
+    }
+
+    // An antivirus/indexer-style reader: blocks the rename onto queue.json (UnauthorizedAccessException on Windows).
+    private FileStream HoldQueueFile() =>
+        new(Path.Combine(_dir, "queue.json"), FileMode.Open, FileAccess.Read, FileShare.Read);
+
+    [Fact]
+    public async Task LockedQueueFileWithServerDownKeepsTheGameAndRetriesIt()
+    {
+        var server = new FakeServer(() => Answer(HttpStatusCode.ServiceUnavailable));
+        var (uploader, queue) = Create(server);
+        queue.Save([]);
+
+        using (HoldQueueFile())
+        {
+            await uploader.UploadOrQueueAsync(Game(1), CancellationToken.None); // enqueue fails, send gets 503
+            Assert.Empty(queue.Load());
+
+            uploader.ResetCooldown();
+            await uploader.FlushAsync(CancellationToken.None); // still locked: must not throw, must retry the send
+        }
+        Assert.Equal([1L, 1L], server.Sent);
+
+        uploader.ResetCooldown();
+        await uploader.FlushAsync(CancellationToken.None); // lock gone, server still down: game reaches the file
+        Assert.Equal(1L, Assert.Single(queue.Load()).GameId);
+
+        server.Respond = () => Answer(HttpStatusCode.OK);
+        uploader.ResetCooldown();
+        await uploader.FlushAsync(CancellationToken.None);
+        Assert.Empty(queue.Load());
+        Assert.Equal([1L, 1L, 1L, 1L], server.Sent);
+    }
+
+    [Fact]
+    public async Task LockedQueueFileDuringAcceptedUploadNeitherThrowsNorResends()
+    {
+        var server = new FakeServer(() => Answer(HttpStatusCode.OK));
+        var (uploader, queue) = Create(server);
+        queue.Save([Game(1)]);
+
+        using (HoldQueueFile())
+        {
+            await uploader.FlushAsync(CancellationToken.None); // sent and answered, but the file can't be rewritten
+            await uploader.UploadOrQueueAsync(Game(2), CancellationToken.None);
+        }
+        await uploader.FlushAsync(CancellationToken.None);
+
+        Assert.Empty(queue.Load());
+        Assert.Equal([1L, 2L], server.Sent);
+    }
 }
