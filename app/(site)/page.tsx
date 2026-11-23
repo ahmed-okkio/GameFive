@@ -1,5 +1,6 @@
 import { getPlayerSession } from "@/lib/companion";
 import { EVENT_START } from "@/lib/countdown";
+import { Ambience } from "./Ambience";
 import { listEntrants } from "@/lib/entrants";
 import { Clock } from "./Clock";
 import { EntrantList, SignUp } from "./Entrants";
@@ -43,6 +44,7 @@ export default async function Home() {
   const me = player?.id ?? null;
   return (
     <main className="pb-6">
+      <Ambience />
       <section className="pt-10 text-center">
         <CountdownTitle />
         <Clock now={now} />

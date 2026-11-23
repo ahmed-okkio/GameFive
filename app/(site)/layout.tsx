@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { Marcellus, Spectral } from "next/font/google";
 import { Backdrop } from "./Backdrop";
 import { Splash } from "./Splash";
-import { Ambience } from "./Ambience";
 import { getEventSettings } from "@/lib/companion";
 import { MaintenanceNotice, siteStyles } from "./ui";
 
@@ -23,7 +22,6 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
       <style>{siteStyles}</style>
       <Splash />
       <Backdrop />
-      <Ambience />
       <MaintenanceNotice on={maintenance} />
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6">{children}</div>
     </div>
