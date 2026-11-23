@@ -1,39 +1,48 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-// Looping Howling Abyss ambience. Browsers block sound before a gesture, so it starts off behind a toggle;
-// the visitor's choice is remembered and, once on, resumes on their next click anywhere.
+// Looping Howling Abyss ambience, on by default unless the visitor turned it off. Browsers usually block sound
+// before a gesture, so if the autoplay attempt fails it starts on the first click or key press anywhere.
 const KEY = "gf-ambience";
 
 export function Ambience() {
   const audio = useRef<HTMLAudioElement>(null);
-  const [on, setOn] = useState(false);
+  const button = useRef<HTMLButtonElement>(null);
+  const [on, setOn] = useState(true);
 
   useEffect(() => {
-    let saved = false;
-    try { saved = localStorage.getItem(KEY) === "on"; } catch {}
-    if (!saved) return;
-    setOn(true);
-    const start = () => audio.current?.play().catch(() => {});
+    let off = false;
+    try { off = localStorage.getItem(KEY) === "off"; } catch {}
+    if (off) return setOn(false);
+    const a = audio.current!;
+    a.volume = 0.15;
+    const start = (e?: Event) => {
+      // The toggle handles its own click; starting here would let that click switch it straight back off.
+      if (e && button.current?.contains(e.target as Node)) return;
+      a.play().then(stop, () => {});
+    };
+    const stop = () => ["pointerdown", "keydown"].forEach((t) => window.removeEventListener(t, start));
+    ["pointerdown", "keydown"].forEach((t) => window.addEventListener(t, start));
     start();
-    window.addEventListener("pointerdown", start, { once: true });
-    return () => window.removeEventListener("pointerdown", start);
+    return stop;
   }, []);
 
   function toggle() {
-    const a = audio.current;
-    if (!a) return;
-    const next = !on;
+    const a = audio.current!;
+    // On but still blocked by autoplay: this click is the gesture that starts it.
+    const next = !on || a.paused;
     setOn(next);
     try { localStorage.setItem(KEY, next ? "on" : "off"); } catch {}
+    a.volume = 0.15;
     if (next) a.play().catch(() => {});
     else a.pause();
   }
 
   return (
     <>
-      <audio ref={audio} src="/audio/howling-abyss.mp3" loop preload="none" onPlay={(e) => (e.currentTarget.volume = 0.35)} />
+      <audio ref={audio} src="/audio/howling-abyss.mp3" loop preload="none" />
       <button
+        ref={button}
         type="button"
         onClick={toggle}
         aria-pressed={on}
